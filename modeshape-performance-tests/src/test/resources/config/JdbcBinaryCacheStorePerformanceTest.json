@@ -1,0 +1,11 @@
+{
+    "name" : "Test_Repository",
+    "query" : {
+        "indexStorage" : {
+            "type" : "ram"
+        },
+        "indexing" : {
+            "mode" : "sync"
+        }
+    }
+}
