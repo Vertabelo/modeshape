@@ -28,14 +28,13 @@
         <module>modeshape-jcr</module>
         <module>modeshape-unit-test</module>
         <module>sequencers</module>
-<!--        <module>extractors</module> -->
 
         <!--
             The REST client needs the JDBC driver
         -->
-        <module>web</module>
+<!--        <module>web</module> -->
         <module>modeshape-jdbc-local</module>
-        <module>modeshape-jdbc</module>
+<!--        <module>modeshape-jdbc</module> -->
 
 
     </modules>
