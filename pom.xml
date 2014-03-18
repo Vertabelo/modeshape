@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.modeshape</groupId>
     <artifactId>modeshape-parent</artifactId>
-	<version>3.7.1.Final</version>
+	<version>3.7.1.Final-ep</version>
     <relativePath>modeshape-parent/pom.xml</relativePath>
   </parent>
 
@@ -28,7 +28,16 @@
         <module>modeshape-jcr</module>
         <module>modeshape-unit-test</module>
         <module>sequencers</module>
-        <module>extractors</module>
+<!--        <module>extractors</module> -->
+
+        <!--
+            The REST client needs the JDBC driver
+        -->
+        <module>web</module>
+        <module>modeshape-jdbc-local</module>
+        <module>modeshape-jdbc</module>
+
+
     </modules>
 	<properties>
 		<rootDir>${project.basedir}</rootDir>
