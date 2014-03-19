@@ -1873,41 +1873,88 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
             tokens.canConsume("MATCH", "FULL");
             tokens.canConsume("MATCH", "PARTIAL");
+            
+            parseReferentialActions(tokens, constraintNode);
+        }
+    }
+    
 
-            //	
-            // referentialTriggeredAction : (updateRule deleteRule?) | (deleteRule updateRule?);
-            //
-            // deleteRule : 'ON' 'DELETE' referencialAction;
-            //	
-            // updateRule : 'ON' 'UPDATE' referencialAction;
-            //
-            // referencialAction
-            // : cascadeOption | setNullOption | setDefaultOption | noActionOption
-            // ;
-            //    		
-            // cascadeOption : 'CASCADE';
-            // setNullOption : 'SET' 'NULL';
-            // setDefaultOption : 'SET' 'DEFAULT';
-            // noActionOption : 'NO' 'ACTION';
-            // nowOption : 'NOW' '(' ')' ;
-
-            // Could be one or both, so check more than once.
-            while (tokens.canConsume("ON", "UPDATE") || tokens.canConsume("ON", "DELETE")) {
-
-                if (tokens.matches("CASCADE") || tokens.matches("NOW()")) {
-                    tokens.consume();
-                } else if (tokens.matches("SET", "NULL")) {
-                    tokens.consume("SET", "NULL");
-                } else if (tokens.matches("SET", "DEFAULT")) {
-                    tokens.consume("SET", "DEFAULT");
-                } else if (tokens.matches("NO", "ACTION")) {
-                    tokens.consume("NO", "ACTION");
-                } else {
-                    System.out.println(" ERROR:   ColumnDefinition REFERENCES has NO REFERENCIAL ACTION.");
-                }
+    protected void parseReferentialActions( DdlTokenStream tokens,
+                                    AstNode constraintNode ) throws ParsingException {
+        // Could be one or both, so check twice
+        String referentialActionType = getReferentialActionType(tokens);
+        if(referentialActionType != null) {
+            parseReferentialAction(tokens, constraintNode, referentialActionType);
+            
+            // read a possible second one
+            referentialActionType = getReferentialActionType(tokens);
+            if(referentialActionType != null) {
+                parseReferentialAction(tokens, constraintNode, referentialActionType);
             }
         }
     }
+    
+    protected String getReferentialActionType(DdlTokenStream tokens) {
+        //      
+        // referentialTriggeredAction : (updateRule deleteRule?) | (deleteRule updateRule?);
+        //
+        // deleteRule : 'ON' 'DELETE' referencialAction;
+        //  
+        // updateRule : 'ON' 'UPDATE' referencialAction;
+        //
+        String referentialActionType = null;
+        if(tokens.canConsume("ON", "UPDATE")) {
+            referentialActionType = ON_UPDATE_ACTION;
+            
+        } else if(tokens.canConsume("ON", "DELETE")) {
+            referentialActionType = ON_DELETE_ACTION;
+        }
+        return referentialActionType;
+    }
+    
+    protected void parseReferentialAction(DdlTokenStream tokens,
+            AstNode constraintNode,
+            String referentialActionType) {
+        // referencialAction
+        // : cascadeOption | setNullOption | setDefaultOption | noActionOption | restrictOption
+        // ;
+        //                  
+        // cascadeOption : 'CASCADE';
+        // setNullOption : 'SET' 'NULL';
+        // setDefaultOption : 'SET' 'DEFAULT';
+        // noActionOption : 'NO' 'ACTION';
+        // restrictOption : 'RESTRICT';
+        // nowOption : 'NOW' '(' ')' ;
+
+        if (tokens.matches("CASCADE")) {
+            tokens.consume();
+            constraintNode.setProperty(referentialActionType, DdlConstants.ReferencialAction.CASCADE);
+            
+        } else if (tokens.matches("SET", "NULL")) {
+            tokens.consume("SET", "NULL");
+            constraintNode.setProperty(referentialActionType, DdlConstants.ReferencialAction.SET_NULL);
+            
+        } else if (tokens.matches("SET", "DEFAULT")) {
+            tokens.consume("SET", "DEFAULT");
+            constraintNode.setProperty(referentialActionType, DdlConstants.ReferencialAction.SET_DEFAULT);
+            
+        } else if (tokens.matches("NO", "ACTION")) {
+            tokens.consume("NO", "ACTION");
+            constraintNode.setProperty(referentialActionType, DdlConstants.ReferencialAction.NO_ACTION);
+            
+        } else if (tokens.matches("RESTRICT")) {
+            tokens.consume("RESTRICT");
+            constraintNode.setProperty(referentialActionType, DdlConstants.ReferencialAction.RESTRICT);
+            
+        } else if (tokens.matches("NOW()")) {
+            // unsupported now
+            tokens.consume();
+            
+        } else {
+            System.out.println(" ERROR:   ColumnDefinition REFERENCES has unsupported REFERENCIAL ACTION.");
+        }
+    }
+    
 
     // ===========================================================================================================================
     // PARSING CREATE VIEW

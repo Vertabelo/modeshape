@@ -135,6 +135,10 @@
       < 'DEFERRABLE', 'NOT DEFERRABLE'
   - ddl:checkSearchCondition (STRING)
       < 'INITIALLY DEFERRED', 'INITIALLY IMMEDIATE'
+  - ddl:onUpdateAction (STRING)
+      < 'CASCADE', 'SET NULL', 'SET DEFAULT', 'NO ACTION', 'RESTRICT'
+  - ddl:onDeleteAction (STRING)
+      < 'CASCADE', 'SET NULL', 'SET DEFAULT', 'NO ACTION', 'RESTRICT'
   + * (ddl:columnReference) = ddl:columnReference sns
   + * (ddl:tableReference) = ddl:tableReference
   + * (ddl:fkColumnReference) = ddl:fkColumnReference sns

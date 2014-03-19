@@ -103,6 +103,7 @@ public interface DdlConstants {
         public static final String SET_NULL = "SET NULL";
         public static final String SET_DEFAULT = "SET DEFAULT";
         public static final String NO_ACTION = "NO ACTION";
+        public static final String RESTRICT = "RESTRICT";
     }
 
     // Basic SQL 92 statement start phrases

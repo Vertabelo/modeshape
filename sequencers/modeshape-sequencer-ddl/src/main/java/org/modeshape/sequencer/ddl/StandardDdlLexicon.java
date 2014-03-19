@@ -169,6 +169,8 @@ public class StandardDdlLexicon {
     public static final String ALL_PRIVILEGES = PREFIX + ":allPrivileges";
     public static final String WITH_GRANT_OPTION = PREFIX + ":withGrantOption";
     public static final String GRANTEE = PREFIX + ":grantee";
+    public static final String ON_UPDATE_ACTION = PREFIX + ":onUpdateAction";
+    public static final String ON_DELETE_ACTION = PREFIX + ":onDeleteAction";
 
     public static final String CREATE_VIEW_QUERY_EXPRESSION = PREFIX + ":queryExpression";
     public static final String CREATE_VIEW_OPTION_CLAUSE = PREFIX + ":createViewOption";
