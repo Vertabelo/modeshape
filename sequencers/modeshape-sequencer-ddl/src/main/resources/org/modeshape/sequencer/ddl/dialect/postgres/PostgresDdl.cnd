@@ -114,7 +114,6 @@
 [postgresddl:createForeignDataWrapperStatement] > ddl:creatable, ddl:statement, postgresddl:foreignDataOperand mixin
 [postgresddl:createFunctionStatement]           > ddl:creatable, ddl:statement, postgresddl:functionOperand mixin
 [postgresddl:createGroupStatement]              > ddl:creatable, ddl:statement, postgresddl:groupOperand mixin
-[postgresddl:createIndexStatement]              > ddl:creatable, ddl:statement, postgresddl:indexOperand mixin
 [postgresddl:createLanguageStatement]           > ddl:creatable, ddl:statement, postgresddl:languageOperand mixin
 [postgresddl:createOperatorStatement]           > ddl:creatable, ddl:statement, postgresddl:operatorOperand mixin
 [postgresddl:createRoleStatement]               > ddl:creatable, ddl:statement, postgresddl:roleOperand mixin
@@ -127,6 +126,23 @@
 [postgresddl:createTypeStatement]               > ddl:creatable, ddl:statement, postgresddl:typeOperand mixin
 [postgresddl:createUserStatement]               > ddl:creatable, ddl:statement, postgresddl:userOperand mixin
 [postgresddl:createUserMappingStatement]        > ddl:creatable, ddl:statement, postgresddl:userMappingOperand mixin
+
+
+[postgresddl:indexOrderable] mixin
+  - postgresddl:order (string) < 'ASC', 'DESC'
+[postgresddl:indexStorageParameter]             > ddl:simpleProperty mixin
+[postgresddl:createIndexStatement]              > ddl:creatable, ddl:statement, postgresddl:indexOperand mixin
+  - postgresddl:unique (boolean)
+  - postgresddl:concurrently (boolean)
+  - postgresddl:using (string)
+  - postgresddl:tableName (string) mandatory
+  - postgresddl:indexAttributes (string) multiple
+  - postgresddl:otherRefs (string) multiple
+  - postgresddl:tablespace (string)
+  - postgresddl:whereClause (string)
+  + * (ddl:columnReference) = ddl:columnReference
+  + * (postgresddl:indexStorageParameter) = postgresddl:indexStorageParameter sns
+
 
 // =============================================================================
 // DROP STATEMENTS

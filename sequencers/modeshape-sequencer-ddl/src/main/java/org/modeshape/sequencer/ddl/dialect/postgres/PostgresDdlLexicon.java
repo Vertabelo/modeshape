@@ -23,6 +23,8 @@
  */
 package org.modeshape.sequencer.ddl.dialect.postgres;
 
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.Namespace.PREFIX;
+
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
 
 /**
@@ -147,9 +149,21 @@ public class PostgresDdlLexicon  extends StandardDdlLexicon {
     public static final String TYPE_FUNCTION_PARAMETER                     = Namespace.PREFIX + ":functionParameter";
     public static final String FUNCTION_PARAMETER_MODE                = Namespace.PREFIX + ":mode";
     public static final String ROLE                                   = Namespace.PREFIX + ":role";
+    public static final String TYPE_INDEX_ORDERABLE                   = Namespace.PREFIX + ":indexOrderable";
+    public static final String TYPE_INDEX_STORAGE_PARAMETER           = Namespace.PREFIX + ":indexStorageParameter";
     
     // PROPERTY NAMES
     public static final String TARGET_OBJECT_TYPE = Namespace.PREFIX + ":targetObjectType";
     public static final String TARGET_OBJECT_NAME = Namespace.PREFIX + ":targetObjectName";
     public static final String COMMENT = Namespace.PREFIX + ":comment";
+
+    public static final String UNIQUE_INDEX = Namespace.PREFIX + ":unique";
+    public static final String CONCURRENTLY = Namespace.PREFIX + ":concurrently";
+    public static final String USING = Namespace.PREFIX + ":using";
+    public static final String TABLE_NAME = Namespace.PREFIX + ":tableName";
+    public static final String INDEX_AATRIBUTES = Namespace.PREFIX + ":indexAttributes";
+    public static final String OTHER_REFS = Namespace.PREFIX + ":otherRefs";
+    public static final String TABLESPACE = Namespace.PREFIX + ":tablespace";
+    public static final String WHERE_CLAUSE = Namespace.PREFIX + ":whereClause";
+    public static final String INDEX_ORDER = Namespace.PREFIX + ":order";
 }

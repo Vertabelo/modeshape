@@ -68,6 +68,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
 import org.modeshape.sequencer.ddl.StandardDdlParser;
 import org.modeshape.sequencer.ddl.datatype.DataType;
 import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
+
 import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.*;
 import org.modeshape.sequencer.ddl.node.AstNode;
 import java.util.ArrayList;
@@ -590,9 +591,9 @@ public class PostgresDdlParser extends StandardDdlParser
         } else if (tokens.matches(STMT_CREATE_GROUP)) {
             return parseStatement(tokens, STMT_CREATE_GROUP, parentNode, TYPE_CREATE_GROUP_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_INDEX)) {
-            return parseStatement(tokens, STMT_CREATE_INDEX, parentNode, TYPE_CREATE_INDEX_STATEMENT);
+            return parseCreateIndexStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_UNIQUE_INDEX)) {
-            return parseStatement(tokens, STMT_CREATE_UNIQUE_INDEX, parentNode, TYPE_CREATE_INDEX_STATEMENT);
+            return parseCreateIndexStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_LANGUAGE)) {
             return parseStatement(tokens, STMT_CREATE_LANGUAGE, parentNode, TYPE_CREATE_LANGUAGE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_TRUSTED_PROCEDURAL_LANGUAGE)) {
@@ -1722,6 +1723,257 @@ public class PostgresDdlParser extends StandardDdlParser
         markEndOfStatement(tokens, node);
 
         return node;
+    }
+    
+    protected AstNode parseCreateIndexStatement(DdlTokenStream tokens, AstNode parentNode) throws ParsingException {
+        //  CREATE [ UNIQUE ] INDEX [ CONCURRENTLY ] [ name ] ON table_name [ USING method ]
+        //          ( { column_name | ( expression ) } [ COLLATE collation ] [ opclass ] [ ASC | DESC ] [ NULLS { FIRST | LAST } ] [, ...] )
+        //          [ WITH ( storage_parameter = value [, ... ] ) ]
+        //          [ TABLESPACE tablespace_name ]
+        //          [ WHERE predicate ]
+        assert tokens != null;
+        assert parentNode != null;
+        assert (tokens.matches(STMT_CREATE_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_INDEX));
+
+        markStartOfStatement(tokens);
+        
+        tokens.consume(CREATE);
+        final boolean isUnique = tokens.canConsume(UNIQUE);
+        tokens.consume(INDEX);
+        
+        final boolean isConcurrently = tokens.canConsume("CONCURRENTLY");
+        final String indexName = parseName(tokens);
+        
+        AstNode indexNode = nodeFactory().node(indexName, parentNode, TYPE_CREATE_INDEX_STATEMENT);
+        indexNode.setProperty(UNIQUE_INDEX, isUnique);
+        indexNode.setProperty(CONCURRENTLY, isConcurrently);
+        
+        tokens.consume(ON);
+        final String tableName = parseName(tokens);
+        indexNode.setProperty(TABLE_NAME, tableName);
+        
+        if(tokens.canConsume("USING")) {
+            String usingMethod = tokens.consume();
+            indexNode.setProperty(USING, usingMethod);
+        }
+
+        // parse left-paren content right-paren
+        final String columnExpressionList = parseContentBetweenParens(tokens);
+        parseIndexColumnExpressionList("(" + columnExpressionList + ")", indexNode);
+        
+        // TODO WITH, TABLESPACE, WHERE - at this point we don't need it, skipping
+        parseUntilTerminator(tokens);
+        
+        markEndOfStatement(tokens, indexNode);
+        
+        return indexNode;
+    }
+    
+    /**
+     * INFO: This is copy-pasted from OracleDdlParser.
+     * 
+     * If the index type is a bitmap-join the columns are from the dimension tables which are defined in the FROM clause. All other
+     * index types the columns are from the table the index in on.
+     * <p>
+     * <code>
+     * column-expression == left-paren column-name [ASC | DESC] | constant | function [, column-name [ASC | DESC] | constant | function ]* right-paren
+     * </code>
+     * 
+     * @param columnExpressionList the comma separated column expression list (cannot be <code>null</code>)
+     * @param indexNode the index node whose column expression list is being processed (cannot be <code>null</code>)
+     */
+    private void parseIndexColumnExpressionList( final String columnExpressionList,
+                                                 final AstNode indexNode ) {
+        final DdlTokenStream tokens = new DdlTokenStream(columnExpressionList, DdlTokenStream.ddlTokenizer(false), false);
+        tokens.start();
+
+        tokens.consume(L_PAREN); // must have opening paren
+        int numLeft = 1;
+        int numRight = 0;
+
+        // must have content between the parens
+        if (!tokens.matches(R_PAREN)) {
+            final List<String> possibleColumns = new ArrayList<String>(); // dimension table columns
+            final List<String> functions = new ArrayList<String>(); // functions, constants
+            final StringBuilder text = new StringBuilder();
+            boolean isFunction = false;
+
+            while (tokens.hasNext()) {
+                if (tokens.canConsume(COMMA)) {
+                    if (isFunction) {
+                        functions.add(text.toString());
+                    } else {
+                        possibleColumns.add(text.toString());
+                    }
+
+                    text.setLength(0); // clear out
+                    isFunction = false;
+                    continue;
+                }
+
+                if (tokens.matches(L_PAREN)) {
+                    isFunction = true;
+                    ++numLeft;
+                } else if (tokens.matches("ASC") || tokens.matches("DESC")) {
+                    text.append(SPACE);
+                } else if (tokens.matches(R_PAREN)) {
+                    if (numLeft == ++numRight) {
+                        if (isFunction) {
+                            functions.add(text.toString());
+                        } else {
+                            possibleColumns.add(text.toString());
+                        }
+
+                        break;
+                    }
+                }
+
+                text.append(tokens.consume());
+            }
+
+            if (!possibleColumns.isEmpty()) {
+                List<AstNode> tableNodes = null;
+                final boolean tableIndex = indexNode.hasMixin(PostgresDdlLexicon.TYPE_CREATE_INDEX_STATEMENT);
+
+                // find appropriate table nodes
+                if (tableIndex) {
+                    // table index so find table node
+                    final String tableName = (String)indexNode.getProperty(PostgresDdlLexicon.TABLE_NAME);
+                    final AstNode parent = indexNode.getParent();
+                    final List<AstNode> nodes = parent.childrenWithName(tableName);
+
+                    if (!nodes.isEmpty()) {
+                        if (nodes.size() == 1) {
+                            tableNodes = nodes;
+                        } else {
+                            // this should not be possible but check none the less
+                            for (final AstNode node : nodes) {
+                                if (node.hasMixin(PostgresDdlLexicon.TYPE_CREATE_TABLE_STATEMENT)) {
+                                    tableNodes = new ArrayList<AstNode>(1);
+                                    tableNodes.add(node);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // must be bitmap-join
+                    tableNodes = indexNode.getChildren(PostgresDdlLexicon.TYPE_TABLE_REFERENCE);
+                }
+
+                if ((tableNodes != null) && !tableNodes.isEmpty()) {
+                    boolean processed = false;
+
+                    for (String possibleColumn : possibleColumns) {
+                        // first determine any ordering
+                        final int ascIndex = possibleColumn.toUpperCase().indexOf(" ASC");
+                        final boolean asc = (ascIndex != -1);
+                        final int descIndex = possibleColumn.toUpperCase().indexOf(" DESC");
+                        boolean desc = (descIndex != -1);
+    
+                        // adjust column name if there is ordering
+                        if (asc) {
+                            possibleColumn = possibleColumn.substring(0, ascIndex);
+                        } else if (desc) {
+                            possibleColumn = possibleColumn.substring(0, descIndex);
+                        }
+
+                        if (tableIndex) {
+                            if (tableNodes.isEmpty()) {
+                                if (asc) {
+                                    functions.add(possibleColumn + SPACE + "ASC");
+                                } else if (desc) {
+                                    functions.add(possibleColumn + SPACE + "DESC");
+                                } else {
+                                    functions.add(possibleColumn);
+                                }
+                            } else {
+                                // only one table reference. need to find column.
+                                final AstNode tableNode = tableNodes.get(0);
+                                final List<AstNode> columnNodes = tableNode.getChildren(PostgresDdlLexicon.TYPE_COLUMN_DEFINITION);
+
+                                if (!columnNodes.isEmpty()) {
+                                    // find column
+                                    for (final AstNode colNode : columnNodes) {
+                                        if (colNode.getName().toUpperCase().equals(possibleColumn.toUpperCase())) {
+                                            final AstNode colRef = nodeFactory().node(possibleColumn, indexNode, TYPE_COLUMN_REFERENCE);
+                                            
+                                            if (asc || desc) {
+                                                colRef.addMixin(PostgresDdlLexicon.TYPE_INDEX_ORDERABLE);
+                
+                                                if (asc) {
+                                                    colRef.setProperty(PostgresDdlLexicon.INDEX_ORDER, "ASC");
+                                                } else {
+                                                    colRef.setProperty(PostgresDdlLexicon.INDEX_ORDER, "DESC");
+                                                }
+                                            }
+                
+                                            processed = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (!processed) {
+                                    if (asc) {
+                                        functions.add(possibleColumn + SPACE + "ASC");
+                                    } else if (desc) {
+                                        functions.add(possibleColumn + SPACE + "DESC");
+                                    } else {
+                                        functions.add(possibleColumn);
+                                    }
+
+                                    processed = true;
+                                }
+                            }
+                        } else {
+                            // bitmap-join
+                            for (final AstNode dimensionTableNode : tableNodes) {
+                                if (possibleColumn.toUpperCase().startsWith(dimensionTableNode.getName().toUpperCase() + PERIOD)) {
+                                    final AstNode colRef = nodeFactory().node(possibleColumn, indexNode, TYPE_COLUMN_REFERENCE);
+                                    
+                                    if (asc || desc) {
+                                        colRef.addMixin(PostgresDdlLexicon.TYPE_INDEX_ORDERABLE);
+        
+                                        if (asc) {
+                                            colRef.setProperty(PostgresDdlLexicon.INDEX_ORDER, "ASC");
+                                        } else {
+                                            colRef.setProperty(PostgresDdlLexicon.INDEX_ORDER, "DESC");
+                                        }
+                                    }
+        
+                                    processed = true;
+                                    break;
+                                }
+                            }
+
+                            // probably a constant or function
+                            if (!processed) {
+                                if (asc) {
+                                    functions.add(possibleColumn + SPACE + "ASC");
+                                } else if (desc) {
+                                    functions.add(possibleColumn + SPACE + "DESC");
+                                } else {
+                                    functions.add(possibleColumn);
+                                }
+
+                                processed = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!functions.isEmpty()) {
+                indexNode.setProperty(PostgresDdlLexicon.OTHER_REFS, functions);
+            }
+        }
+
+        if (numLeft != numRight) {
+            throw new ParsingException(tokens.nextPosition());
+        }
+
+        tokens.consume(R_PAREN); // must have closing paren
     }
 
     /**

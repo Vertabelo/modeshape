@@ -2882,6 +2882,51 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         testPrint("== >> SOURCE:\n" + source + "\n");
     }
     
+
+
+    /**
+     * The tokens must start with a left paren, end with a right paren, and have content between. Any parens in the content must
+     * have matching parens.
+     * 
+     * @param tokens the tokens being processed (cannot be <code>null</code> but or empty)
+     * @return the content (never <code>null</code> or empty.
+     * @throws ParsingException if there is a problem parsing the query expression
+     */
+    protected String parseContentBetweenParens( final DdlTokenStream tokens ) throws ParsingException {
+        tokens.consume(L_PAREN); // don't include first paren in expression
+
+        int numLeft = 1;
+        int numRight = 0;
+
+        final StringBuilder text = new StringBuilder();
+
+        while (tokens.hasNext()) {
+            if (tokens.matches(L_PAREN)) {
+                ++numLeft;
+            } else if (tokens.matches(R_PAREN)) {
+                if (numLeft == ++numRight) {
+                    tokens.consume(R_PAREN); // don't include last paren in expression
+                    break;
+                }
+            }
+
+            final String token = tokens.consume();
+
+            // don't add space if empty or if this token or previous token is a period
+            if (!PERIOD.equals(token) && (text.length() != 0) && (PERIOD.charAt(0) != (text.charAt(text.length() - 1)))) {
+                text.append(SPACE);
+            }
+
+            text.append(token);
+        }
+
+        if ((numLeft != numRight) || (text.length() == 0)) {
+            throw new ParsingException(tokens.nextPosition());
+        }
+
+        return text.toString();
+    }
+    
     
     /**
      * {@inheritDoc}
