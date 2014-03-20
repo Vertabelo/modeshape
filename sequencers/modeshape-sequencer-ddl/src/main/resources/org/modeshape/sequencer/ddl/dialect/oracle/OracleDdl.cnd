@@ -175,6 +175,16 @@
 [oracleddl:createRoleStatement]         > ddl:creatable, ddl:statement, oracleddl:roleOperand mixin
 [oracleddl:createRollbackStatement]     > ddl:creatable, ddl:statement, oracleddl:rollbackOperand mixin
 [oracleddl:createSequenceStatement]     > ddl:creatable, ddl:statement, oracleddl:sequenceOperand mixin
+  - oracleddl:incrementBy (LONG)
+  - oracleddl:startWith (LONG)
+  - oracleddl:maxValue (LONG)
+  - oracleddl:noMaxValue (boolean)
+  - oracleddl:minValue (LONG)
+  - oracleddl:noMinValue (boolean)
+  - oracleddl:cycle (boolean)
+  - oracleddl:cache (LONG)
+  - oracleddl:noCache (boolean)
+  - oracleddl:order (boolean)
 [oracleddl:createSpfileStatement]       > ddl:creatable, ddl:statement, oracleddl:spfileOperand mixin
 [oracleddl:createSynonymStatement]      > ddl:creatable, ddl:statement, oracleddl:synonymOperand mixin
 [oracleddl:createTablespaceStatement]   > ddl:creatable, ddl:statement, oracleddl:tablespaceOperand mixin

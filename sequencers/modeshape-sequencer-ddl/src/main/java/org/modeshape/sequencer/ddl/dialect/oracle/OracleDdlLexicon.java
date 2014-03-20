@@ -169,5 +169,17 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String INDEX_ATTRIBUTES   = PREFIX + ":indexAttributes";
     public static final String INDEX_ORDER        = PREFIX + ":order";
     public static final String WHERE_CLAUSE       = PREFIX + ":whereClause";
+    
+    // sequence properties
+    public static final String SEQ_INCREMENT_BY   = PREFIX + "incrementBy";
+    public static final String SEQ_START_WITH     = PREFIX + "startWith";
+    public static final String SEQ_MAX_VALUE      = PREFIX + "maxValue";
+    public static final String SEQ_NO_MAX_VALUE   = PREFIX + "noMaxValue";
+    public static final String SEQ_MIN_VALUE      = PREFIX + "minValue";
+    public static final String SEQ_NO_MIN_VALUE   = PREFIX + "noMinValue";
+    public static final String SEQ_CYCLE          = PREFIX + "cycle";
+    public static final String SEQ_CACHE          = PREFIX + "cache";
+    public static final String SEQ_NO_CACHE       = PREFIX + "noCache";
+    public static final String SEQ_ORDER          = PREFIX + "order";
 
 }

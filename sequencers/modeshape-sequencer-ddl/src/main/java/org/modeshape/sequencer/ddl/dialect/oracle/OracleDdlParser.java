@@ -424,7 +424,7 @@ public class OracleDdlParser extends StandardDdlParser
         } else if (tokens.matches(STMT_CREATE_PUBLIC_ROLLBACK)) {
             return parseStatement(tokens, STMT_CREATE_PUBLIC_ROLLBACK, parentNode, TYPE_CREATE_ROLLBACK_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_SEQUENCE)) {
-            return parseStatement(tokens, STMT_CREATE_SEQUENCE, parentNode, TYPE_CREATE_SEQUENCE_STATEMENT);
+            return parseCreateSequenceStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_SPFILE)) {
             return parseStatement(tokens, STMT_CREATE_SPFILE, parentNode, TYPE_CREATE_SPFILE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_SYNONYM)) {
@@ -1576,6 +1576,91 @@ public class OracleDdlParser extends StandardDdlParser
             }
         }
     }
+    
+    protected AstNode parseCreateSequenceStatement(final DdlTokenStream tokens, final AstNode parentNode)
+            throws ParsingException {
+        assert tokens != null;
+        assert parentNode != null;
+        assert tokens.matches(STMT_CREATE_SEQUENCE);
+        
+        // CREATE SEQUENCE [ schema. ] sequence
+        // [ INCREMENT BY integer
+        // | START WITH integer
+        // | { MAXVALUE integer | NOMAXVALUE }
+        // | { MINVALUE integer | NOMINVALUE }
+        // | { CYCLE | NOCYCLE }
+        // | { CACHE integer | NOCACHE }
+        // | { ORDER | NOORDER }
+        // ]...
+        // ;
+
+        markStartOfStatement(tokens);
+        tokens.consume(STMT_CREATE_SEQUENCE);
+        
+        final String sequenceName = parseName(tokens);
+        AstNode sequenceNode = nodeFactory().node(sequenceName, parentNode, TYPE_CREATE_SEQUENCE_STATEMENT);
+        
+        boolean lastMatched = true;
+        while (tokens.hasNext() && !isTerminator(tokens) && lastMatched) {
+            
+            if(tokens.canConsume("INCREMENT", "BY")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_INCREMENT_BY, longValue);
+                
+            } else if(tokens.canConsume("START", "WITH")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_START_WITH, longValue);
+                
+            } else if(tokens.canConsume("NOMAXVALUE")) {
+                sequenceNode.setProperty(SEQ_NO_MAX_VALUE, true);
+                
+            } else if(tokens.canConsume("MAXVALUE")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_MAX_VALUE, longValue);
+                
+            } else if(tokens.canConsume("NOMINVALUE")) {
+                sequenceNode.setProperty(SEQ_NO_MIN_VALUE, true);
+                
+            } else if(tokens.canConsume("MINVALUE")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_MIN_VALUE, longValue);
+                
+            } else if(tokens.canConsume("NOCYCLE")) {
+                sequenceNode.setProperty(SEQ_CYCLE, false);
+                
+            } else if(tokens.canConsume("CYCLE")) {
+                sequenceNode.setProperty(SEQ_CYCLE, true);
+                
+            } else if(tokens.canConsume("NOCACHE")) {
+                sequenceNode.setProperty(SEQ_NO_CACHE, true);
+                
+            } else if(tokens.canConsume("CACHE")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_CACHE, longValue);
+                
+            } else if(tokens.canConsume("NOORDER")) {
+                sequenceNode.setProperty(SEQ_ORDER, false);
+                
+            } else if(tokens.canConsume("ORDER")) {
+                sequenceNode.setProperty(SEQ_ORDER, true);
+                
+            } else {
+                // unknown sequence parameter
+                lastMatched = false;
+            }
+        }
+        
+        parseUntilTerminator(tokens);
+
+        markEndOfStatement(tokens, sequenceNode);
+        return sequenceNode;
+    }
+    
 
     private AstNode parseCommentStatement( DdlTokenStream tokens,
                                            AstNode parentNode ) throws ParsingException {
