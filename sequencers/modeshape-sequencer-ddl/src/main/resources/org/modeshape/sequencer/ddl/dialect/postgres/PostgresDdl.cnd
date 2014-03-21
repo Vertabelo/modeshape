@@ -119,6 +119,15 @@
 [postgresddl:createRoleStatement]               > ddl:creatable, ddl:statement, postgresddl:roleOperand mixin
 [postgresddl:createRuleStatement]               > ddl:creatable, ddl:statement, postgresddl:ruleOperand mixin
 [postgresddl:createSequenceStatement]           > ddl:creatable, ddl:statement, postgresddl:sequenceOperand mixin
+  - postgresddl:incrementBy (LONG)
+  - postgresddl:startWith (LONG)
+  - postgresddl:maxValue (LONG)
+  - postgresddl:noMaxValue (boolean)
+  - postgresddl:minValue (LONG)
+  - postgresddl:noMinValue (boolean)
+  - postgresddl:cycle (boolean)
+  - postgresddl:cache (LONG)
+  - postgresddl:ownedBy (STRING)
 [postgresddl:createServerStatement]             > ddl:creatable, ddl:statement, postgresddl:serverOperand mixin
 [postgresddl:createTablespaceStatement]         > ddl:creatable, ddl:statement, postgresddl:tablespaceOperand mixin
 [postgresddl:createTextSearchStatement]         > ddl:creatable, ddl:statement, postgresddl:textSearchOperand mixin

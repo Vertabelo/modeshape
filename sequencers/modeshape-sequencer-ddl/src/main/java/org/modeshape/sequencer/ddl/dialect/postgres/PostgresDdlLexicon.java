@@ -23,8 +23,6 @@
  */
 package org.modeshape.sequencer.ddl.dialect.postgres;
 
-import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.Namespace.PREFIX;
-
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
 
 /**
@@ -166,4 +164,15 @@ public class PostgresDdlLexicon  extends StandardDdlLexicon {
     public static final String TABLESPACE = Namespace.PREFIX + ":tablespace";
     public static final String WHERE_CLAUSE = Namespace.PREFIX + ":whereClause";
     public static final String INDEX_ORDER = Namespace.PREFIX + ":order";
+
+    // sequence properties
+    public static final String SEQ_INCREMENT_BY   = Namespace.PREFIX + ":incrementBy";
+    public static final String SEQ_START_WITH     = Namespace.PREFIX + ":startWith";
+    public static final String SEQ_MAX_VALUE      = Namespace.PREFIX + ":maxValue";
+    public static final String SEQ_NO_MAX_VALUE   = Namespace.PREFIX + ":noMaxValue";
+    public static final String SEQ_MIN_VALUE      = Namespace.PREFIX + ":minValue";
+    public static final String SEQ_NO_MIN_VALUE   = Namespace.PREFIX + ":noMinValue";
+    public static final String SEQ_CYCLE          = Namespace.PREFIX + ":cycle";
+    public static final String SEQ_CACHE          = Namespace.PREFIX + ":cache";
+    public static final String SEQ_OWNED_BY       = Namespace.PREFIX + ":ownedBy";
 }

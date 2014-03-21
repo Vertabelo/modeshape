@@ -607,7 +607,7 @@ public class PostgresDdlParser extends StandardDdlParser
         } else if (tokens.matches(STMT_CREATE_RULE) || tokens.matches(STMT_CREATE_OR_REPLACE_RULE)) {
             return parseCreateRuleStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_SEQUENCE)) {
-            return parseStatement(tokens, STMT_CREATE_SEQUENCE, parentNode, TYPE_CREATE_SEQUENCE_STATEMENT);
+            return parseCreateSequenceStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_SERVER)) {
             return parseStatement(tokens, STMT_CREATE_SERVER, parentNode, TYPE_CREATE_SERVER_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_TABLESPACE)) {
@@ -1975,6 +1975,94 @@ public class PostgresDdlParser extends StandardDdlParser
 
         tokens.consume(R_PAREN); // must have closing paren
     }
+    
+    
+
+    protected AstNode parseCreateSequenceStatement(final DdlTokenStream tokens, final AstNode parentNode)
+            throws ParsingException {
+        assert tokens != null;
+        assert parentNode != null;
+        assert tokens.matches(STMT_CREATE_SEQUENCE); 
+        
+        // CREATE 
+        // [ TEMPORARY | TEMP ]       -- WE DON'T SUPPORT IT HERE, IT'S ONLY TEMPORARY
+        // SEQUENCE name 
+        // [ INCREMENT [ BY ] increment ]
+        // [ MINVALUE minvalue | NO MINVALUE ] 
+        // [ MAXVALUE maxvalue | NO MAXVALUE ]
+        // [ START [ WITH ] start ] 
+        // [ CACHE cache ] 
+        // [ [ NO ] CYCLE ]
+        // [ OWNED BY { table_name.column_name | NONE } ]
+
+        markStartOfStatement(tokens);
+        tokens.consume(STMT_CREATE_SEQUENCE);
+        
+        final String sequenceName = parseName(tokens);
+        AstNode sequenceNode = nodeFactory().node(sequenceName, parentNode, TYPE_CREATE_SEQUENCE_STATEMENT);
+        
+        boolean lastMatched = true;
+        while (tokens.hasNext() && !isTerminator(tokens) && lastMatched) {
+            
+            if(tokens.canConsume("INCREMENT", "BY") || tokens.canConsume("INCREMENT")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_INCREMENT_BY, longValue);
+                
+            } else if(tokens.canConsume("START", "WITH") || tokens.canConsume("START")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_START_WITH, longValue);
+                
+            } else if(tokens.canConsume("NO", "MAXVALUE")) {
+                sequenceNode.setProperty(SEQ_NO_MAX_VALUE, true);
+                
+            } else if(tokens.canConsume("MAXVALUE")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_MAX_VALUE, longValue);
+                
+            } else if(tokens.canConsume("NO", "MINVALUE")) {
+                sequenceNode.setProperty(SEQ_NO_MIN_VALUE, true);
+                
+            } else if(tokens.canConsume("MINVALUE")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_MIN_VALUE, longValue);
+                
+            } else if(tokens.canConsume("NO", "CYCLE")) {
+                sequenceNode.setProperty(SEQ_CYCLE, false);
+                
+            } else if(tokens.canConsume("CYCLE")) {
+                sequenceNode.setProperty(SEQ_CYCLE, true);
+                
+            } else if(tokens.canConsume("CACHE")) {
+                String value = tokens.consume();
+                long longValue = Long.parseLong(value);
+                sequenceNode.setProperty(SEQ_CACHE, longValue);
+                
+            } else if(tokens.canConsume("OWNED", "BY")) {
+                boolean isNone = tokens.canConsume("NONE");
+                if(isNone) {
+                    sequenceNode.setProperty(SEQ_OWNED_BY, "NONE");
+                    
+                } else {
+                    String ownedByName = parseName(tokens);
+                    sequenceNode.setProperty(SEQ_OWNED_BY, ownedByName);
+                }
+                
+            } else {
+                // unknown sequence parameter
+                lastMatched = false;
+            }
+        }
+        
+        parseUntilTerminator(tokens);
+
+        markEndOfStatement(tokens, sequenceNode);
+        return sequenceNode;
+    }
+    
 
     /**
      * {@inheritDoc}
