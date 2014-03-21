@@ -39,10 +39,10 @@ public interface PostgresDdlConstants extends DdlConstants {
 		"RESET", "REVOKE", "ROLLBACK", "FETCH", "EXPLAIN", "DISCARD", "COPY", "CLUSTER", "NOTIFY", "LOAD", "COMMENT", "LOCK",
 		"SERVER", "SEARCH", "PARSER", "DICTIONARY", "WRAPPER", "PROCEDURAL", "CONVERSION", "AGGREGATE", "TEMPLATE", 
 		"MAPPING", "TRUSTED", "TRIGGER", "VACUUM", "FAMILTY",
-		"BIGSERIAL", "BOX", "BOOLEAN", "BOX", "BYTEA", "CIDR", "CIRCLE", "FLOAT4", "FLOAT8", "INET", "INT2", "INT4", "INT8",
+		"BIGSERIAL", "BOX", "BOOLEAN", "BOOL", "BYTEA", "CIDR", "CIRCLE", "FLOAT4", "FLOAT8", "INET", "INT2", "INT4", "INT8",
         "LINE", "LSEG", "MACADDR", "MONEY", "PATH", "POINT", "POLYGON",
         "SERIAL", "SERIAL4", "SERIAL8", "TEXT", "TIMESTAMPZ", "TSQUERY",
-        "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML"
+        "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID"
 	};
 
 	interface PostgresStatementStartPhrases {
@@ -328,6 +328,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 		static final String[] DTYPE_SERIAL8 = {"SERIAL8"}; 
 		static final String[] DTYPE_TIMESTAMPZ = {"TIMESTAMPZ"}; 
 		static final String[] DTYPE_VARBIT = {"VARBIT"}; 
+                static final String[] DTYPE_OID = {"OID"}; 
 
 		
 		static final List<String[]> CUSTOM_DATATYPE_START_PHRASES = 
@@ -335,13 +336,13 @@ public interface PostgresDdlConstants extends DdlConstants {
                             DTYPE_CIDR, DTYPE_CIRCLE, DTYPE_FLOAT4, DTYPE_FLOAT8, DTYPE_INET, DTYPE_INT2, DTYPE_INT4, DTYPE_INT8,
                             DTYPE_LINE, DTYPE_LSEG, DTYPE_MACADDR, DTYPE_MONEY, DTYPE_PATH, DTYPE_POINT, DTYPE_POLYGON,
                             DTYPE_SERIAL, DTYPE_SERIAL4, DTYPE_SERIAL8, DTYPE_TEXT, DTYPE_TIMESTAMPZ, DTYPE_TSQUERY,
-                            DTYPE_TSVECTOR, DTYPE_TXID_SNAPSHOT, DTYPE_UUID, DTYPE_XML);
+                            DTYPE_TSVECTOR, DTYPE_TXID_SNAPSHOT, DTYPE_UUID, DTYPE_XML, DTYPE_OID);
 		
 	  	static final List<String> CUSTOM_DATATYPE_START_WORDS = 
-	  		Arrays.asList("BIGSERIAL", "BOX", "BOOLEAN", "BOX", "BYTEA",
+	  		Arrays.asList("BIGSERIAL", "BOX", "BOOLEAN", "BOOL", "BYTEA",
                             "CIDR", "CIRCLE", "FLOAT4", "FLOAT8", "INET", "INT2", "INT4", "INT8",
                             "LINE", "LSEG", "MACADDR", "MONEY", "PATH", "POINT", "POLYGON",
                             "SERIAL", "SERIAL4", "SERIAL8", "TEXT", "TIMESTAMPZ", "TSQUERY",
-                            "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML");
+                            "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID");
 	}
 }

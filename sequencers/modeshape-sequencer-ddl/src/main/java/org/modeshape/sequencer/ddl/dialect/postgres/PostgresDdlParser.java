@@ -2087,7 +2087,8 @@ public class PostgresDdlParser extends StandardDdlParser
                 || tokens.matches(PostgresDataTypes.DTYPE_POLYGON) || tokens.matches(PostgresDataTypes.DTYPE_TEXT)
                 || tokens.matches(PostgresDataTypes.DTYPE_TSQUERY) || tokens.matches(PostgresDataTypes.DTYPE_TSVECTOR)
                 || tokens.matches(PostgresDataTypes.DTYPE_TXID_SNAPSHOT) || tokens.matches(PostgresDataTypes.DTYPE_UUID)
-                || tokens.matches(PostgresDataTypes.DTYPE_VARBIT) || tokens.matches(PostgresDataTypes.DTYPE_XML)) {
+                || tokens.matches(PostgresDataTypes.DTYPE_VARBIT) || tokens.matches(PostgresDataTypes.DTYPE_XML)
+                || tokens.matches(PostgresDataTypes.DTYPE_OID)) {
                 typeName = tokens.consume();
                 result = new DataType(typeName);
             }
