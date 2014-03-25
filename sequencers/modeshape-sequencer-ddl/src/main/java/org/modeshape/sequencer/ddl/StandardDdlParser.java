@@ -1691,7 +1691,10 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
          */
         consumeComment(tokens);
 
-        if ((tokens.matches("PRIMARY", "KEY")) || (tokens.matches("FOREIGN", "KEY")) || (tokens.matches("UNIQUE"))) {
+        if ((tokens.matches("PRIMARY", "KEY")) 
+                || (tokens.matches("FOREIGN", "KEY")) 
+                || (tokens.matches("UNIQUE"))
+                || (tokens.matches("CHECK"))) {
 
             // This is the case where the PK/FK/UK is NOT NAMED
             if (tokens.matches("UNIQUE")) {
@@ -1741,6 +1744,16 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 parseConstraintAttributes(tokens, constraintNode);
 
                 consumeComment(tokens);
+            } else if (tokens.matches("CHECK")) {
+                // CHECK (char_length(zipcode) = 5);
+                String ck_name = "CHECK_1";
+                tokens.consume("CHECK");
+
+                AstNode constraintNode = nodeFactory().node(ck_name, tableNode, mixinType);
+                constraintNode.setProperty(CONSTRAINT_TYPE, CHECK);
+
+                String clause = consumeParenBoundedTokens(tokens, true);
+                constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
             }
         } else if (tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "UNIQUE")) {
             // CONSTRAINT P_KEY_2a UNIQUE (PERMISSIONUID)
@@ -2313,7 +2326,10 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
     protected boolean isTableConstraint( DdlTokenStream tokens ) throws ParsingException {
         boolean result = false;
 
-        if ((tokens.matches("PRIMARY", "KEY")) || (tokens.matches("FOREIGN", "KEY")) || (tokens.matches("UNIQUE"))) {
+        if ((tokens.matches("PRIMARY", "KEY"))
+                || (tokens.matches("FOREIGN", "KEY")) 
+                || (tokens.matches("UNIQUE"))
+                || (tokens.matches("CHECK"))) {
             result = true;
         } else if (tokens.matches("CONSTRAINT")) {
             if (tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "UNIQUE")

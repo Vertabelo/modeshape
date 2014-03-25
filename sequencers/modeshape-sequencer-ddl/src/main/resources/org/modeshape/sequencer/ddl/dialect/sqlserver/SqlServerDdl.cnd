@@ -1,0 +1,97 @@
+/*
+ * ModeShape (http://www.modeshape.org)
+ * See the COPYRIGHT.txt file distributed with this work for information
+ * regarding copyright ownership.  Some portions may be licensed
+ * to Red Hat, Inc. under one or more contributor license agreements.
+ * See the AUTHORS.txt file in the distribution for a full listing of 
+ * individual contributors. 
+ *
+ * ModeShape is free software. Unless otherwise indicated, all code in ModeShape
+ * is licensed to you under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * ModeShape is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+ 
+ //------------------------------------------------------------------------------
+// N A M E S P A C E S
+//------------------------------------------------------------------------------
+<jcr='http://www.jcp.org/jcr/1.0'>
+<nt='http://www.jcp.org/jcr/nt/1.0'>
+<mix='http://www.jcp.org/jcr/mix/1.0'>
+<ddl='http://www.modeshape.org/ddl/1.0'>
+<sqlserverddl='http://www.modeshape.org/ddl/sqlserver/1.0'>
+
+// =============================================================================
+// OPERANDS
+// =============================================================================
+[sqlserverddl:indexOperand]        > ddl:operand mixin abstract
+[sqlserverddl:parameterOperand]    > ddl:operand mixin abstract
+[sqlserverddl:sequenceOperand]     > ddl:operand mixin abstract
+
+// =============================================================================
+// COLUMN
+// =============================================================================
+[sqlserverddl:columnDefinition] > ddl:columnDefinition
+  - sqlserverddl:dropDefault (boolean)
+
+//
+
+[sqlserverddl:functionParameter]     > sqlserverddl:parameterOperand mixin
+  - ddl:datatypeName (STRING) mandatory
+  - ddl:datatypeLength (LONG)
+  - ddl:datatypePrecision (LONG)
+  - ddl:datatypeScale (LONG)
+  - sqlserverddl:default (STRING)
+  - sqlserverddl:defaultExpresssion (STRING)
+  - sqlserverddl:inOutNoCopy (STRING)
+
+// =============================================================================
+// ALTER STATEMENTS
+// =============================================================================
+
+[sqlserverddl:alterTableStatement] > ddl:alterTableStatement mixin
+  - sqlserverddl:newTableName (STRING)
+  + sqlserverddl:renameColumn (ddl:renamable) = ddl:renamable sns
+  + sqlserverddl:renameConstraint (ddl:renamable) = ddl:renamable sns
+
+// =============================================================================
+// CREATE STATEMENTS
+// =============================================================================
+
+[sqlserverddl:indexOrderable] mixin
+  - sqlserverddl:order (string) < 'ASC', 'DESC'
+[sqlserverddl:createIndexStatement]        > ddl:creatable, ddl:statement, sqlserverddl:indexOperand mixin
+  - sqlserverddl:unique (boolean)
+  - sqlserverddl:indexAttributes (string) multiple
+  - sqlserverddl:tableName (string) mandatory
+  - sqlserverddl:otherRefs (string) multiple
+  + * (ddl:columnReference) = ddl:columnReference
+
+[sqlserverddl:createSequenceStatement]     > ddl:creatable, ddl:statement, sqlserverddl:sequenceOperand mixin
+  - sqlserverddl:incrementBy (LONG)
+  - sqlserverddl:startWith (LONG)
+  - sqlserverddl:maxValue (LONG)
+  - sqlserverddl:noMaxValue (boolean)
+  - sqlserverddl:minValue (LONG)
+  - sqlserverddl:noMinValue (boolean)
+  - sqlserverddl:cycle (boolean)
+  - sqlserverddl:cache (LONG)
+  - sqlserverddl:noCache (boolean)
+
+// =============================================================================
+// DROP STATEMENTS
+// =============================================================================
+
+// =============================================================================
+// MISC STATEMENTS
+// =============================================================================
