@@ -495,9 +495,40 @@ public class SqlServerDdlParser extends StandardDdlParser
         AstNode tableNode = nodeFactory().node(tableName, parentNode, TYPE_CREATE_TABLE_STATEMENT);
         
         // AS FileTable
-        tokens.canConsume("AS", "FileTable");
+        if(tokens.canConsume("AS", "FILETABLE")){
+            tableNode.setProperty(AS_FILETABLE, true);
+        }
         
         parseColumnsAndConstraints(tokens, tableNode);
+        
+
+        boolean lastMatched = true;
+        while (tokens.hasNext() && !isTerminator(tokens) && lastMatched) {
+
+            if(tokens.canConsume("WITH")) {
+                String withOptionsList = parseContentBetweenParens(tokens);
+                tableNode.setProperty(WITH_OPTIONS, withOptionsList);
+                
+            } else if(tokens.canConsume("ON")) {
+                String name = parseName(tokens);
+                if(tokens.matches(L_PAREN)) {
+                    String columnName = parseContentBetweenParens(tokens);
+                    name = name + " (" + columnName + ")";
+                }
+                tableNode.setProperty(ON_CLAUSE, name);
+                
+            } else if(tokens.canConsume("FILESTREAM_ON")) {
+                String name = parseName(tokens);
+                tableNode.setProperty(FILESTREAM_ON_CLAUSE, name);
+                
+            } else if(tokens.canConsume("TEXTIMAGE_ON")) {
+                String name = parseName(tokens);
+                tableNode.setProperty(TEXTIMAGE_ON_CLAUSE, name);
+                
+            } else {
+                lastMatched = false;
+            }
+        }
         
         parseUntilTerminator(tokens); // ignore the rest
 
@@ -689,7 +720,7 @@ public class SqlServerDdlParser extends StandardDdlParser
                     if(tokens.matches(L_PAREN)) {
                         sb.append(parseContentBetweenParens(tokens));
                     } else {
-                        sb.append(tokens.consume());
+                        sb.append(SPACE).append(tokens.consume());
                     }
                 }
                 computedColumnExpression = sb.toString();
@@ -1176,16 +1207,24 @@ public class SqlServerDdlParser extends StandardDdlParser
         parseColumnNameList(tokens, createViewNode, TYPE_COLUMN_REFERENCE);
         
         // WITH ENCRYPTION, SCHEMABINDING, VIEW_METADATA
-        if (tokens.matches("WITH")) {
+        if (tokens.canConsume("WITH")) {
+            StringBuilder sb = new StringBuilder();
+            
             do {
-                tokens.consume();
+                sb.append(SPACE).append(tokens.consume());
             } while (!tokens.matches("AS"));
+            
+            createViewNode.setProperty(VIEW_WITH_ATTRIBUTES, sb.toString());
         }
         
         tokens.consume("AS");
         
-        // FIXME "WITH CHECK OPTION" will be consumed in queryExpression
+        // "WITH CHECK OPTION" is consumed in queryExpression - check it
         String queryExpression = parseUntilTerminator(tokens);
+        if(queryExpression.toUpperCase().endsWith("WITH CHECK OPTION")){
+            queryExpression = queryExpression.substring(0, queryExpression.length() - "WITH CHECK OPTION".length());
+            createViewNode.setProperty(VIEW_WITH_CHECK_OPTION, true);
+        }
         
         createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
         
@@ -1442,15 +1481,54 @@ public class SqlServerDdlParser extends StandardDdlParser
         indexNode = nodeFactory().node(indexName, parentNode, TYPE_CREATE_INDEX_STATEMENT);
         indexNode.setProperty(SqlServerDdlLexicon.INDEX_TYPE, SqlServerDdlConstants.IndexTypes.TABLE);
         indexNode.setProperty(SqlServerDdlLexicon.TABLE_NAME, tableName);
+        indexNode.setProperty(UNIQUE_INDEX, isUnique);
+        indexNode.setProperty(INDEX_CLUSTERED, isClustered);
+        indexNode.setProperty(INDEX_NONCLUSTERED, isNonclustered);
         
         // parse left-paren content right-paren
         final String columnExpressionList = parseContentBetweenParens(tokens);
         parseIndexColumnExpressionList('(' + columnExpressionList + ')', indexNode);
 
-        indexNode.setProperty(UNIQUE_INDEX, isUnique);
-//        indexNode.setProperty(BITMAP_INDEX, isBitmap); // FIXME MK clustered / nonclustered
 
-        // FIXME MK include / where / with / on / filestream_on
+        boolean lastMatched = true;
+        while (tokens.hasNext() && !isTerminator(tokens) && lastMatched) {
+
+            if(tokens.canConsume("INCLUDE")) {
+                String includeColumnsList = parseContentBetweenParens(tokens);
+                indexNode.setProperty(INCLUDE_COLUMNS, includeColumnsList);
+                
+            } else if(tokens.canConsume("WITH")) {
+                String withOptionsList = parseContentBetweenParens(tokens);
+                indexNode.setProperty(WITH_OPTIONS, withOptionsList);
+                
+            } else if(tokens.canConsume("ON")) {
+                String name = parseName(tokens);
+                if(tokens.matches(L_PAREN)) {
+                    String columnName = parseContentBetweenParens(tokens);
+                    name = name + " (" + columnName + ")";
+                }
+                indexNode.setProperty(ON_CLAUSE, name);
+                
+            } else if(tokens.canConsume("FILESTREAM_ON")) {
+                String name = parseName(tokens);
+                indexNode.setProperty(FILESTREAM_ON_CLAUSE, name);
+                
+            } else if(tokens.canConsume("WHERE")) {
+                // it can be any expression... parse until next keyword or terminator
+                StringBuilder sb = new StringBuilder();
+                while (tokens.hasNext() && !isTerminator(tokens)
+                        && !(tokens.matches("INCLUDE") 
+                                || tokens.matches("WITH") 
+                                || tokens.matches("ON") 
+                                || tokens.matches("FILESTREAM_ON"))){
+                    sb.append(SPACE).append(tokens.consume());
+                }
+                indexNode.setProperty(WHERE_CLAUSE, sb.toString());
+                
+            } else {
+                lastMatched = false;
+            }
+        }
         
         parseUntilTerminator(tokens);
         
@@ -1535,7 +1613,8 @@ public class SqlServerDdlParser extends StandardDdlParser
                 sequenceNode.setProperty(SEQ_CACHE, longValue);
                 
             } else if(tokens.canConsume("AS")) {
-                tokens.consume(); // ignore it
+                String dataType = tokens.consume();
+                sequenceNode.setProperty(SEQ_AS_DATA_TYPE, dataType);
                 
             } else {
                 // unknown sequence parameter

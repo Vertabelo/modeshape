@@ -44,21 +44,22 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String TYPE_INDEX_ORDERABLE                             = PREFIX + ":indexOrderable";
 
     // PROPERTY NAMES
-    public static final String TARGET_OBJECT_TYPE = PREFIX + ":targetObjectType";
-    public static final String COMMENT            = PREFIX + ":comment";
-    public static final String UNIQUE_INDEX       = PREFIX + ":unique";
-    public static final String BITMAP_INDEX       = PREFIX + ":bitmap";
-    public static final String TABLE_NAME         = PREFIX + ":tableName";
-    public static final String IN_OUT_NO_COPY     = PREFIX + ":inOutNoCopy";
-    public static final String AUTHID_VALUE       = PREFIX + ":authIdValue";
-    public static final String INDEX_TYPE         = PREFIX + ":indexType";
-    public static final String UNUSABLE_INDEX     = PREFIX + ":unusable";
-    public static final String CLUSTER_NAME       = PREFIX + ":clustereName";
-    public static final String TABLE_ALIAS        = PREFIX + ":tableAlias";
-    public static final String OTHER_INDEX_REFS   = PREFIX + ":otherRefs";
-    public static final String INDEX_ATTRIBUTES   = PREFIX + ":indexAttributes";
-    public static final String INDEX_ORDER        = PREFIX + ":order";
-    public static final String WHERE_CLAUSE       = PREFIX + ":whereClause";
+    public static final String COMMENT                  = PREFIX + ":comment";
+    public static final String UNIQUE_INDEX             = PREFIX + ":unique";
+    public static final String TABLE_NAME               = PREFIX + ":tableName";
+    public static final String INDEX_TYPE               = PREFIX + ":indexType";
+    public static final String OTHER_INDEX_REFS         = PREFIX + ":otherRefs";
+    public static final String INDEX_ATTRIBUTES         = PREFIX + ":indexAttributes";
+    public static final String INDEX_ORDER              = PREFIX + ":order";
+    public static final String INDEX_CLUSTERED          = PREFIX + ":clustered";
+    public static final String INDEX_NONCLUSTERED       = PREFIX + ":nonclustered";
+    public static final String WHERE_CLAUSE             = PREFIX + ":whereClause";
+    public static final String ON_CLAUSE                = PREFIX + ":onClause";
+    public static final String INCLUDE_COLUMNS          = PREFIX + ":includeColumns";
+    public static final String WITH_OPTIONS             = PREFIX + ":withOptions";
+    public static final String FILESTREAM_ON_CLAUSE     = PREFIX + ":filestreamOnClause";
+    public static final String TEXTIMAGE_ON_CLAUSE      = PREFIX + ":textimageOnClause";
+    public static final String AS_FILETABLE             = PREFIX + ":asFileTable";
     
     // sequence properties
     public static final String SEQ_INCREMENT_BY   = PREFIX + ":incrementBy";
@@ -70,5 +71,10 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String SEQ_CYCLE          = PREFIX + ":cycle";
     public static final String SEQ_CACHE          = PREFIX + ":cache";
     public static final String SEQ_NO_CACHE       = PREFIX + ":noCache";
+    public static final String SEQ_AS_DATA_TYPE   = PREFIX + ":asDataType";
+    
+    // view properties
+    public static final String VIEW_WITH_ATTRIBUTES     = PREFIX + ":withAttributes";
+    public static final String VIEW_WITH_CHECK_OPTION   = PREFIX + ":withCheckOption";
 
 }

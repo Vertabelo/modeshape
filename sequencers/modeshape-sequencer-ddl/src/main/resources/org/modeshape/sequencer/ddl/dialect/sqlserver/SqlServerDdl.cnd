@@ -72,6 +72,8 @@
   - sqlserverddl:order (string) < 'ASC', 'DESC'
 [sqlserverddl:createIndexStatement]        > ddl:creatable, ddl:statement, sqlserverddl:indexOperand mixin
   - sqlserverddl:unique (boolean)
+  - sqlserverddl:clustered (boolean)
+  - sqlserverddl:nonclustered (boolean)
   - sqlserverddl:indexAttributes (string) multiple
   - sqlserverddl:tableName (string) mandatory
   - sqlserverddl:otherRefs (string) multiple
@@ -87,6 +89,7 @@
   - sqlserverddl:cycle (boolean)
   - sqlserverddl:cache (LONG)
   - sqlserverddl:noCache (boolean)
+  - sqlserverddl:asDataType (string)
 
 // =============================================================================
 // DROP STATEMENTS

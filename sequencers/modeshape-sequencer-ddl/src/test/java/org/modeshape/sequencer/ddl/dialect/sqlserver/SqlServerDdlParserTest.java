@@ -273,7 +273,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         		" WITH SCHEMABINDING, VIEW_METADATA, ENCRYPTION" +
         		" AS" +
         		" select  1 as one,  2 as two " +
-        		" WITH CHECK OPTION;";
+        		" WITH   CHECK    option;";
         assertScoreAndParse(content, null, 1);
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_VIEW_STATEMENT));
