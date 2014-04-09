@@ -751,6 +751,19 @@ public class SqlServerDdlParser extends StandardDdlParser
             boolean parsedConstraint = parseColumnConstraint(tokens, columnNode, isAlterTable);
             boolean parsedIdentity = parseIdentityClause(tokens, columnNode);
             boolean parsedRowguidcol = tokens.canConsume("ROWGUIDCOL");
+
+            if(parsedFilestream) {
+                columnNode.setProperty(COLUMN_FILESTREAM, true);
+            }
+            if(parsedSparse) {
+                columnNode.setProperty(COLUMN_SPARSE, true);
+            }
+            if(parsedIdentity) {
+                columnNode.setProperty(COLUMN_IDENTITY, true);
+            }
+            if(parsedRowguidcol) {
+                columnNode.setProperty(COLUMN_ROWGUIDCOL, true);
+            }
             if (!parsedFilestream 
                     && !parsedDefaultClause 
                     && !parsedSparse

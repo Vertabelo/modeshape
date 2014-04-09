@@ -41,8 +41,11 @@
 // =============================================================================
 // COLUMN
 // =============================================================================
-[sqlserverddl:columnDefinition] > ddl:columnDefinition
-  - sqlserverddl:dropDefault (boolean)
+[sqlserverddl:columnDefinition] > ddl:columnDefinition mixin
+  - sqlserverddl:filestream (boolean)
+  - sqlserverddl:sparse (boolean)
+  - sqlserverddl:identity (boolean)
+  - sqlserverddl:rowguidcol (boolean)
 
 //
 

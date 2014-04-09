@@ -42,6 +42,7 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String TYPE_RENAME_CONSTRAINT 				= PREFIX + ":renameConstraint";
     public static final String TYPE_FUNCTION_PARAMETER                          = PREFIX + ":functionParameter";
     public static final String TYPE_INDEX_ORDERABLE                             = PREFIX + ":indexOrderable";
+    public static final String TYPE_COLUMN_DEFINITION                           = PREFIX + ":columnDefinition";
 
     // PROPERTY NAMES
     public static final String COMMENT                  = PREFIX + ":comment";
@@ -76,5 +77,10 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     // view properties
     public static final String VIEW_WITH_ATTRIBUTES     = PREFIX + ":withAttributes";
     public static final String VIEW_WITH_CHECK_OPTION   = PREFIX + ":withCheckOption";
-
+    
+    // columns properties
+    public static final String COLUMN_FILESTREAM    = PREFIX + ":filestream";
+    public static final String COLUMN_SPARSE        = PREFIX + ":sparse";
+    public static final String COLUMN_IDENTITY      = PREFIX + ":identity";
+    public static final String COLUMN_ROWGUIDCOL    = PREFIX + ":rowguidcol";
 }
