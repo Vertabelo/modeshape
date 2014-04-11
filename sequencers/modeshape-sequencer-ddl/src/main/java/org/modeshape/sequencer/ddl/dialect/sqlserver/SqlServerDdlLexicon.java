@@ -61,6 +61,9 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String FILESTREAM_ON_CLAUSE     = PREFIX + ":filestreamOnClause";
     public static final String TEXTIMAGE_ON_CLAUSE      = PREFIX + ":textimageOnClause";
     public static final String AS_FILETABLE             = PREFIX + ":asFileTable";
+    public static final String CLUSTERED                = PREFIX + ":clustered";
+    public static final String NONCLUSTERED             = PREFIX + ":nonclustered";
+    public static final String NOT_FOR_REPLICATION      = PREFIX + ":notForReplication";
     
     // sequence properties
     public static final String SEQ_INCREMENT_BY   = PREFIX + ":incrementBy";
@@ -83,4 +86,5 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String COLUMN_SPARSE        = PREFIX + ":sparse";
     public static final String COLUMN_IDENTITY      = PREFIX + ":identity";
     public static final String COLUMN_ROWGUIDCOL    = PREFIX + ":rowguidcol";
+    
 }

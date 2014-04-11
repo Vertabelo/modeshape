@@ -578,10 +578,17 @@ public class SqlServerDdlParser extends StandardDdlParser
             }
             
             tokens.consume("UNIQUE"); // UNIQUE
-            tokens.canConsumeAnyOf("CLUSTERED", "NONCLUSTERED");
+            boolean isClustered = tokens.canConsume("CLUSTERED");
+            boolean isNonclustered = tokens.canConsume("NONCLUSTERED");
 
             AstNode constraintNode = nodeFactory().node(uc_name, tableNode, mixinType);
             constraintNode.setProperty(CONSTRAINT_TYPE, UNIQUE);
+            if(isClustered) {
+                constraintNode.setProperty(CLUSTERED, true);
+            }
+            if(isNonclustered) {
+                constraintNode.setProperty(NONCLUSTERED, true);
+            }
 
             // CONSUME COLUMNS
             parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
@@ -599,10 +606,17 @@ public class SqlServerDdlParser extends StandardDdlParser
                 pk_name = parseName(tokens);
             }
             tokens.consume("PRIMARY", "KEY");
-            tokens.canConsumeAnyOf("CLUSTERED", "NONCLUSTERED");
+            boolean isClustered = tokens.canConsume("CLUSTERED");
+            boolean isNonclustered = tokens.canConsume("NONCLUSTERED");
 
             AstNode constraintNode = nodeFactory().node(pk_name, tableNode, mixinType);
             constraintNode.setProperty(CONSTRAINT_TYPE, PRIMARY_KEY);
+            if(isClustered) {
+                constraintNode.setProperty(CLUSTERED, true);
+            }
+            if(isNonclustered) {
+                constraintNode.setProperty(NONCLUSTERED, true);
+            }
 
             // CONSUME COLUMNS
             parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
@@ -634,7 +648,11 @@ public class SqlServerDdlParser extends StandardDdlParser
             parseConstraintAttributes(tokens, constraintNode);
 
             consumeComment(tokens);
-            tokens.canConsume("NOT", "FOR", "REPLICATION");
+
+            if(tokens.canConsume("NOT", "FOR", "REPLICATION")) {
+                constraintNode.setProperty(NOT_FOR_REPLICATION, true);
+            }
+            
             consumeComment(tokens);
             
         } else if (tokens.matches("CHECK") 
@@ -644,10 +662,13 @@ public class SqlServerDdlParser extends StandardDdlParser
                 ck_name = parseName(tokens);
             }
             tokens.consume("CHECK");
-            tokens.canConsume("NOT", "FOR", "REPLICATION");
             
             AstNode constraintNode = nodeFactory().node(ck_name, tableNode, mixinType);
             constraintNode.setProperty(CONSTRAINT_TYPE, CHECK);
+            
+            if(tokens.canConsume("NOT", "FOR", "REPLICATION")) {
+                constraintNode.setProperty(NOT_FOR_REPLICATION, true);
+            }
             
             String clause = consumeParenBoundedTokens(tokens, true);
             constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
@@ -655,7 +676,7 @@ public class SqlServerDdlParser extends StandardDdlParser
     }
     
     
-    protected void parseOptionalPKorUniqueAttributes(DdlTokenStream tokens, AstNode parentNode) {
+    protected void parseOptionalPKorUniqueAttributes(DdlTokenStream tokens, AstNode constraintNode) {
         /*
             [ 
                 WITH FILLFACTOR = fillfactor 
@@ -667,21 +688,27 @@ public class SqlServerDdlParser extends StandardDdlParser
         
         if(tokens.canConsume("WITH", "FILLFACTOR")) {
             tokens.consume("=");
-            tokens.consume();
+            String fillfactorValue = tokens.consume();
+            constraintNode.setProperty(WITH_OPTIONS, "FILLFACTOR = "+fillfactorValue);
             
         } else if (tokens.matches("WITH", L_PAREN)) {
             tokens.consume("WITH");
-            parseContentBetweenParens(tokens);
+            String withValue = parseContentBetweenParens(tokens);
+            constraintNode.setProperty(WITH_OPTIONS, withValue);
         }
         
         if(tokens.canConsume("ON")) {
+            StringBuilder sb = new StringBuilder();
             if(tokens.matches(TokenStream.ANY_VALUE, L_PAREN)) {
-                tokens.consume(); // partition_scheme_name
+                sb.append(tokens.consume()); // partition_scheme_name
+                sb.append("(");
                 parseContentBetweenParens(tokens); // (partition_column_name)
+                sb.append(")");
                 
             } else {
-                parseName(tokens); // filegroup | "default"
+                sb.append(parseName(tokens)); // filegroup | "default"
             }
+            constraintNode.setProperty(ON_CLAUSE, sb.toString());
         }
     }
     
@@ -836,11 +863,18 @@ public class SqlServerDdlParser extends StandardDdlParser
             }
             
             tokens.consume("UNIQUE"); // UNIQUE
-            tokens.canConsumeAnyOf("CLUSTERED", "NONCLUSTERED");
+            boolean isClustered = tokens.canConsume("CLUSTERED");
+            boolean isNonclustered = tokens.canConsume("NONCLUSTERED");
 
             AstNode constraintNode = nodeFactory().node(uc_name, columnNode.getParent(), mixinType);
             constraintNode.setProperty(CONSTRAINT_TYPE, UNIQUE);
-
+            if(isClustered) {
+                constraintNode.setProperty(CLUSTERED, true);
+            }
+            if(isNonclustered) {
+                constraintNode.setProperty(NONCLUSTERED, true);
+            }
+            
             // CONSUME COLUMNS
 //            parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
             nodeFactory().node(colName, constraintNode, TYPE_COLUMN_REFERENCE);
@@ -859,10 +893,17 @@ public class SqlServerDdlParser extends StandardDdlParser
                 pk_name = parseName(tokens);
             }
             tokens.consume("PRIMARY", "KEY");
-            tokens.canConsumeAnyOf("CLUSTERED", "NONCLUSTERED");
+            boolean isClustered = tokens.canConsume("CLUSTERED");
+            boolean isNonclustered = tokens.canConsume("NONCLUSTERED");
 
             AstNode constraintNode = nodeFactory().node(pk_name, columnNode.getParent(), mixinType);
             constraintNode.setProperty(CONSTRAINT_TYPE, PRIMARY_KEY);
+            if(isClustered) {
+                constraintNode.setProperty(CLUSTERED, true);
+            }
+            if(isNonclustered) {
+                constraintNode.setProperty(NONCLUSTERED, true);
+            }
 
             // CONSUME COLUMNS
 //            parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
@@ -897,7 +938,11 @@ public class SqlServerDdlParser extends StandardDdlParser
             parseConstraintAttributes(tokens, constraintNode);
 
             consumeComment(tokens);
-            tokens.canConsume("NOT", "FOR", "REPLICATION");
+            
+            if(tokens.canConsume("NOT", "FOR", "REPLICATION")) {
+                constraintNode.setProperty(NOT_FOR_REPLICATION, true);
+            }
+            
             consumeComment(tokens);
             
         } else if (tokens.matches("CHECK") 
@@ -908,10 +953,13 @@ public class SqlServerDdlParser extends StandardDdlParser
                 ck_name = parseName(tokens);
             }
             tokens.consume("CHECK");
-            tokens.canConsume("NOT", "FOR", "REPLICATION");
             
             AstNode constraintNode = nodeFactory().node(ck_name, columnNode.getParent(), mixinType);
             constraintNode.setProperty(CONSTRAINT_TYPE, CHECK);
+            
+            if(tokens.canConsume("NOT", "FOR", "REPLICATION")) {
+                constraintNode.setProperty(NOT_FOR_REPLICATION, true);
+            }
             
             String clause = consumeParenBoundedTokens(tokens, true);
             constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
