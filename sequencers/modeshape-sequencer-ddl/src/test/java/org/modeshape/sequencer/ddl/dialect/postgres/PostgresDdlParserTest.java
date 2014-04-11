@@ -259,6 +259,20 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
 
     }
 
+    @Test
+    public void shouldParseCreateUnloggedTable() {
+        printTest("shouldParseCreateTempTable()");
+        String content = "CREATE UNLOGGED TABLE product (" +
+        		"    id int  NOT NULL," +
+        		"    product_category_id int  NOT NULL," +
+        		"    sku char(10)  NOT NULL," +
+        		"    CONSTRAINT product_pk PRIMARY KEY (id))" +
+        		" WITH (OIDS=FALSE) TABLESPACE pg_default;";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
     // CREATE RULE notify_me AS ON UPDATE TO mytable DO ALSO NOTIFY mytable;
     @Test
     public void shouldParseCreateRule() {

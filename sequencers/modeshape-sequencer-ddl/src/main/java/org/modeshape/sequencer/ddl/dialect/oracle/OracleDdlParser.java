@@ -454,6 +454,26 @@ public class OracleDdlParser extends StandardDdlParser
         return super.parseCreateStatement(tokens, parentNode);
     }
 
+    
+    @Override
+    protected void parseCreateTableOptions( DdlTokenStream tokens,
+                                            AstNode tableNode ) throws ParsingException {
+        assert tokens != null;
+        assert tableNode != null;
+
+        // [ ON COMMIT { PRESERVE ROWS | DELETE ROWS | DROP } ]
+        while (areNextTokensCreateTableOptions(tokens)) {
+            parseNextCreateTableOption(tokens, tableNode);
+        }
+        
+        // things specific for Oracle
+        
+        // TODO physical properties
+        
+        // TODO table_properties
+    }
+    
+    
     private AstNode parseCreateClusterStatement( DdlTokenStream tokens,
                                                  AstNode parentNode ) throws ParsingException {
         markStartOfStatement(tokens);

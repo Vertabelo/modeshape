@@ -567,7 +567,7 @@ public class PostgresDdlParser extends StandardDdlParser
         assert parentNode != null;
 
         if (tokens.matches(STMT_CREATE_TEMP_TABLE) || tokens.matches(STMT_CREATE_GLOBAL_TEMP_TABLE)
-            || tokens.matches(STMT_CREATE_LOCAL_TEMP_TABLE)) {
+            || tokens.matches(STMT_CREATE_LOCAL_TEMP_TABLE) || tokens.matches(STMT_CREATE_UNLOGGED_TABLE)) {
             return parseCreateTableStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_AGGREGATE)) {
             return parseStatement(tokens, STMT_CREATE_AGGREGATE, parentNode, TYPE_CREATE_AGGREGATE_STATEMENT);
@@ -639,43 +639,30 @@ public class PostgresDdlParser extends StandardDdlParser
 
         tokens.canConsumeAnyOf("LOCAL", "GLOBAL");
         tokens.canConsumeAnyOf("TEMP", "TEMPORARY");
+        
+        boolean isUnlogged = false;
+        if(tokens.canConsume("UNLOGGED")) {
+            isUnlogged = true;
+        }
 
         tokens.consume("TABLE"); // TABLE
+        tokens.canConsume("IF", "NOT", "EXISTS");
 
         String tableName = parseName(tokens);
         AstNode tableNode = nodeFactory().node(tableName, parentNode, TYPE_CREATE_TABLE_STATEMENT);
-
-        // //System.out.println("  >> PARSING CREATE TABLE >>  Name = " + tableName);
-        // if( tokens.canConsume("AS") ) {
-        // parseUntilTerminator(tokens);
-        // } else if( tokens.matches(L_PAREN)){
+        if(isUnlogged) {
+            tableNode.setProperty(UNLOGGED, true);
+        }
+        
+        
         parseColumnsAndConstraints(tokens, tableNode);
-        // }
-        // // [ ON COMMIT { PRESERVE ROWS | DELETE ROWS | DROP } ]
-        // // [ TABLESPACE tablespace ]
-        // // [ WITH ( storage_parameter [= value] [, ... ] ) | WITH OIDS | WITHOUT OIDS ]
-        // // [ WITH [ NO ] DATA ]
-        // // AS query (SEE ABOVE)
-        // if( tokens.canConsume("ON", "COMMIT") ) {
-        // // PRESERVE ROWS | DELETE ROWS | DROP
-        // tokens.canConsume("PRESERVE", "ROWS");
-        // tokens.canConsume("DELETE", "ROWS");
-        // tokens.canConsume("DROP");
-        // } else if( tokens.canConsume("TABLESPACE") ) {
-        // tokens.consume(); // tablespace name
-        // } else if( tokens.canConsume("WITH", "OIDS") ||
-        // tokens.canConsume("WITHOUT", "OUDS")) {
-        // } else if( tokens.canConsume("WITH")) {
-        // if( tokens.matches(L_PAREN) ) {
-        // consumeParenBoundedTokens(tokens, true);
-        // } else {
-        // tokens.canConsume("NO");
-        // tokens.canConsume("DATA");
-        // }
-        // }
-
+        
+        // [ INHERITS ( parent_table [, ... ] ) ]
+        // [ WITH ( storage_parameter [= value] [, ... ] ) | WITH OIDS | WITHOUT OIDS ]
+        // [ ON COMMIT { PRESERVE ROWS | DELETE ROWS | DROP } ]
+        // [ TABLESPACE tablespace_name ]
         parseCreateTableOptions(tokens, tableNode);
-
+        
         markEndOfStatement(tokens, tableNode);
 
         return tableNode;
@@ -688,22 +675,35 @@ public class PostgresDdlParser extends StandardDdlParser
         assert parentNode != null;
 
         if (tokens.canConsume("ON", "COMMIT")) {
-            // PRESERVE ROWS | DELETE ROWS | DROP
+            // [ ON COMMIT { PRESERVE ROWS | DELETE ROWS | DROP } ]
             tokens.canConsume("PRESERVE", "ROWS");
             tokens.canConsume("DELETE", "ROWS");
             tokens.canConsume("DROP");
-        } else if (tokens.canConsume("TABLESPACE")) {
-            tokens.consume(); // tablespace name
-        } else if (tokens.canConsume("WITH", "OIDS") || tokens.canConsume("WITHOUT", "OUDS")) {
-        } else if (tokens.canConsume("WITH")) {
-            if (tokens.matches(L_PAREN)) {
-                consumeParenBoundedTokens(tokens, true);
-            } else {
-                tokens.canConsume("NO");
-                tokens.canConsume("DATA");
+            
+        } else if(tokens.canConsume("TABLESPACE")) {
+            // [ TABLESPACE tablespace_name ]
+            String tablespace = parseName(tokens);
+            parentNode.setProperty(TABLESPACE, tablespace);
+            
+        } else if (tokens.matches("WITH", "OIDS") || tokens.matches("WITH", L_PAREN) || tokens.matches("WITHOUT", "OIDS")) {
+            // [ WITH ( storage_parameter [= value] [, ... ] ) | WITH OIDS | WITHOUT OIDS ]
+            String withOptions = null;
+            if(tokens.canConsume("WITH", "OIDS")){
+                // obsolescent syntax equivalent to WITH (OIDS)
+                withOptions = "OIDS";
+            } else if(tokens.matches("WITH", L_PAREN)){
+                tokens.consume("WITH");
+                withOptions = parseContentBetweenParens(tokens);
+            } else if(tokens.canConsume("WITHOUT", "OIDS")){
+                // obsolescent syntax equivalent to WITH (OIDS=FALSE)
+                withOptions = "OIDS=FALSE";
             }
+            parentNode.setProperty(WITH_OPTIONS, withOptions);
+            
         } else if (tokens.canConsume("AS")) {
             parseUntilTerminator(tokens);
+        } else if(tokens.canConsume("INHERITS")) {
+            parseContentBetweenParens(tokens);
         }
     }
 
@@ -713,8 +713,8 @@ public class PostgresDdlParser extends StandardDdlParser
 
         boolean result = false;
 
-        if (tokens.matches("ON", "COMMIT") || tokens.matches("TABLESPACE") || tokens.matches("WITH") || tokens.matches("WITHOUT")
-            || tokens.matches("AS")) {
+        if (tokens.matches("ON", "COMMIT") || tokens.matches("TABLESPACE") || tokens.matches("WITH") 
+                || tokens.matches("WITHOUT") || tokens.matches("AS") || tokens.matches("INHERITS")) {
             result = true;
         }
 
