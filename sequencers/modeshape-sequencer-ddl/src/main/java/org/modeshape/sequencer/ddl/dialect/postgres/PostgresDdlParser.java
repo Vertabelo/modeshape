@@ -2104,33 +2104,6 @@ public class PostgresDdlParser extends StandardDdlParser
         /**
          * {@inheritDoc}
          * 
-         * @see org.modeshape.sequencer.ddl.datatype.DataTypeParser#parseApproxNumericType(org.modeshape.sequencer.ddl.DdlTokenStream)
-         */
-        @Override
-        protected DataType parseApproxNumericType( DdlTokenStream tokens ) throws ParsingException {
-            DataType result = null;
-            String typeName = null;
-
-            if (tokens.matches(PostgresDataTypes.DTYPE_FLOAT4) || tokens.matches(PostgresDataTypes.DTYPE_FLOAT8)) {
-                typeName = tokens.consume();
-                result = new DataType(typeName);
-                int precision = 0;
-                if (tokens.matches('(')) {
-                    precision = (int)parseBracketedLong(tokens, result);
-                }
-                result.setPrecision(precision);
-            }
-
-            if (result == null) {
-                result = super.parseApproxNumericType(tokens);
-            }
-
-            return result;
-        }
-
-        /**
-         * {@inheritDoc}
-         * 
          * @see org.modeshape.sequencer.ddl.datatype.DataTypeParser#parseBitStringType(org.modeshape.sequencer.ddl.DdlTokenStream)
          */
         @Override
@@ -2162,7 +2135,15 @@ public class PostgresDdlParser extends StandardDdlParser
             DataType result = null;
             String typeName = null;
 
-            if (tokens.matches(PostgresDataTypes.DTYPE_BIGSERIAL) || tokens.matches(PostgresDataTypes.DTYPE_SERIAL)
+            if (tokens.matches(PostgresDataTypes.DTYPE_FLOAT4) || tokens.matches(PostgresDataTypes.DTYPE_FLOAT8)) {
+                typeName = tokens.consume();
+                result = new DataType(typeName);
+                if (tokens.matches('(')) {
+                    int precision = (int)parseBracketedLong(tokens, result);
+                    result.setPrecision(precision);
+                }
+                
+            } else if (tokens.matches(PostgresDataTypes.DTYPE_BIGSERIAL) || tokens.matches(PostgresDataTypes.DTYPE_SERIAL)
                 || tokens.matches(PostgresDataTypes.DTYPE_SERIAL4) || tokens.matches(PostgresDataTypes.DTYPE_SERIAL8)
                 || tokens.matches(PostgresDataTypes.DTYPE_INT2) || tokens.matches(PostgresDataTypes.DTYPE_INT4)
                 || tokens.matches(PostgresDataTypes.DTYPE_INT8) || tokens.matches(PostgresDataTypes.DTYPE_BOX)

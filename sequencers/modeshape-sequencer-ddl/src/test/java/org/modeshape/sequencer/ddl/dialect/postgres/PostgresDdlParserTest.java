@@ -400,4 +400,18 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         String content = getFileContent(DDL_FILE_PATH + "postgres_test_statements_4.ddl");
         assertScoreAndParse(content, "postgres_test_statements_4.ddl", 34);
     }
+
+    @Test
+    public void shouldParseCreateTableFloat4() {
+        printTest("shouldParseCreateTableFloat4()");
+        String content = "CREATE TABLE \"public\".\"phy_communesecondaire\" ("
+                + " \"id\"            int8 NOT NULL DEFAULT nextval('phy_communesecondaire_id_seq'::regclass),"
+                + " \"jhpotentiel\"   float4 NOT NULL,"
+                + " PRIMARY KEY(\"id\")"
+                + ");";
+        assertScoreAndParse(content, null, 1);
+        System.out.println(rootNode.getChildren().toString());
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
 }
