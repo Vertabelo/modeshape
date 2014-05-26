@@ -122,8 +122,8 @@ public class StandardDdlSequencerTest extends AbstractDdlSequencerTest {
         assertNotNull(nextidNode);
         verifyPrimaryType(nextidNode, NT_UNSTRUCTURED);
         verifyProperty(nextidNode, DATATYPE_NAME, "NUMERIC");
-        verifyProperty(nextidNode, DATATYPE_PRECISION, "0");
-        verifyProperty(nextidNode, DATATYPE_SCALE, "0");
+//        verifyProperty(nextidNode, DATATYPE_PRECISION, "0");
+//        verifyProperty(nextidNode, DATATYPE_SCALE, "0");
         verifyHasProperty(nextidNode, DATATYPE_LENGTH);
         verifyMixinType(nextidNode, TYPE_COLUMN_DEFINITION);
 
@@ -184,7 +184,7 @@ public class StandardDdlSequencerTest extends AbstractDdlSequencerTest {
         verifyPrimaryType(node_2, NT_UNSTRUCTURED);
         verifyProperty(node_2, DATATYPE_NAME, "NUMERIC");
         verifyProperty(node_2, DATATYPE_PRECISION, "3");
-        verifyProperty(node_2, DATATYPE_SCALE, "0");
+//        verifyProperty(node_2, DATATYPE_SCALE, "0");
         verifyHasProperty(node_2, DATATYPE_LENGTH);
         verifyMixinType(node_2, TYPE_COLUMN_DEFINITION);
     }

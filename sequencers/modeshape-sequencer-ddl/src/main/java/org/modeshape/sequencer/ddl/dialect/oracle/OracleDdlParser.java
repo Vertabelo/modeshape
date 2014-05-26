@@ -2077,24 +2077,21 @@ public class OracleDdlParser extends StandardDdlParser
             } else if (tokens.matches(OracleDataTypes.DTYPE_NUMBER)) {
                 dataType = new DataType();
                 typeName = consume(tokens, dataType, true, OracleDataTypes.DTYPE_NUMBER);
-                int precision = 0;
-                int scale = 0;
+                
                 if (tokens.matches(L_PAREN)) {
                     consume(tokens, dataType, false, L_PAREN);
-                    precision = (int)parseLong(tokens, dataType);
+                    
+                    int precision = (int)parseLong(tokens, dataType);
+                    dataType.setPrecision(precision);
+                    
                     if (canConsume(tokens, dataType, false, COMMA)) {
-                        scale = (int)parseLong(tokens, dataType);
-                    } else {
-                        scale = getDefaultScale();
+                        int scale = (int)parseLong(tokens, dataType);
+                        dataType.setScale(scale);
                     }
                     consume(tokens, dataType, false, R_PAREN);
-                } else {
-                    precision = getDefaultPrecision();
-                    scale = getDefaultScale();
                 }
                 dataType.setName(typeName);
-                dataType.setPrecision(precision);
-                dataType.setScale(scale);
+                
             } else if (tokens.matches(OracleDataTypes.DTYPE_INTERVAL_YEAR)) {
                 // INTERVAL YEAR (year_precision) TO MONTH
 

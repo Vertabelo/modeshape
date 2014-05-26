@@ -1297,7 +1297,6 @@ public class DerbyDdlParser extends StandardDdlParser implements DerbyDdlConstan
         protected DataType parseCustomType( DdlTokenStream tokens ) throws ParsingException {
             DataType dataType = null;
             String typeName = null;
-            long length = 0;
 
             if (tokens.matches(DerbyDataTypes.DTYPE_BINARY_LARGE_OBJECT)
                 || tokens.matches(DerbyDataTypes.DTYPE_CHARACTER_LARGE_OBJECT)) {
@@ -1306,21 +1305,21 @@ public class DerbyDdlParser extends StandardDdlParser implements DerbyDdlConstan
                            + consume(tokens, dataType, true);
                 if (canConsume(tokens, dataType, true, L_PAREN)) {
                     String lengthValue = consume(tokens, dataType, false);
-                    length = parseLong(lengthValue);
+                    long length = parseLong(lengthValue);
+                    dataType.setLength(length);
                     consume(tokens, dataType, true, R_PAREN);
                 }
                 dataType.setName(typeName);
-                dataType.setLength(length);
             } else if (tokens.matches(DerbyDataTypes.DTYPE_CLOB) || tokens.matches(DerbyDataTypes.DTYPE_BLOB)) {
                 dataType = new DataType();
                 typeName = consume(tokens, dataType, true);
                 if (canConsume(tokens, dataType, true, L_PAREN)) {
                     String lengthValue = consume(tokens, dataType, false);
-                    length = parseLong(lengthValue);
+                    long length = parseLong(lengthValue);
+                    dataType.setLength(length);
                     consume(tokens, dataType, true, R_PAREN);
                 }
                 dataType.setName(typeName);
-                dataType.setLength(length);
             } else if (tokens.matches(DerbyDataTypes.DTYPE_BIGINT)) {
                 dataType = new DataType();
                 typeName = consume(tokens, dataType, true);

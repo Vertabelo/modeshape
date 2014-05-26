@@ -1778,6 +1778,8 @@ public class PostgresDdlParser extends StandardDdlParser
      * <code>
      * column-expression == left-paren column-name [ASC | DESC] | constant | function [, column-name [ASC | DESC] | constant | function ]* right-paren
      * </code>
+     * FIXME: it has changed to:
+     * ( { column_name | ( expression ) } [ COLLATE collation ] [ opclass ] [ ASC | DESC ] [ NULLS { FIRST | LAST } ] [, ...] )
      * 
      * @param columnExpressionList the comma separated column expression list (cannot be <code>null</code>)
      * @param indexNode the index node whose column expression list is being processed (cannot be <code>null</code>)

@@ -603,24 +603,19 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
                 String typeName = tokens.consume();
                 dataType.setName(typeName);
 
-                int precision = 0;
-                int scale = 0;
-
                 if (tokens.matches(L_PAREN)) {
                     consume(tokens, dataType, false, L_PAREN);
-                    precision = (int)parseLong(tokens, dataType);
+                    
+                    int precision = (int)parseLong(tokens, dataType);
+                    dataType.setPrecision(precision);
+                    
                     if (tokens.canConsume(COMMA)) {
-                        scale = (int)parseLong(tokens, dataType);
-                    } else {
-                        scale = getDefaultScale();
+                        int scale = (int)parseLong(tokens, dataType);
+                        dataType.setScale(scale);
                     }
                     tokens.consume(R_PAREN);
-                } else {
-                    precision = getDefaultPrecision();
-                    scale = getDefaultScale();
                 }
-                dataType.setPrecision(precision);
-                dataType.setScale(scale);
+                
             } else if (tokens.matches(DTYPE_MEDIUMBLOB) || tokens.matches(DTYPE_LONGBLOB) || tokens.matches(DTYPE_BLOB)
                        || tokens.matches(DTYPE_TINYBLOB) || tokens.matches(DTYPE_YEAR) || tokens.matches(DTYPE_DATETIME)
                        || tokens.matches(DTYPE_BOOLEAN) || tokens.matches(DTYPE_BOOL)) {
@@ -630,20 +625,18 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
                        || tokens.matches(DTYPE_BINARY) || tokens.matches(DTYPE_BIGINT)) {
                 String typeName = tokens.consume();
                 dataType = new DataType(typeName);
-                long length = getDefaultLength();
                 if (tokens.matches(L_PAREN)) {
-                    length = parseBracketedLong(tokens, dataType);
+                    long length = parseBracketedLong(tokens, dataType);
+                    dataType.setLength(length);
                 }
-                dataType.setLength(length);
             } else if (tokens.matches(DTYPE_NATIONAL_VARCHAR)) {
                 String typeName = getStatementTypeName(DTYPE_NATIONAL_VARCHAR);
                 dataType = new DataType(typeName);
                 tokens.consume(DTYPE_NATIONAL_VARCHAR);
-                long length = getDefaultLength();
                 if (tokens.matches(L_PAREN)) {
-                    length = parseBracketedLong(tokens, dataType);
+                    long length = parseBracketedLong(tokens, dataType);
+                    dataType.setLength(length);
                 }
-                dataType.setLength(length);
             } else if (tokens.matches(DTYPE_MEDIUMTEXT) || tokens.matches(DTYPE_TEXT) || tokens.matches(DTYPE_LONGTEXT)
                        || tokens.matches(DTYPE_TINYTEXT)) {
                 String typeName = tokens.consume();

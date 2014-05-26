@@ -23,7 +23,6 @@
  */
 package org.modeshape.sequencer.ddl.dialect.sqlserver;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
@@ -46,7 +45,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
     @Before
     public void beforeEach() {
         parser = new SqlServerDdlParser();
-        setPrintToConsole(true);
+//        setPrintToConsole(true);
         parser.setTestMode(isPrintToConsole());
         parser.setDoUseTerminator(true);
         rootNode = parser.nodeFactory().node("ddlRootNode");

@@ -2146,11 +2146,10 @@ public class SqlServerDdlParser extends StandardDdlParser
                 typeName = consume(tokens, dataType, false, DataTypes.DTYPE_TIME);
                 dataType.setName(typeName);
 
-                int precision = 0;
                 if (tokens.matches(L_PAREN)) {
-                    precision = (int)parseBracketedLong(tokens, dataType);
+                    int precision = (int)parseBracketedLong(tokens, dataType);
+                    dataType.setPrecision(precision);
                 }
-                dataType.setPrecision(precision);
 
                 canConsume(tokens, dataType, true, "WITH", "TIME", "ZONE");
                 

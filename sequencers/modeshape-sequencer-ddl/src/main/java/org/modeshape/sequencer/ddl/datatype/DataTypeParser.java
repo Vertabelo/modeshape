@@ -331,11 +331,10 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false); // "CHARACTER", "CHAR",
             dataType.setName(typeName);
-            long length = getDefaultLength();
             if (tokens.matches(L_PAREN)) {
-                length = parseBracketedLong(tokens, dataType);
+                long length = parseBracketedLong(tokens, dataType);
+                dataType.setLength(length);
             }
-            dataType.setLength(length);
         }
 
         return dataType;
@@ -360,49 +359,46 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NCHAR_VARYING);
             long length = parseBracketedLong(tokens, dataType);
-
             dataType.setLength(length);
+            
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR_VARYING)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
             long length = parseBracketedLong(tokens, dataType);
-
             dataType.setLength(length);
+            
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
             long length = parseBracketedLong(tokens, dataType);
-
             dataType.setLength(length);
+            
         } else if (tokens.matches(DataTypes.DTYPE_NCHAR)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NCHAR);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NCHAR);
-            long length = getDefaultLength();
             if (tokens.matches(L_PAREN)) {
-                length = parseBracketedLong(tokens, dataType);
+                long length = parseBracketedLong(tokens, dataType);
+                dataType.setLength(length);
             }
-            dataType.setLength(length);
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHAR);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR);
-            long length = getDefaultLength();
             if (tokens.matches(L_PAREN)) {
-                length = parseBracketedLong(tokens, dataType);
+                long length = parseBracketedLong(tokens, dataType);
+                dataType.setLength(length);
             }
-            dataType.setLength(length);
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHARACTER);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER);
-            long length = getDefaultLength();
             if (tokens.matches(L_PAREN)) {
-                length = parseBracketedLong(tokens, dataType);
+                long length = parseBracketedLong(tokens, dataType);
+                dataType.setLength(length);
             }
-            dataType.setLength(length);
         }
 
         return dataType;
@@ -425,17 +421,16 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_BIT_VARYING);
             long length = parseBracketedLong(tokens, dataType);
-
             dataType.setLength(length);
+            
         } else if (tokens.matches(DataTypes.DTYPE_BIT)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_BIT);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_BIT);
-            long length = getDefaultLength();
             if (tokens.matches(L_PAREN)) {
-                length = parseBracketedLong(tokens, dataType);
+                long length = parseBracketedLong(tokens, dataType);
+                dataType.setLength(length);
             }
-            dataType.setLength(length);
         }
 
         return dataType;
@@ -458,29 +453,24 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false);
             dataType.setName(typeName);
+            
         } else if (tokens.matchesAnyOf("NUMERIC", "DECIMAL", "DEC")) {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false);
             dataType.setName(typeName);
-
-            int precision = 0;
-            int scale = 0;
-
+            
             if (tokens.matches(L_PAREN)) {
                 consume(tokens, dataType, false, L_PAREN);
-                precision = (int)parseLong(tokens, dataType);
+                
+                int precision = (int)parseLong(tokens, dataType);
+                dataType.setPrecision(precision);
+                
                 if (canConsume(tokens, dataType, false, COMMA)) {
-                    scale = (int)parseLong(tokens, dataType);
-                } else {
-                    scale = getDefaultScale();
+                    int scale = (int)parseLong(tokens, dataType);
+                    dataType.setScale(scale);
                 }
                 consume(tokens, dataType, false, R_PAREN);
-            } else {
-                precision = getDefaultPrecision();
-                scale = getDefaultScale();
             }
-            dataType.setPrecision(precision);
-            dataType.setScale(scale);
         }
 
         return dataType;
@@ -510,11 +500,10 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false, DataTypes.DTYPE_FLOAT);
             dataType.setName(typeName);
-            int precision = 0;
             if (tokens.matches(L_PAREN)) {
-                precision = (int)parseBracketedLong(tokens, dataType);
+                int precision = (int)parseBracketedLong(tokens, dataType);
+                dataType.setPrecision(precision);
             }
-            dataType.setPrecision(precision);
         }
 
         return dataType;
@@ -536,28 +525,27 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false, DataTypes.DTYPE_DATE);
             dataType.setName(typeName);
+            
         } else if (tokens.matches(DataTypes.DTYPE_TIME)) {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false, DataTypes.DTYPE_TIME);
             dataType.setName(typeName);
-
-            int precision = 0;
+            
             if (tokens.matches(L_PAREN)) {
-                precision = (int)parseBracketedLong(tokens, dataType);
+                int precision = (int)parseBracketedLong(tokens, dataType);
+                dataType.setPrecision(precision);
             }
-            dataType.setPrecision(precision);
-
             canConsume(tokens, dataType, true, "WITH", "TIME", "ZONE");
+            
         } else if (tokens.matches(DataTypes.DTYPE_TIMESTAMP)) {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false, DataTypes.DTYPE_TIMESTAMP);
             dataType.setName(typeName);
 
-            int precision = 0;
             if (tokens.matches(L_PAREN)) {
-                precision = (int)parseBracketedLong(tokens, dataType);
+                int precision = (int)parseBracketedLong(tokens, dataType);
+                dataType.setPrecision(precision);
             }
-            dataType.setPrecision(precision);
 
             canConsume(tokens, dataType, true, "WITH", "TIME", "ZONE");
         }

@@ -410,8 +410,20 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
                 + " PRIMARY KEY(\"id\")"
                 + ");";
         assertScoreAndParse(content, null, 1);
-        System.out.println(rootNode.getChildren().toString());
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
+
+    @Test
+    public void shouldParseCreateIndexUsingBtree() {
+        printTest("shouldParseCreateIndexUsingBtree()");
+        String content = "CREATE INDEX  \"index_reports_on_report_url\"" +
+        		" ON \"public\".\"reports\"" +
+        		" USING btree(report_url COLLATE \"default\" ASC NULLS LAST);";
+        assertScoreAndParse(content, null, 1);
+        System.out.println(rootNode.getChildren().get(0).getChildren().toString());
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, PostgresDdlLexicon.TYPE_CREATE_INDEX_STATEMENT));
+    }
+
 }
