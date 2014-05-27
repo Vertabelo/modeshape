@@ -1462,6 +1462,18 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 }
                 if (isComment(tokens)) {
                     tokens.consume();
+                } else if (tokens.matches(">", "=")
+                        || tokens.matches("<", "=")
+                        || tokens.matches("<", ">")
+                        || tokens.matches("!", "=")
+                        || tokens.matches("!", "<")
+                        || tokens.matches("!", ">")
+                        || tokens.matches(":", ":")) {
+                    // EDWM-751
+                    String first = tokens.consume();
+                    String second = tokens.consume();
+                    sb.append(SPACE).append(first).append(second);
+                    
                 } else {
                     sb.append(SPACE).append(tokens.consume());
                 }
@@ -1886,6 +1898,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
             tokens.canConsume("MATCH", "FULL");
             tokens.canConsume("MATCH", "PARTIAL");
+            tokens.canConsume("MATCH", "SIMPLE");
             
             parseReferentialActions(tokens, constraintNode);
         }
@@ -2924,6 +2937,20 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                     tokens.consume(R_PAREN); // don't include last paren in expression
                     break;
                 }
+            }
+            
+            if (tokens.matches(">", "=")
+                    || tokens.matches("<", "=")
+                    || tokens.matches("<", ">")
+                    || tokens.matches("!", "=")
+                    || tokens.matches("!", "<")
+                    || tokens.matches("!", ">")
+                    || tokens.matches(":", ":")) {
+                // EDWM-751
+                String first = tokens.consume();
+                String second = tokens.consume();
+                text.append(SPACE).append(first).append(second);
+                continue;
             }
 
             final String token = tokens.consume();
