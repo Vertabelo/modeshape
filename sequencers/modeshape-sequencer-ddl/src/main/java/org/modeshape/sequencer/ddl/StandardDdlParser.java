@@ -1766,6 +1766,8 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
                 String clause = consumeParenBoundedTokens(tokens, true);
                 constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
+
+                parseConstraintAttributes(tokens, constraintNode);
             }
         } else if (tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "UNIQUE")) {
             // CONSTRAINT P_KEY_2a UNIQUE (PERMISSIONUID)
@@ -1829,6 +1831,8 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
             String clause = consumeParenBoundedTokens(tokens, true);
             constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
+
+            parseConstraintAttributes(tokens, constraintNode);
         }
 
     }
