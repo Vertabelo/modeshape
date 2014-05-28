@@ -55,6 +55,7 @@ import org.modeshape.sequencer.ddl.DdlParserProblem;
 import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
+import org.modeshape.sequencer.ddl.DdlConstants.DataTypes;
 import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
 import org.modeshape.sequencer.ddl.StandardDdlParser;
 import org.modeshape.sequencer.ddl.datatype.DataType;
@@ -2017,25 +2018,45 @@ public class SqlServerDdlParser extends StandardDdlParser
                 typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_TEXT);
                 dataType.setName(typeName);
             } else if (tokens.matches(SqlServerDataTypes.DTYPE_NVARCHAR)) {
-                //  nvarchar [ ( n | max ) ] 
+                //  nvarchar [ ( n | max ) ]
+
                 dataType = new DataType();
                 typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_NVARCHAR);
                 dataType.setName(typeName);
-                if (tokens.matches(L_PAREN)) {
-                    // FIXME support for (max)
+                
+                if(tokens.canConsume(L_PAREN, "MAX", R_PAREN)) {
+                    // EDWM-687 support for nvarchar(max)
+                    dataType.setName(dataType.getName() + "(max)");
+                    dataType.appendSource(false, "(max)");
+                } else if(tokens.matches(L_PAREN)) {
                     long length = parseBracketedLong(tokens, dataType);
                     dataType.setLength(length);
                 }
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_VARBINARY)) {
-                //  varbinary [ ( n | max) ] 
+                
+            } else if (tokens.matches(SqlServerDataTypes.DTYPE_VARBINARY)
+                    || tokens.matches(SqlServerDataTypes.DTYPE_BINARY_VARYING)) {
+                //  varbinary [ ( n | max ) ]
+                
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_VARBINARY);
+                if (tokens.matches(SqlServerDataTypes.DTYPE_VARBINARY)) {
+                    typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_VARBINARY);
+                } else if (tokens.matches(SqlServerDataTypes.DTYPE_BINARY_VARYING)) {
+                    typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_BINARY_VARYING);
+                } else {
+                    throw new RuntimeException("Unimplemented yet");
+                }
+                
                 dataType.setName(typeName);
-                if (tokens.matches(L_PAREN)) {
-                    // FIXME support for (max)
+                
+                if(tokens.canConsume(L_PAREN, "MAX", R_PAREN)) {
+                    // EDWM-687 support for nvarchar(max)
+                    dataType.setName(dataType.getName() + "(max)");
+                    dataType.appendSource(false, "(max)");
+                } else if(tokens.matches(L_PAREN)) {
                     long length = parseBracketedLong(tokens, dataType);
                     dataType.setLength(length);
                 }
+                
             } else if (tokens.matches(SqlServerDataTypes.DTYPE_BINARY)) {
                 //  binary [ ( n ) ] 
                 dataType = new DataType();
@@ -2100,9 +2121,92 @@ public class SqlServerDdlParser extends StandardDdlParser
         
         @Override
         protected DataType parseCharStringType( DdlTokenStream tokens ) throws ParsingException {
-            // FIXME support for (max)
+            DataType dataType = null;
+            String typeName = null;
 
-            return super.parseCharStringType(tokens);
+            if (tokens.matches(DataTypes.DTYPE_VARCHAR)
+                    || tokens.matches(DataTypes.DTYPE_CHAR_VARYING)
+                    || tokens.matches(DataTypes.DTYPE_CHARACTER_VARYING)) {
+                
+                if (tokens.matches(DataTypes.DTYPE_VARCHAR)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_VARCHAR);
+                    dataType = new DataType(typeName);
+                    consume(tokens, dataType, false, DataTypes.DTYPE_VARCHAR);
+                    
+                } else if (tokens.matches(DataTypes.DTYPE_CHAR_VARYING)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_CHAR_VARYING);
+                    dataType = new DataType(typeName);
+                    consume(tokens, dataType, false, DataTypes.DTYPE_CHAR_VARYING);
+                    
+                } else if (tokens.matches(DataTypes.DTYPE_CHARACTER_VARYING)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_CHARACTER_VARYING);
+                    dataType = new DataType(typeName);
+                    consume(tokens, dataType, false, DataTypes.DTYPE_CHARACTER_VARYING);
+                } else {
+                    throw new RuntimeException("Unimplemented yet");
+                }
+                
+                if(tokens.canConsume(L_PAREN, "MAX", R_PAREN)) {
+                    // EDWM-687 support for varchar(max)
+                    dataType.setName(dataType.getName() + "(max)");
+                    dataType.appendSource(false, "(max)");
+                    
+                } else if(tokens.matches(L_PAREN)) {
+                    long length = parseBracketedLong(tokens, dataType);
+                    dataType.setLength(length);
+                }
+                
+            } else {
+                dataType = super.parseCharStringType(tokens);
+            }
+            
+            return dataType;
+        }
+        
+        
+        @Override
+        protected DataType parseNationalCharStringType(DdlTokenStream tokens) throws ParsingException {
+            DataType dataType = null;
+            String typeName = null;
+            
+            if (tokens.matches(DataTypes.DTYPE_NCHAR_VARYING)
+                    || tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR_VARYING)
+                    || tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
+                //  national char varying [ ( n | max ) ]
+                
+                dataType = new DataType();
+                if (tokens.matches(DataTypes.DTYPE_NCHAR_VARYING)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_NCHAR_VARYING);
+                    dataType = new DataType(typeName);
+                    consume(tokens, dataType, false, DataTypes.DTYPE_NCHAR_VARYING);
+                    
+                } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR_VARYING)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
+                    dataType = new DataType(typeName);
+                    consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
+                    
+                } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
+                    dataType = new DataType(typeName);
+                    consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
+                    
+                } else {
+                    throw new RuntimeException("Unimplemented yet");
+                }
+                
+                if(tokens.canConsume(L_PAREN, "MAX", R_PAREN)) {
+                    // EDWM-687 support for 'national char varying(max)'
+                    dataType.setName(dataType.getName() + "(max)");
+                    dataType.appendSource(false, "(max)");
+                } else if(tokens.matches(L_PAREN)) {
+                    long length = parseBracketedLong(tokens, dataType);
+                    dataType.setLength(length);
+                }
+                
+                return dataType;
+            }
+            
+            return super.parseNationalCharStringType(tokens);
         }
 
         /**

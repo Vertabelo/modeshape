@@ -189,6 +189,42 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
+
+    @Test
+    public void shouldParseCreateTable_varchar_max() {
+        printTest("shouldParseCreateTable_varchar_max()");
+        String content = "CREATE TABLE client (" +
+                        "    id int  NOT NULL," +
+                        "    full_name varchar(max)  NOT NULL," +
+                        "    qq char varying(max)  NOT NULL," +
+                        "    ww character varying(max)  NOT NULL," +
+                        "    ee nvarchar(max)  NOT NULL," +
+                        "    rr national char varying(max)  NOT NULL," +
+                        "    tt national character varying(max)  NOT NULL," +
+                        "    yy varbinary(max)  NOT NULL," +
+                        "    uu binary varying(max)  NOT NULL," +
+                        "    num_full_name varchar(5)  NOT NULL," +
+                        "    num_qq char varying(5)  NOT NULL," +
+                        "    num_ww character varying(5)  NOT NULL," +
+                        "    num_ee nvarchar(5)  NOT NULL," +
+                        "    num_rr national char varying(5)  NOT NULL," +
+                        "    num_tt national character varying(5)  NOT NULL," +
+                        "    num_yy varbinary(5)  NOT NULL," +
+                        "    num_uu binary varying(5)  NOT NULL," +
+                        "    no_size_full_name varchar  NOT NULL," +
+                        "    no_size_qq char varying  NOT NULL," +
+                        "    no_size_ww character varying  NOT NULL," +
+                        "    no_size_ee nvarchar  NOT NULL," +
+                        "    no_size_rr national char varying  NOT NULL," +
+                        "    no_size_tt national character varying  NOT NULL," +
+                        "    no_size_yy varbinary  NOT NULL," +
+                        "    no_size_uu binary varying  NOT NULL," +
+                        "    PRIMARY KEY (id)" +
+                        ");";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
     
 
     @Test

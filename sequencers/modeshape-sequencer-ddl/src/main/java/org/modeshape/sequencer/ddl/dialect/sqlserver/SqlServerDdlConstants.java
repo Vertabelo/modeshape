@@ -388,8 +388,10 @@ public interface SqlServerDdlConstants extends DdlConstants {
         static final String[] DTYPE_TEXT = {"TEXT"};
         static final String[] DTYPE_NVARCHAR = {"NVARCHAR"}; //NVARCHAR(max)
         static final String[] DTYPE_VARCHAR_SQLSERVER = {"VARCHAR"}; //VARCHAR(max)
+        
         // BINARY
         static final String[] DTYPE_VARBINARY = {"VARBINARY"};
+        static final String[] DTYPE_BINARY_VARYING = {"BINARY", "VARYING"}; //BINARY VARYING(max)
         static final String[] DTYPE_BINARY = {"BINARY"};
         static final String[] DTYPE_IMAGE = {"IMAGE"};
         // OTHER
@@ -407,7 +409,7 @@ public interface SqlServerDdlConstants extends DdlConstants {
                 DTYPE_BIGINT, DTYPE_MONEY, DTYPE_SMALLMONEY, DTYPE_TINYINT,
                 DTYPE_DATETIME2, DTYPE_DATETIME, DTYPE_DATETIMEOFFSET, DTYPE_SMALLDATETIME,
                 DTYPE_NTEXT, DTYPE_TEXT, DTYPE_NVARCHAR, DTYPE_VARCHAR_SQLSERVER,
-                DTYPE_VARBINARY, DTYPE_BINARY, DTYPE_IMAGE,
+                DTYPE_VARBINARY, DTYPE_BINARY_VARYING, DTYPE_BINARY, DTYPE_IMAGE,
                 DTYPE_HIERARCHYID, DTYPE_SQL_VARIANT, DTYPE_TIMESTAMP_SQLSERVER, DTYPE_ROWVERSION,
                 DTYPE_UNIQUEIDENTIFIER, DTYPE_XML, DTYPE_GEOGRAPHY, DTYPE_GEOMETRY);
         
