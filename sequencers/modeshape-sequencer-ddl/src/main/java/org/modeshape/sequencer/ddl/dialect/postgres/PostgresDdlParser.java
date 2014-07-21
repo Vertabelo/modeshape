@@ -1761,7 +1761,19 @@ public class PostgresDdlParser extends StandardDdlParser
         final String columnExpressionList = parseContentBetweenParens(tokens);
         parseIndexColumnExpressionList("(" + columnExpressionList + ")", indexNode);
         
-        // TODO WITH, TABLESPACE, WHERE - at this point we don't need it, skipping
+        // WITH
+        if(tokens.canConsume("WITH")) {
+            String withOptions = parseContentBetweenParens(tokens);
+            indexNode.setProperty(WITH_OPTIONS, withOptions);
+        }
+        
+        // TABLESPACE
+        if(tokens.canConsume("TABLESPACE")) {
+            String tablespace = parseName(tokens);
+            indexNode.setProperty(TABLESPACE, tablespace);
+        }
+        
+        // TODO WHERE - at this point we don't need it, skipping
         parseUntilTerminator(tokens);
         
         markEndOfStatement(tokens, indexNode);
