@@ -185,9 +185,10 @@ public class StandardDdlLexicon {
     public static final String SOURCE_CHARACTER_SET_NAME = PREFIX + ":sourceCharacterSetName";
     public static final String TARGET_CHARACTER_SET_NAME = PREFIX + ":targetCharacterSetName";
 
-
     public static final String DROP_OPTION = PREFIX + ":dropOption";
     public static final String COLUMN_ATTRIBUTE = PREFIX + ":columnAttribute";
+
+    public static final String OR_REPLACE_CLAUSE = PREFIX + ":orReplaceClause";
 
     /**
      * value constraints

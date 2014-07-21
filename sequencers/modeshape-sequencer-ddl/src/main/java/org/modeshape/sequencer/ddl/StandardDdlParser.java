@@ -1322,15 +1322,17 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
         while (tokens.hasNext() && !tokens.matches(COMMA)) {
             boolean parsedDefaultClause = parseDefaultClause(tokens, columnNode);
-            if (!parsedDefaultClause) {
-                boolean parsedCollate = parseCollateClause(tokens, columnNode);
-                boolean parsedConstraint = parseColumnConstraint(tokens, columnNode, isAlterTable);
-                if (!parsedCollate && !parsedConstraint) {
-                    // THIS IS AN ERROR. NOTHING FOUND.
-                    // NEED TO absorb tokens
-                    unusedTokensSB.append(SPACE).append(tokens.consume());
-                }
+            boolean parsedCollate = parseCollateClause(tokens, columnNode);
+            boolean parsedConstraint = parseColumnConstraint(tokens, columnNode, isAlterTable);
+            
+            if (!parsedDefaultClause 
+                    && !parsedCollate
+                    && !parsedConstraint) {
+                // THIS IS AN ERROR. NOTHING FOUND.
+                // NEED TO absorb tokens
+                unusedTokensSB.append(SPACE).append(tokens.consume());
             }
+            
             tokens.canConsume(DdlTokenizer.COMMENT);
         }
 
@@ -1538,6 +1540,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 }
 
                 parseConstraintAttributes(tokens, constraintNode);
+                
             } else if (tokens.matches("PRIMARY", "KEY")) {
                 // CONSTRAINT U_KEY_2a PRIMARY KEY (PERMISSIONUID)
                 tokens.consume("PRIMARY"); // PRIMARY
@@ -1554,6 +1557,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 }
 
                 parseConstraintAttributes(tokens, constraintNode);
+                
             } else if (tokens.matches("REFERENCES")) {
                 // References in an in-line constraint is really a foreign key definition
                 // EXAMPLE:
@@ -1567,6 +1571,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 parseReferences(tokens, constraintNode);
 
                 parseConstraintAttributes(tokens, constraintNode);
+                
             }
         } else if (tokens.matches("UNIQUE")) {
             result = true;
@@ -1575,10 +1580,11 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             String uc_name = "UC_1"; // UNIQUE CONSTRAINT NAME
 
             AstNode constraintNode = nodeFactory().node(uc_name, columnNode.getParent(), mixinType);
-
             constraintNode.setProperty(CONSTRAINT_TYPE, UNIQUE);
 
             nodeFactory().node(colName, constraintNode, TYPE_COLUMN_REFERENCE);
+
+            parseConstraintAttributes(tokens, constraintNode);
 
         } else if (tokens.matches("PRIMARY", "KEY")) {
             result = true;
@@ -1587,10 +1593,11 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             String pk_name = "PK_1"; // PRIMARY KEY NAME
 
             AstNode constraintNode = nodeFactory().node(pk_name, columnNode.getParent(), mixinType);
-
             constraintNode.setProperty(CONSTRAINT_TYPE, PRIMARY_KEY);
 
             nodeFactory().node(colName, constraintNode, TYPE_COLUMN_REFERENCE);
+
+            parseConstraintAttributes(tokens, constraintNode);
 
         } else if (tokens.matches("FOREIGN", "KEY")) {
             result = true;
@@ -1603,13 +1610,13 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             String constraintName = parseName(tokens);
 
             AstNode constraintNode = nodeFactory().node(constraintName, columnNode.getParent(), mixinType);
-
             constraintNode.setProperty(CONSTRAINT_TYPE, FOREIGN_KEY);
 
             nodeFactory().node(colName, constraintNode, TYPE_COLUMN_REFERENCE);
 
             parseReferences(tokens, constraintNode);
             parseConstraintAttributes(tokens, constraintNode);
+            
         } else if (tokens.matches("REFERENCES")) {
             result = true;
             // This is an auto-named FK
@@ -1620,13 +1627,13 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             String constraintName = "FK_1";
 
             AstNode constraintNode = nodeFactory().node(constraintName, columnNode.getParent(), mixinType);
-
             constraintNode.setProperty(CONSTRAINT_TYPE, FOREIGN_KEY);
 
             nodeFactory().node(colName, constraintNode, TYPE_COLUMN_REFERENCE);
 
             parseReferences(tokens, constraintNode);
             parseConstraintAttributes(tokens, constraintNode);
+            
         } else if (tokens.matches("CHECK")) {
             result = true;
             tokens.consume("CHECK"); // CHECK
@@ -1638,6 +1645,8 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
             String clause = consumeParenBoundedTokens(tokens, true);
             constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
+
+            parseConstraintAttributes(tokens, constraintNode);
         }
 
         return result;
@@ -2017,7 +2026,10 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
         String stmtType = "CREATE";
         tokens.consume("CREATE");
+        
+        boolean orReplaceClause = false;
         if (tokens.canConsume("OR", "REPLACE")) {
+            orReplaceClause = true;
             stmtType = stmtType + SPACE + "OR REPLACE";
         }
         tokens.consume("VIEW");
@@ -2026,7 +2038,8 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         String name = parseName(tokens);
 
         AstNode createViewNode = nodeFactory().node(name, parentNode, TYPE_CREATE_VIEW_STATEMENT);
-
+        createViewNode.setProperty(StandardDdlLexicon.OR_REPLACE_CLAUSE, orReplaceClause);
+        
         // CONSUME COLUMNS
         parseColumnNameList(tokens, createViewNode, TYPE_COLUMN_REFERENCE);
 
