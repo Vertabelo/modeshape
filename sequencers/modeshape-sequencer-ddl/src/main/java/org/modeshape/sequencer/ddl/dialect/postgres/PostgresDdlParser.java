@@ -1773,8 +1773,14 @@ public class PostgresDdlParser extends StandardDdlParser
             indexNode.setProperty(TABLESPACE, tablespace);
         }
         
-        // TODO WHERE - at this point we don't need it, skipping
-        parseUntilTerminator(tokens);
+        // WHERE
+        if(tokens.canConsume("WHERE")) {
+            String whereClause = parseUntilTerminator(tokens);
+            indexNode.setProperty(WHERE_CLAUSE, whereClause);
+            
+        } else {
+            parseUntilTerminator(tokens);
+        }
         
         markEndOfStatement(tokens, indexNode);
         
