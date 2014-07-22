@@ -169,6 +169,9 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String INDEX_ATTRIBUTES   = PREFIX + ":indexAttributes";
     public static final String INDEX_ORDER        = PREFIX + ":order";
     public static final String WHERE_CLAUSE       = PREFIX + ":whereClause";
+    public static final String OR_REPLACE         = PREFIX + ":orReplace";
+    public static final String FORCE              = PREFIX + ":force";
+    public static final String NO_FORCE           = PREFIX + ":noForce";
     
     // sequence properties
     public static final String SEQ_INCREMENT_BY   = PREFIX + "incrementBy";

@@ -359,6 +359,11 @@ public class OracleDdlParser extends StandardDdlParser
         if (tokens.matches(STMT_CREATE_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_INDEX)
             || tokens.matches(STMT_CREATE_BITMAP_INDEX)) {
             return parseCreateIndex(tokens, parentNode);
+        } else if (tokens.matches(STMT_CREATE_VIEW) || tokens.matches(STMT_CREATE_OR_REPLACE_VIEW)
+                || tokens.matches(STMT_CREATE_FORCE_VIEW) || tokens.matches(STMT_CREATE_OR_REPLACE_FORCE_VIEW)
+                || tokens.matches(STMT_CREATE_NO_FORCE_VIEW) || tokens.matches(STMT_CREATE_OR_REPLACE_NO_FORCE_VIEW)) {
+            return parseCreateViewStatement(tokens, parentNode);
+            
         } else if (tokens.matches(STMT_CREATE_CLUSTER)) {
             return parseCreateClusterStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_CONTEXT)) {
@@ -1203,11 +1208,19 @@ public class OracleDdlParser extends StandardDdlParser
 
         String stmtType = "CREATE";
         tokens.consume("CREATE");
+
+        boolean isOrReplace = false;
+        boolean isNoForce = false;
+        boolean isForce = false;
         if (tokens.canConsume("OR", "REPLACE")) {
+            isOrReplace = true;
             stmtType = stmtType + SPACE + "OR REPLACE";
-        } else if (tokens.canConsume("NO", "FORCE")) {
+        } 
+        if (tokens.canConsume("NO", "FORCE")) {
+            isNoForce = true;
             stmtType = stmtType + SPACE + "NO FORCE";
         } else if (tokens.canConsume("FORCE")) {
+            isForce = true;
             stmtType = stmtType + SPACE + "FORCE";
         }
 
@@ -1217,6 +1230,16 @@ public class OracleDdlParser extends StandardDdlParser
         String name = parseName(tokens);
 
         AstNode createViewNode = nodeFactory().node(name, parentNode, TYPE_CREATE_VIEW_STATEMENT);
+        
+        if(isOrReplace) {
+            createViewNode.setProperty(OR_REPLACE, true);
+        }
+        if(isNoForce) {
+            createViewNode.setProperty(NO_FORCE, true);
+        }
+        if(isForce) {
+            createViewNode.setProperty(FORCE, true);
+        }
 
         // CONSUME COLUMNS
         parseColumnNameList(tokens, createViewNode, TYPE_COLUMN_REFERENCE);
