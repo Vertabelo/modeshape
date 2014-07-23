@@ -25,6 +25,8 @@ package org.modeshape.sequencer.ddl;
 
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.Namespace.PREFIX;
 
+import org.modeshape.sequencer.ddl.node.AstNode;
+
 /**
  * Lexicon for DDL concepts.
  */
@@ -121,7 +123,7 @@ public class StandardDdlLexicon {
     public static final String TYPE_ADD_COLUMN_DEFINITION = PREFIX + ":addColumnDefinition";
     public static final String TYPE_DROP_TABLE_CONSTRAINT_DEFINITION = PREFIX + ":dropTableConstraintDefinition";
     public static final String TYPE_ADD_TABLE_CONSTRAINT_DEFINITION = PREFIX + ":addTableConstraintDefinition";
-
+    
     public static final String TYPE_PROBLEM = PREFIX + ":ddlProblem";
     public static final String TYPE_COLUMN_DEFINITION = PREFIX + ":columnDefinition";
     public static final String TYPE_COLUMN_REFERENCE = PREFIX + ":columnReference";

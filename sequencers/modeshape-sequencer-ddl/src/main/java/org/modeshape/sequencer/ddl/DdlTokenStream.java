@@ -328,166 +328,170 @@ public class DdlTokenStream extends TokenStream {
         @Override
         public void tokenize( CharacterStream input,
                               Tokens tokens ) throws ParsingException {
-            int startIndex;
-            int endIndex;
             while (input.hasNext()) {
                 char c = input.next();
-                switch (c) {
-                    case ' ':
-                    case '\t':
-                    case '\n':
-                    case '\r':
-                        // Just skip these whitespace characters ...
-                        break;
-                    // ==============================================================================================
-                    // DDL Comments token = "--"
-                    // ==============================================================================================
-                    case '-': {
-                        startIndex = input.index();
-                        Position startPosition = input.position(startIndex);
-                        if (input.isNext('-')) {
-                            // -- END OF LINE comment ...
-                            boolean foundLineTerminator = false;
-                            while (input.hasNext()) {
-                                c = input.next();
-                                if (c == '\n' || c == '\r') {
-                                    foundLineTerminator = true;
-                                    break;
-                                }
+                handleInputCharacter(c, tokens, input);
+            }
+        }
+
+        protected void handleInputCharacter(char c, Tokens tokens, CharacterStream input) {
+            int startIndex;
+            int endIndex;
+            switch (c) {
+                case ' ':
+                case '\t':
+                case '\n':
+                case '\r':
+                    // Just skip these whitespace characters ...
+                    break;
+                // ==============================================================================================
+                // DDL Comments token = "--"
+                // ==============================================================================================
+                case '-': {
+                    startIndex = input.index();
+                    Position startPosition = input.position(startIndex);
+                    if (input.isNext('-')) {
+                        // -- END OF LINE comment ...
+                        boolean foundLineTerminator = false;
+                        while (input.hasNext()) {
+                            c = input.next();
+                            if (c == '\n' || c == '\r') {
+                                foundLineTerminator = true;
+                                break;
                             }
-                            endIndex = input.index(); // the token won't include the '\n' or '\r' character(s)
-                            if (!foundLineTerminator) ++endIndex; // must point beyond last char
-                            if (c == '\r' && input.isNext('\n')) input.next();
-
-                            // Check for PARSER_ID
-
-                            if (useComments) {
-                                tokens.addToken(startPosition, startIndex, endIndex, COMMENT);
-                            }
-
-                        } else {
-                            // just a regular dash ...
-                            tokens.addToken(startPosition, startIndex, startIndex + 1, SYMBOL);
                         }
-                        break;
+                        endIndex = input.index(); // the token won't include the '\n' or '\r' character(s)
+                        if (!foundLineTerminator) ++endIndex; // must point beyond last char
+                        if (c == '\r' && input.isNext('\n')) input.next();
+
+                        // Check for PARSER_ID
+
+                        if (useComments) {
+                            tokens.addToken(startPosition, startIndex, endIndex, COMMENT);
+                        }
+
+                    } else {
+                        // just a regular dash ...
+                        tokens.addToken(startPosition, startIndex, startIndex + 1, SYMBOL);
                     }
-                        // ==============================================================================================
-                    case '(':
-                    case ')':
-                    case '{':
-                    case '}':
-                    case '*':
-                    case ',':
-                    case ';':
-                    case '+':
-                    case '%':
-                    case '?':
-                    case '$':
-                    case '[':
-                    case ']':
-                    case '!':
-                    case '<':
-                    case '>':
-                    case '|':
-                    case '=':
-                    case ':':
-                        tokens.addToken(input.position(input.index()), input.index(), input.index() + 1, SYMBOL);
-                        break;
-                    case '.':
-                        tokens.addToken(input.position(input.index()), input.index(), input.index() + 1, DECIMAL);
-                        break;
-                    case '\"':
-                        startIndex = input.index();
-                        Position startingPosition = input.position(startIndex);
-                        boolean foundClosingQuote = false;
-                        while (input.hasNext()) {
-                            c = input.next();
-                            if (c == '\\' && input.isNext('"')) {
-                                c = input.next(); // consume the ' character since it is escaped
-                            } else if (c == '"') {
-                                foundClosingQuote = true;
-                                break;
-                            }
-                        }
-                        if (!foundClosingQuote) {
-                            String msg = CommonI18n.noMatchingDoubleQuoteFound.text(startingPosition.getLine(),
-                                                                                    startingPosition.getColumn());
-                            throw new ParsingException(startingPosition, msg);
-                        }
-                        endIndex = input.index() + 1; // beyond last character read
-                        tokens.addToken(startingPosition, startIndex, endIndex, DOUBLE_QUOTED_STRING);
-                        break;
-                    case '\u2019': // '’':
-                    case '\'':
-                        char quoteChar = c;
-                        startIndex = input.index();
-                        startingPosition = input.position(startIndex);
-                        foundClosingQuote = false;
-                        while (input.hasNext()) {
-                            c = input.next();
-                            if (c == '\\' && input.isNext(quoteChar)) {
-                                c = input.next(); // consume the ' character since it is escaped
-                            } else if (c == quoteChar) {
-                                foundClosingQuote = true;
-                                break;
-                            }
-                        }
-                        if (!foundClosingQuote) {
-                            String msg = CommonI18n.noMatchingSingleQuoteFound.text(startingPosition.getLine(),
-                                                                                    startingPosition.getColumn());
-                            throw new ParsingException(startingPosition, msg);
-                        }
-                        endIndex = input.index() + 1; // beyond last character read
-                        tokens.addToken(startingPosition, startIndex, endIndex, SINGLE_QUOTED_STRING);
-                        break;
-                    case '/':
-                        startIndex = input.index();
-                        startingPosition = input.position(startIndex);
-                        if (input.isNext('/')) {
-                            // End-of-line comment ...
-                            boolean foundLineTerminator = false;
-                            while (input.hasNext()) {
-                                c = input.next();
-                                if (c == '\n' || c == '\r') {
-                                    foundLineTerminator = true;
-                                    break;
-                                }
-                            }
-                            endIndex = input.index(); // the token won't include the '\n' or '\r' character(s)
-                            if (!foundLineTerminator) ++endIndex; // must point beyond last char
-                            if (c == '\r' && input.isNext('\n')) input.next();
-                            if (useComments) {
-                                tokens.addToken(startingPosition, startIndex, endIndex, COMMENT);
-                            }
-
-                        } else if (input.isNext('*')) {
-                            // Multi-line comment ...
-                            while (input.hasNext() && !input.isNext('*', '/')) {
-                                c = input.next();
-                            }
-                            if (input.hasNext()) input.next(); // consume the '*'
-                            if (input.hasNext()) input.next(); // consume the '/'
-
-                            endIndex = input.index() + 1; // the token will include the '/' and '*' characters
-                            if (useComments) {
-                                tokens.addToken(startingPosition, startIndex, endIndex, COMMENT);
-                            }
-
-                        } else {
-                            // just a regular slash ...
-                            tokens.addToken(startingPosition, startIndex, startIndex + 1, SYMBOL);
-                        }
-                        break;
-                    default:
-                        startIndex = input.index();
-                        Position startPosition = input.position(startIndex);
-                        // Read until another whitespace/symbol/decimal/slash is found
-                        while (input.hasNext() && !(input.isNextWhitespace() || input.isNextAnyOf("/.-(){}*,;+%?$[]!<>|=:"))) {
-                            c = input.next();
-                        }
-                        endIndex = input.index() + 1; // beyond last character that was included
-                        tokens.addToken(startPosition, startIndex, endIndex, WORD);
+                    break;
                 }
+                    // ==============================================================================================
+                case '(':
+                case ')':
+                case '{':
+                case '}':
+                case '*':
+                case ',':
+                case ';':
+                case '+':
+                case '%':
+                case '?':
+                case '$':
+                case '[':
+                case ']':
+                case '!':
+                case '<':
+                case '>':
+                case '|':
+                case '=':
+                case ':':
+                    tokens.addToken(input.position(input.index()), input.index(), input.index() + 1, SYMBOL);
+                    break;
+                case '.':
+                    tokens.addToken(input.position(input.index()), input.index(), input.index() + 1, DECIMAL);
+                    break;
+                case '\"':
+                    startIndex = input.index();
+                    Position startingPosition = input.position(startIndex);
+                    boolean foundClosingQuote = false;
+                    while (input.hasNext()) {
+                        c = input.next();
+                        if (c == '\\' && input.isNext('"')) {
+                            c = input.next(); // consume the ' character since it is escaped
+                        } else if (c == '"') {
+                            foundClosingQuote = true;
+                            break;
+                        }
+                    }
+                    if (!foundClosingQuote) {
+                        String msg = CommonI18n.noMatchingDoubleQuoteFound.text(startingPosition.getLine(),
+                                                                                startingPosition.getColumn());
+                        throw new ParsingException(startingPosition, msg);
+                    }
+                    endIndex = input.index() + 1; // beyond last character read
+                    tokens.addToken(startingPosition, startIndex, endIndex, DOUBLE_QUOTED_STRING);
+                    break;
+                case '\u2019': // '’':
+                case '\'':
+                    char quoteChar = c;
+                    startIndex = input.index();
+                    startingPosition = input.position(startIndex);
+                    foundClosingQuote = false;
+                    while (input.hasNext()) {
+                        c = input.next();
+                        if (c == '\\' && input.isNext(quoteChar)) {
+                            c = input.next(); // consume the ' character since it is escaped
+                        } else if (c == quoteChar) {
+                            foundClosingQuote = true;
+                            break;
+                        }
+                    }
+                    if (!foundClosingQuote) {
+                        String msg = CommonI18n.noMatchingSingleQuoteFound.text(startingPosition.getLine(),
+                                                                                startingPosition.getColumn());
+                        throw new ParsingException(startingPosition, msg);
+                    }
+                    endIndex = input.index() + 1; // beyond last character read
+                    tokens.addToken(startingPosition, startIndex, endIndex, SINGLE_QUOTED_STRING);
+                    break;
+                case '/':
+                    startIndex = input.index();
+                    startingPosition = input.position(startIndex);
+                    if (input.isNext('/')) {
+                        // End-of-line comment ...
+                        boolean foundLineTerminator = false;
+                        while (input.hasNext()) {
+                            c = input.next();
+                            if (c == '\n' || c == '\r') {
+                                foundLineTerminator = true;
+                                break;
+                            }
+                        }
+                        endIndex = input.index(); // the token won't include the '\n' or '\r' character(s)
+                        if (!foundLineTerminator) ++endIndex; // must point beyond last char
+                        if (c == '\r' && input.isNext('\n')) input.next();
+                        if (useComments) {
+                            tokens.addToken(startingPosition, startIndex, endIndex, COMMENT);
+                        }
+
+                    } else if (input.isNext('*')) {
+                        // Multi-line comment ...
+                        while (input.hasNext() && !input.isNext('*', '/')) {
+                            c = input.next();
+                        }
+                        if (input.hasNext()) input.next(); // consume the '*'
+                        if (input.hasNext()) input.next(); // consume the '/'
+
+                        endIndex = input.index() + 1; // the token will include the '/' and '*' characters
+                        if (useComments) {
+                            tokens.addToken(startingPosition, startIndex, endIndex, COMMENT);
+                        }
+
+                    } else {
+                        // just a regular slash ...
+                        tokens.addToken(startingPosition, startIndex, startIndex + 1, SYMBOL);
+                    }
+                    break;
+                default:
+                    startIndex = input.index();
+                    Position startPosition = input.position(startIndex);
+                    // Read until another whitespace/symbol/decimal/slash is found
+                    while (input.hasNext() && !(input.isNextWhitespace() || input.isNextAnyOf("/.-(){}*,;+%?$[]!<>|=:"))) {
+                        c = input.next();
+                    }
+                    endIndex = input.index() + 1; // beyond last character that was included
+                    tokens.addToken(startPosition, startIndex, endIndex, WORD);
             }
         }
     }

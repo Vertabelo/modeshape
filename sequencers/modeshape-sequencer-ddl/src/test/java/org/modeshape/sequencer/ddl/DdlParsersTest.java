@@ -32,8 +32,10 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_SCHEMA_
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_SCHEMA_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_PROBLEM;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.modeshape.common.text.ParsingException;
@@ -252,5 +254,5 @@ public class DdlParsersTest extends DdlParserTestHelper {
         final String ddl = getFileContent(DDL_TEST_FILE_PATH + "dialect/oracle/oracle_test_statements_3.ddl");
         this.parsers.parseUsing(ddl, this.parsers.getParsers().iterator().next().getId(), "bogusId", (String[])null);
     }
-
+    
 }

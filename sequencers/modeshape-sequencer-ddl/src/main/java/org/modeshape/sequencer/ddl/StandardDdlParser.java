@@ -131,7 +131,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         // Create the state of this parser ...
         problems.clear();
         boolean includeComments = true;
-        DdlTokenStream tokens = new DdlTokenStream(ddl, DdlTokenStream.ddlTokenizer(includeComments), false);
+        DdlTokenStream tokens = new DdlTokenStream(ddl, ddlTokenizer(includeComments), false);
         initializeTokenStream(tokens);
         tokens.start();
 
@@ -149,6 +149,10 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
         // Return the tokens so parse(...) won't have to re-tokenize ...
         return tokens;
+    }
+
+    protected DdlTokenizer ddlTokenizer(boolean includeComments) {
+        return DdlTokenStream.ddlTokenizer(includeComments);
     }
 
     protected void computeScore( DdlTokenStream tokens,
@@ -194,7 +198,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         } else {
             // Need to create the token stream ...
             boolean includeComments = false;
-            tokens = new DdlTokenStream(ddl, DdlTokenStream.ddlTokenizer(includeComments), false);
+            tokens = new DdlTokenStream(ddl, ddlTokenizer(includeComments), false);
             initializeTokenStream(tokens);
             tokens.start();
         }
@@ -1270,7 +1274,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
         String tableElementString = getTableElementsString(tokens, false);
 
-        DdlTokenStream localTokens = new DdlTokenStream(tableElementString, DdlTokenStream.ddlTokenizer(false), false);
+        DdlTokenStream localTokens = new DdlTokenStream(tableElementString, ddlTokenizer(false), false);
 
         localTokens.start();
 

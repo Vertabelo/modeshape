@@ -1,0 +1,124 @@
+/*
+ * ModeShape (http://www.modeshape.org)
+ * See the COPYRIGHT.txt file distributed with this work for information
+ * regarding copyright ownership.  Some portions may be licensed
+ * to Red Hat, Inc. under one or more contributor license agreements.
+ * See the AUTHORS.txt file in the distribution for a full listing of 
+ * individual contributors. 
+ *
+ * ModeShape is free software. Unless otherwise indicated, all code in ModeShape
+ * is licensed to you under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * ModeShape is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+ 
+ //------------------------------------------------------------------------------
+// N A M E S P A C E S
+//------------------------------------------------------------------------------
+<jcr='http://www.jcp.org/jcr/1.0'>
+<nt='http://www.jcp.org/jcr/nt/1.0'>
+<mix='http://www.jcp.org/jcr/mix/1.0'>
+<ddl='http://www.modeshape.org/ddl/1.0'>
+<mysqlddl='http://www.modeshape.org/ddl/mysql/1.0'>
+
+// ============================================================================
+// OPERANDS
+// ============================================================================
+
+[mysqlddl:constraintOperand] mixin
+	- mysqlddl:setNull (STRING)
+	- mysqlddl:noAction (STRING)
+    - mysqlddl:match (STRING) < 'FULL', 'PARTIAL, 'SIMPLE'
+    
+[mysqlddl:commentOperand] mixin
+  - mysqlddl:comment (STRING)
+  
+[mysqlddl:firstAfterOperand] mixin
+  - mysqlddl:first (boolean)
+  - mysqlddl:after (STRING)
+	    
+    
+// =============================================================================
+// COLUMN
+// =============================================================================
+[mysqlddl:columnDefinition] > ddl:columnDefinition, mysqlddl:commentOperand, mysqlddl:firstAfterOperand mixin
+  - mysqlddl:columnFormat (STRING) < 'FIXED', 'DYNAMIC', 'DEFAULT'
+  - mysqlddl:storage (STRING) < 'DISK', 'MEMORY', 'DEFAULT'
+  - mysqlddl:autoIncrement (boolean)
+  
+[mysqlddl:changeColumn] > mysqlddl:columnDefinition mixin
+	- mysqlddl:oldName (STRING) 
+[mysqlddl:modifyColumn] > mysqlddl:columnDefinition mixin
+
+[mysqlddl:columnReference] > ddl:columnReference mixin
+	- mysqlddl:indexOrder (STRING) < 'ASC', 'DESC'
+
+// ============================================================================= 
+// CREATE  
+// =============================================================================
+[mysqlddl:createTableStatement  > ddl:createTableStatement, mysqlddl:commentOperand mixin
+	- mysqlddl:comment (STRING)
+	- mysqlddl:like (STRING)
+	- mysqlddl:engine (STRING)
+	- mysqlddl:characterSet (STRING)
+	- mysqlddl:collate (STRING)
+	- mysqlddl:tablespace (STRING)
+	
+	
+[mysqlddl:createIndexStatement]  > ddl:creatable, ddl:statement, mysqlddl:commentOperand mixin
+	- mysqlddl:online (STRING) < 'ONLINE', 'OFFLINE'
+	- mysqlddl:type (STRING) < 'UNIQUE', 'SPATIAL', 'FULLTEXT'
+	- mysqlddl:tableName (STRING)
+	- mysqlddl:keyBlockSize (STRING)
+	- mysqlddl:using (STRING) < 'BTREE', 'HASH'
+	- mysqlddl:with (STRING)
+	+ * (ddl:columnReference)
+
+// =============================================================================
+// table constraints
+// =============================================================================	
+[mysqlddl:addTableConstraintDefinition] > ddl:addTableConstraintDefinition, mysqlddl:constraintOperand
+[mysqlddl:tableConstraint] > ddl:tableConstraint,  mysqlddl:constraintOperand
+
+// =============================================================================
+// DROP STATEMENTS
+// =============================================================================
+[mysqlddl:dropPrimaryKey] mixin 	
+[mysqlddl:dropIndex] mixin
+[mysqlddl:dropForeignKey] mixin
+
+// =============================================================================
+// ALTER
+// =============================================================================
+
+[mysqlddl:dropPrimaryKey] mixin
+
+[mysqlddl:dropIndex] mixin
+
+[mysqlddl:dropForeignKey] mixin
+
+[mysqlddl:changeColumn] > mysqlddl:firstAfterOperand mixin
+	- mysqlddl:oldName (STRING)
+
+[mysqlddl:modifyColumn] > mysqlddl:firstAfterOperand mixin
+
+[mysqlddl:alterTableStatement] > ddl.alterTableStatement mixin
+	+ * (ddl:columnDefinition)
+	+ * (mysqlddl:dropPrimaryKey)
+	+ * (mysqlddl:dropIndex)
+	+ * (mysqlddl:dropForeignKey)
+	+ * (ddl:dropColumnDefinition)
+	+ * (mysqlddl:modifyColumn)
+	+ * (mysqlddl:changeColumn)
+	+ * (mysqlddl:renameTableStatement)
+	+ * (ddl:alterColumnDefinition)

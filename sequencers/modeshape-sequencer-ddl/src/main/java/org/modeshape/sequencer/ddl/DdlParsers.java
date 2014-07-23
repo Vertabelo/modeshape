@@ -38,6 +38,7 @@ import org.modeshape.common.text.Position;
 import org.modeshape.common.util.CheckArg;
 import org.modeshape.jcr.api.JcrConstants;
 import org.modeshape.sequencer.ddl.dialect.derby.DerbyDdlParser;
+import org.modeshape.sequencer.ddl.dialect.mysql.MySqlDdlParser;
 import org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlParser;
 import org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlParser;
 import org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlParser;
@@ -98,6 +99,7 @@ public class DdlParsers {
         parsers.add(new PostgresDdlParser());
         parsers.add(new TeiidDdlParser()); // FIXME to remove
         parsers.add(new SqlServerDdlParser());
+        parsers.add(new MySqlDdlParser());
         BUILTIN_PARSERS = Collections.unmodifiableList(parsers);
     }
 
