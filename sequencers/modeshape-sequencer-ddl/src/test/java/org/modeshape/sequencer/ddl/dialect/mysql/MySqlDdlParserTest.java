@@ -1149,4 +1149,11 @@ public class MySqlDdlParserTest extends DdlParserTestHelper {
         
         assertThat(tableReference.getName(), is("users"));
     }
+    
+    @Test
+    public void parseAlterTableAddForeignKey() {
+        String content = "ALTER TABLE purchase ADD CONSTRAINT client_order FOREIGN KEY client_order (client_id) REFERENCES client (id);";
+        
+        assertScoreAndParse(content, null, 1);
+    }
 }

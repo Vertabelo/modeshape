@@ -770,6 +770,10 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
             AstNode constraintNode = nodeFactory().node(fk_name, tableNode, mixinType);
 
             constraintNode.setProperty(CONSTRAINT_TYPE, FOREIGN_KEY);
+            
+            if (! tokens.matches(L_PAREN)) {
+                String indexName = parseName(tokens);
+            }
 
             // CONSUME COLUMNS
             parseIndexColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
