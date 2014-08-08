@@ -41,6 +41,7 @@ import org.modeshape.sequencer.ddl.dialect.derby.DerbyDdlParser;
 import org.modeshape.sequencer.ddl.dialect.mysql.MySqlDdlParser;
 import org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlParser;
 import org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlParser;
+import org.modeshape.sequencer.ddl.dialect.sqlite.SqliteDdlParser;
 import org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlParser;
 import org.modeshape.sequencer.ddl.dialect.teiid.TeiidDdlParser;
 import org.modeshape.sequencer.ddl.node.AstNode;
@@ -100,6 +101,7 @@ public class DdlParsers {
         parsers.add(new TeiidDdlParser()); // FIXME to remove
         parsers.add(new SqlServerDdlParser());
         parsers.add(new MySqlDdlParser());
+        parsers.add(new SqliteDdlParser());
         BUILTIN_PARSERS = Collections.unmodifiableList(parsers);
     }
 
