@@ -377,20 +377,20 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
     boolean isCreateViewStatement(DdlTokenStream tokens) {
         return tokens.matches(DdlConstants.StatementStartPhrases.STMT_CREATE_VIEW)
                 || tokens.matches(DdlConstants.StatementStartPhrases.STMT_CREATE_OR_REPLACE_VIEW)
-                || tokens.matches("CREATE", "ALGORITH", "=", DdlTokenStream.ANY_VALUE,  "VIEW")
-                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITH",  "=", DdlTokenStream.ANY_VALUE,  "VIEW") 
+                || tokens.matches("CREATE", "ALGORITHM", "=", DdlTokenStream.ANY_VALUE,  "VIEW")
+                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITHM",  "=", DdlTokenStream.ANY_VALUE,  "VIEW") 
                 || tokens.matches("CREATE", "DEFINER", "=", DdlTokenStream.ANY_VALUE, "VIEW")
                 || tokens.matches("CREATE", "OR", "REPLACE", "DEFINER", "=", DdlTokenStream.ANY_VALUE, "VIEW") 
                 || tokens.matches("CREATE", "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW")
                 || tokens.matches("CREATE", "OR", "REPLACE", "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW")
-                || tokens.matches("CREATE", "ALGORITH", "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE,   "VIEW")
-                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITH",  "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE,  "VIEW")
-                || tokens.matches("CREATE", "ALGORITH", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE,  "VIEW")
-                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITH",  "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW") 
+                || tokens.matches("CREATE", "ALGORITHM", "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE,   "VIEW")
+                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITHM",  "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE,  "VIEW")
+                || tokens.matches("CREATE", "ALGORITHM", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE,  "VIEW")
+                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITHM",  "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW") 
                 || tokens.matches("CREATE", "DEFINER", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW")
                 || tokens.matches("CREATE", "OR", "REPLACE", "DEFINER", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW")
-                || tokens.matches("CREATE", "ALGORITH", "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE,  "VIEW")
-                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITH",  "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW");
+                || tokens.matches("CREATE", "ALGORITHM", "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE,  "VIEW")
+                || tokens.matches("CREATE", "OR", "REPLACE", "ALGORITHM",  "=", DdlTokenStream.ANY_VALUE, "DEFINER", "=", DdlTokenStream.ANY_VALUE, "SQL", "SECURITY ", DdlTokenStream.ANY_VALUE, "VIEW");
     }
 
     private AstNode parseCreateIndexStatement(DdlTokenStream tokens, AstNode parentNode) {

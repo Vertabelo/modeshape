@@ -58,7 +58,7 @@ public class MySqlDdlParserTest extends DdlParserTestHelper {
     @Before
     public void beforeEach() {
         parser = new MySqlDdlParser();
-        setPrintToConsole(true);
+        setPrintToConsole(false);
         parser.setTestMode(isPrintToConsole());
         parser.setDoUseTerminator(true);
         rootNode = parser.nodeFactory().node("ddlRootNode");
