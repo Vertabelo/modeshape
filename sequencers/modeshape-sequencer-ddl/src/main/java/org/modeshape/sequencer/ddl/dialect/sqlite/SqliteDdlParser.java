@@ -407,22 +407,25 @@ public class SqliteDdlParser extends StandardDdlParser
         
         String colName = columnNode.getName();
 
-        if (tokens.canConsume("NULL")
+        if (tokens.matches("NULL")
                 || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "NULL")) {
             if(tokens.canConsume("CONSTRAINT")) {
                 parseName(tokens); // CONSTRAINT NAME
             }
+            tokens.consume("NULL");
             
             columnNode.setProperty(NULLABLE, "NULL");
             parseConflictClause(tokens, null);
             result = true;
             
-        } else if (tokens.canConsume("NOT", "NULL")
+        } else if (tokens.matches("NOT", "NULL")
                 || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "NOT", "NULL")) {
             result = true;
             if(tokens.canConsume("CONSTRAINT")) {
                 parseName(tokens); // CONSTRAINT NAME
             }
+            tokens.consume("NOT");
+            tokens.consume("NULL");
             
             columnNode.setProperty(NULLABLE, "NOT NULL");
             parseConflictClause(tokens, null);
@@ -452,6 +455,7 @@ public class SqliteDdlParser extends StandardDdlParser
                 || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "PRIMARY", "KEY")) {
             result = true;
             String pk_name = "PK_1";
+            
             if(tokens.canConsume("CONSTRAINT")) {
                 pk_name = parseName(tokens);
             }
