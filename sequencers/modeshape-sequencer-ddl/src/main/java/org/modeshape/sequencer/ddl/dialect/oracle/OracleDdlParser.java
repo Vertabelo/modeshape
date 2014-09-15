@@ -2099,7 +2099,7 @@ public class OracleDdlParser extends StandardDdlParser
                 if (tokens.matches(L_PAREN)) {
                     consume(tokens, dataType, false, L_PAREN);
                     
-                    int precision = (int)parseLong(tokens, dataType);
+                    int precision = (int)parseLongOrAsterisk(tokens, dataType);
                     dataType.setPrecision(precision);
                     
                     if (canConsume(tokens, dataType, false, COMMA)) {
@@ -2124,6 +2124,14 @@ public class OracleDdlParser extends StandardDdlParser
             return dataType;
         }
 
+
+        private long parseLongOrAsterisk(DdlTokenStream tokens, DataType dataType) {
+            if (tokens.matches("*")) {
+                tokens.consume("*");
+                return 38;
+            }
+            return parseLong(tokens, dataType);
+        }
 
         /**
          * Because Oracle has an additional option on the CHAR datatype, we need to override the super method, check for CHAR type
