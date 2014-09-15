@@ -1648,29 +1648,25 @@ public class OracleDdlParser extends StandardDdlParser
             
             if(tokens.canConsume("INCREMENT", "BY")) {
                 String value = tokens.consume();
-                long longValue = Long.parseLong(value);
-                sequenceNode.setProperty(SEQ_INCREMENT_BY, longValue);
+                sequenceNode.setProperty(SEQ_INCREMENT_BY, value);
                 
             } else if(tokens.canConsume("START", "WITH")) {
                 String value = tokens.consume();
-                long longValue = Long.parseLong(value);
-                sequenceNode.setProperty(SEQ_START_WITH, longValue);
+                sequenceNode.setProperty(SEQ_START_WITH, value);
                 
             } else if(tokens.canConsume("NOMAXVALUE")) {
                 sequenceNode.setProperty(SEQ_NO_MAX_VALUE, true);
                 
             } else if(tokens.canConsume("MAXVALUE")) {
                 String value = tokens.consume();
-                long longValue = Long.parseLong(value);
-                sequenceNode.setProperty(SEQ_MAX_VALUE, longValue);
+                sequenceNode.setProperty(SEQ_MAX_VALUE, value);
                 
             } else if(tokens.canConsume("NOMINVALUE")) {
                 sequenceNode.setProperty(SEQ_NO_MIN_VALUE, true);
                 
             } else if(tokens.canConsume("MINVALUE")) {
                 String value = tokens.consume();
-                long longValue = Long.parseLong(value);
-                sequenceNode.setProperty(SEQ_MIN_VALUE, longValue);
+                sequenceNode.setProperty(SEQ_MIN_VALUE, value);
                 
             } else if(tokens.canConsume("NOCYCLE")) {
                 sequenceNode.setProperty(SEQ_CYCLE, false);
@@ -1683,8 +1679,7 @@ public class OracleDdlParser extends StandardDdlParser
                 
             } else if(tokens.canConsume("CACHE")) {
                 String value = tokens.consume();
-                long longValue = Long.parseLong(value);
-                sequenceNode.setProperty(SEQ_CACHE, longValue);
+                sequenceNode.setProperty(SEQ_CACHE, value);
                 
             } else if(tokens.canConsume("NOORDER")) {
                 sequenceNode.setProperty(SEQ_ORDER, false);
@@ -2128,6 +2123,7 @@ public class OracleDdlParser extends StandardDdlParser
 
             return dataType;
         }
+
 
         /**
          * Because Oracle has an additional option on the CHAR datatype, we need to override the super method, check for CHAR type
