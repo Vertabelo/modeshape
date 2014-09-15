@@ -2115,8 +2115,13 @@ public class OracleDdlParser extends StandardDdlParser
 
             } else if (tokens.matches(OracleDataTypes.DTYPE_INTERVAL_DAY)) {
                 // INTERVAL DAY (day_precision) TO SECOND (fractional_seconds_precision)
+            } else if (tokens.matches(OracleDataTypes.DTYPE_URITYPE)) {
+                dataType = new DataType("URITYPE");
+                typeName = consume(tokens, dataType, true, OracleDataTypes.DTYPE_URITYPE);
+            } else if (tokens.matches(OracleDataTypes.DTYPE_URITYPE_QUOTED)) {
+                dataType = new DataType("URITYPE");
+                typeName = consume(tokens, dataType, true, OracleDataTypes.DTYPE_URITYPE_QUOTED);
             }
-
             if (dataType == null) {
                 dataType = super.parseCustomType(tokens);
             }

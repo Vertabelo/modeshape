@@ -281,15 +281,19 @@ public interface OracleDdlConstants extends DdlConstants {
 		static final String[] DTYPE_BFILE = {"BFILE"};
 		static final String[] DTYPE_INTERVAL_YEAR = {"INTERVAL", "YEAR"}; //INTERVAL YEAR (year_precision) TO MONTH
 		static final String[] DTYPE_INTERVAL_DAY = {"INTERVAL", "DAY"}; //	INTERVAL DAY (day_precision) TO SECOND (fractional_seconds_precision)
+		static final String[] DTYPE_URITYPE = {"URITYPE"};
+		static final String[] DTYPE_URITYPE_QUOTED = {"\"URITYPE\""};
 	
 	  	static final List<String[]> CUSTOM_DATATYPE_START_PHRASES = 
 	  		Arrays.asList(DTYPE_CHAR_ORACLE, DTYPE_VARCHAR2, DTYPE_NVARCHAR2, DTYPE_NUMBER, DTYPE_BINARY_FLOAT, DTYPE_BINARY_DOUBLE,
                             DTYPE_LONG, DTYPE_LONG_RAW, DTYPE_RAW, DTYPE_BLOB, DTYPE_CLOB, DTYPE_NCLOB, DTYPE_BFILE, DTYPE_INTERVAL_YEAR,
-                            DTYPE_INTERVAL_DAY);
+                            DTYPE_INTERVAL_DAY,
+                            DTYPE_URITYPE, DTYPE_URITYPE_QUOTED);
 		
 	  	static final List<String> CUSTOM_DATATYPE_START_WORDS = 
 	  		Arrays.asList("VARCHAR2", "NVARCHAR2", "NUMBER",
-                            "BINARY_FLOAT", "BINARY_DOUBLE", "LONG", "RAW", "BLOB", "CLOB", "NCLOB", "BFILE", "INTERVAL");
+                            "BINARY_FLOAT", "BINARY_DOUBLE", "LONG", "RAW", "BLOB", "CLOB", "NCLOB", "BFILE", "INTERVAL",
+                            "URITYPE", "\"URITYPE\"");
 	}
 
 	interface IndexTypes {

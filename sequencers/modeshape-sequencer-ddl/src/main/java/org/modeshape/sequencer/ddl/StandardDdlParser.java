@@ -2805,6 +2805,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 defaultValue = "NULL";
             } else if (tokens.canConsume(L_PAREN)) {
                 optionID = DEFAULT_ID_LITERAL;
+                
                 while (!tokens.canConsume(R_PAREN)) {
                     defaultValue = defaultValue + tokens.consume();
                 }
@@ -2826,6 +2827,15 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 // 1000.00 is valid
                 if (tokens.canConsume(".")) {
                     defaultValue = defaultValue + '.' + tokens.consume();
+                }
+                
+                // obsługa wywołań funkcji
+                if (tokens.canConsume(L_PAREN)) {
+                    defaultValue = defaultValue + L_PAREN;
+                    while (!tokens.canConsume(R_PAREN)) {
+                        defaultValue = defaultValue + tokens.consume();
+                    }
+                    defaultValue = defaultValue + R_PAREN;
                 }
             }
 
