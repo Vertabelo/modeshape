@@ -38,6 +38,7 @@ import org.modeshape.sequencer.ddl.DdlParserTestHelper;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 public class SqlServerDdlParserTest extends DdlParserTestHelper {
+    @SuppressWarnings("hiding")
     private static final String SPACE = DdlConstants.SPACE;
 
     public static final String DDL_FILE_PATH = "ddl/dialect/sqlserver/";
@@ -225,6 +226,28 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
+
+    @Test
+    public void shouldParseCreateTable_9() {
+        // zgłoszone przez klienta
+        printTest("shouldParseCreateTable_9");
+        String content = "CREATE TABLE [dbo].[tblApp](" +
+                "    [AppID] [int] IDENTITY(1,1) NOT NULL," +
+                "    [AppName] [varchar](50) NOT NULL," +
+                "    [DeveloperID] [int] NOT NULL," +
+                "    [CreatedOn] [datetime] NOT NULL," +
+                "    [CreatedBy] [int] NOT NULL," +
+                "    [UpdatedOn] [datetime] NOT NULL," +
+                "    [UpdatedBy] [int] NOT NULL," +
+                "    CONSTRAINT [PK_tblApp] PRIMARY KEY CLUSTERED" +
+                "    (" +
+                "    [AppID] ASC" +
+                "    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]" +
+                "    ) ON [PRIMARY]";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
     
 
     @Test
@@ -324,6 +347,33 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         		"     ON DELETE  SET NULL" +
         		"     ON UPDATE  CASCADE" +
         		"     NOT FOR REPLICATION;";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_ALTER_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void shouldParseAlterTable_2() {
+        printTest("shouldParseAlterTable_2()");
+        String content = "ALTER TABLE [dbo].[tblApp] ADD CONSTRAINT [DF_tblApp_AppName] DEFAULT (space((0))) FOR [AppName]";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_ALTER_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void shouldParseAlterTable_3() {
+        printTest("shouldParseAlterTable_3()");
+        String content = "ALTER TABLE [dbo].[tblApp] ADD CONSTRAINT [DF_tblApp_DeveloperID] DEFAULT ((0)) FOR [DeveloperID]";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_ALTER_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void shouldParseAlterTable_4() {
+        printTest("shouldParseAlterTable_4()");
+        String content = "ALTER TABLE [dbo].[tblApp] ADD CONSTRAINT [DF_tblApp_CreatedOn] DEFAULT (getdate()) FOR [CreatedOn]";
         assertScoreAndParse(content, null, 1);
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_ALTER_TABLE_STATEMENT));

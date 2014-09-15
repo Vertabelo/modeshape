@@ -2392,9 +2392,8 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             result = false;
         } else {
             for (String dTypeStartWord : getDataTypeStartWords()) {
-                result = (tokens.matches(DdlTokenStream.ANY_VALUE, dTypeStartWord) || tokens.matches("COLUMN",
-                                                                                                     DdlTokenStream.ANY_VALUE,
-                                                                                                     dTypeStartWord));
+                result = (tokens.matches(DdlTokenStream.ANY_VALUE, dTypeStartWord) 
+                        || tokens.matches("COLUMN", DdlTokenStream.ANY_VALUE, dTypeStartWord));
                 if (result) {
                     break;
                 }

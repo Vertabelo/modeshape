@@ -25,37 +25,73 @@ package org.modeshape.sequencer.ddl.dialect.sqlserver;
 
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CHECK_SEARCH_CONDITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CONSTRAINT_TYPE;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_NAME;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NULLABLE;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ADD_TABLE_CONSTRAINT_DEFINITION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINITION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_CONSTRAINT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_NAME;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DROP_BEHAVIOR;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NEW_NAME;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NULLABLE;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ADD_TABLE_CONSTRAINT_DEFINITION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_REFERENCE;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_TABLE_CONSTRAINT_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_CONSTRAINT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_REFERENCE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
-import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.*;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.AS_FILETABLE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.CLUSTERED;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_FILESTREAM;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_IDENTITY;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_ROWGUIDCOL;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_SPARSE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.FILESTREAM_ON_CLAUSE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INCLUDE_COLUMNS;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_CLUSTERED;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_NONCLUSTERED;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NONCLUSTERED;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NOT_FOR_REPLICATION;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.ON_CLAUSE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_AS_DATA_TYPE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_CACHE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_CYCLE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_INCREMENT_BY;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_MAX_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_MIN_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_NO_CACHE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_NO_MAX_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_NO_MIN_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_START_WITH;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TEXTIMAGE_ON_CLAUSE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_BACKSLASH_TERMINATOR;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_SEQUENCE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_RENAME_COLUMN;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_RENAME_CONSTRAINT;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.UNIQUE_INDEX;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.VIEW_WITH_ATTRIBUTES;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.VIEW_WITH_CHECK_OPTION;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.WHERE_CLAUSE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.WITH_OPTIONS;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.modeshape.common.text.ParsingException;
 import org.modeshape.common.text.Position;
 import org.modeshape.common.text.TokenStream;
 import org.modeshape.sequencer.ddl.DdlParserProblem;
 import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
-import org.modeshape.sequencer.ddl.StandardDdlLexicon;
 import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
+import org.modeshape.sequencer.ddl.StandardDdlLexicon;
 import org.modeshape.sequencer.ddl.StandardDdlParser;
 import org.modeshape.sequencer.ddl.datatype.DataType;
 import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
@@ -218,35 +254,6 @@ public class SqlServerDdlParser extends StandardDdlParser
                 }
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.modeshape.sequencer.ddl.StandardDdlParser#consumeIdentifier(org.modeshape.sequencer.ddl.DdlTokenStream)
-     */
-    @Override
-    protected String consumeIdentifier( DdlTokenStream tokens ) throws ParsingException {
-        Position startPosition = tokens.nextPosition();
-        String id = super.consumeIdentifier(tokens);
-        Position nextPosition = tokens.nextPosition();
-
-        while (((nextPosition.getIndexInContent() - startPosition.getIndexInContent() - id.length()) == 0)) {
-            // allowed symbols in an identifier: underscore, dollar sign, pound sign, at sign
-            if (tokens.matches(DdlTokenizer.SYMBOL)) {
-                if (tokens.matches('$') || tokens.matches('#') || tokens.matches('@')) {
-                    id += tokens.consume(); // consume symbol
-                } else {
-                    break; // not a valid ID symbol
-                }
-            } else {
-                id += tokens.consume(); // consume text
-            }
-
-            nextPosition = tokens.nextPosition();
-        }
-
-        return id;
     }
     
     private boolean matchesComplexNode( AstNode node ) {
@@ -482,6 +489,54 @@ public class SqlServerDdlParser extends StandardDdlParser
     }
     
     @Override
+    protected boolean isTableConstraint( DdlTokenStream tokens ) throws ParsingException {
+        boolean result = false;
+
+        if ((tokens.matches("PRIMARY", "KEY"))
+                || (tokens.matches("FOREIGN", "KEY")) 
+                || (tokens.matches("UNIQUE"))
+                || (tokens.matches("CHECK"))) {
+            result = true;
+        } else if (tokens.matches("CONSTRAINT")) {
+            if (tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "UNIQUE")
+                    || tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "PRIMARY", "KEY")
+                    || tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "FOREIGN", "KEY")
+                    || tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "CHECK")
+                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "UNIQUE")
+                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "PRIMARY", "KEY")
+                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "FOREIGN", "KEY")
+                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "CHECK")) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+    
+    @Override
+    protected boolean isColumnDefinitionStart( DdlTokenStream tokens ) throws ParsingException {
+        boolean result = false;
+
+        if (isTableConstraint(tokens)) {
+            result = false;
+        } else {
+            for (String dTypeStartWord : getDataTypeStartWords()) {
+                result = (tokens.matches(DdlTokenStream.ANY_VALUE, dTypeStartWord) 
+                        || tokens.matches(DdlTokenStream.ANY_VALUE, "[", dTypeStartWord) 
+                        || tokens.matches("[", DdlTokenStream.ANY_VALUE, "]", dTypeStartWord)
+                        || tokens.matches("[", DdlTokenStream.ANY_VALUE, "]", "[", dTypeStartWord));
+                
+                if (result) {
+                    break;
+                }
+            }
+
+        }
+
+        return result;
+    }
+    
+    @Override
     protected AstNode parseCreateTableStatement( DdlTokenStream tokens,
                                                  AstNode parentNode ) throws ParsingException {
         assert tokens != null;
@@ -571,7 +626,8 @@ public class SqlServerDdlParser extends StandardDdlParser
         consumeComment(tokens);
 
         if (tokens.matches("UNIQUE") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "UNIQUE")) {
+                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "UNIQUE")
+                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "UNIQUE")) {
             String uc_name = "UC_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 uc_name = parseName(tokens); // UNIQUE CONSTRAINT NAME
@@ -591,7 +647,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             }
 
             // CONSUME COLUMNS
-            parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
+//            parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE); // FIXME ASC|DESC
+            parsePkOrUniqueColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
 
             parseConstraintAttributes(tokens, constraintNode);
             
@@ -600,7 +657,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             consumeComment(tokens);
             
         } else if (tokens.matches("PRIMARY", "KEY") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "PRIMARY", "KEY")) {
+                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "PRIMARY", "KEY")
+                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "PRIMARY", "KEY")) {
             String pk_name = "PK_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 pk_name = parseName(tokens);
@@ -619,7 +677,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             }
 
             // CONSUME COLUMNS
-            parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
+//            parseColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE); // FIXME ASC|DESC
+            parsePkOrUniqueColumnNameList(tokens, constraintNode, TYPE_COLUMN_REFERENCE);
 
             parseConstraintAttributes(tokens, constraintNode);
             
@@ -628,7 +687,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             consumeComment(tokens);
 
         } else if (tokens.matches("FOREIGN", "KEY")
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "FOREIGN", "KEY")) {
+                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "FOREIGN", "KEY")
+                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "FOREIGN", "KEY")) {
             String fk_name = "FK_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 fk_name = parseName(tokens);
@@ -656,7 +716,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             consumeComment(tokens);
             
         } else if (tokens.matches("CHECK") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "CHECK")) {
+                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "CHECK")
+                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "CHECK")) {
             String ck_name = "CHECK_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 ck_name = parseName(tokens);
@@ -672,6 +733,38 @@ public class SqlServerDdlParser extends StandardDdlParser
             
             String clause = consumeParenBoundedTokens(tokens, true);
             constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
+        }
+    }
+    
+    protected void parsePkOrUniqueColumnNameList( DdlTokenStream tokens,
+            AstNode parentNode,
+            String referenceType) {
+        if (tokens.matches(L_PAREN)) {
+            tokens.consume(L_PAREN);
+            
+            while (true) {
+                parsePkOrUniqueColumn(tokens, parentNode, referenceType);
+
+                if (!tokens.canConsume(COMMA)) {
+                    break;
+                }
+            }
+
+            tokens.consume(R_PAREN);
+        }
+    }
+
+    private void parsePkOrUniqueColumn(DdlTokenStream tokens, AstNode parentNode, String referenceType) {
+        String columnName = parseName(tokens);
+        AstNode columnNode = nodeFactory().node(columnName, parentNode, referenceType);
+        
+        if (tokens.matches(L_PAREN)) {
+            parseContentBetweenParens(tokens);
+        }
+        if (tokens.canConsume("ASC")) {
+            columnNode.setProperty(SqlServerDdlLexicon.INDEX_ORDER, "ASC");
+        } else if (tokens.canConsume("DESC")) {
+            columnNode.setProperty(SqlServerDdlLexicon.INDEX_ORDER, "DESC");
         }
     }
     
@@ -970,7 +1063,8 @@ public class SqlServerDdlParser extends StandardDdlParser
     
     @Override
     protected boolean parseDefaultClause(DdlTokenStream tokens, AstNode columnNode) throws ParsingException {
-        if(tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "DEFAULT")) {
+        if(tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "DEFAULT")
+                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "DEFAULT")) {
             // [ CONSTRAINT constraint_name ] DEFAULT constant_expression
             // doc: "To maintain compatibility with earlier versions of SQL Server, a constraint name can be assigned to a DEFAULT."
             tokens.consume("CONSTRAINT");
@@ -999,26 +1093,54 @@ public class SqlServerDdlParser extends StandardDdlParser
         assert tokens != null;
         assert parentNode != null;
 
-        if (tokens.matches("ALTER", "TABLE", TokenStream.ANY_VALUE, "ADD")) {
+        markStartOfStatement(tokens);
+
+        tokens.consume(ALTER, TABLE);
+        String tableName = parseName(tokens);
+
+        AstNode alterTableNode = nodeFactory().node(tableName, parentNode, TYPE_ALTER_TABLE_STATEMENT);
+
+        if (tokens.matches("ADD")) {
 
             // ALTER TABLE
             // ADD ( {column_definition | virtual_column_definition
             // [, column_definition | virtual_column_definition] ... } [ column_properties ]
 
-            markStartOfStatement(tokens);
-
-            tokens.consume(ALTER, TABLE);
-
-            String tableName = parseName(tokens);
-
-            AstNode alterTableNode = nodeFactory().node(tableName, parentNode, TYPE_ALTER_TABLE_STATEMENT);
-
             tokens.consume("ADD"); // FIXME MK "ALTER COLUMN", "DROP" and others...
-
-            // System.out.println("  >> PARSING ALTER STATEMENT >>  TABLE Name = " + tableName);
 
             if (isTableConstraint(tokens)) {
                 parseTableConstraint(tokens, alterTableNode, true);
+                
+            } else if (tokens.matches("DEFAULT")
+                    || tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "DEFAULT")
+                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "DEFAULT")){
+                // add default value to a column
+                
+                if(tokens.canConsume("CONSTRAINT")) {
+                    parseName(tokens);
+                }
+                
+                tokens.consume("DEFAULT");
+                String defaultValue = "";
+                if(tokens.matches(L_PAREN)) {
+                    defaultValue = parseContentBetweenParens(tokens);
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    while(!tokens.matches("FOR")) {
+                        sb.append(tokens.consume());
+                        sb.append(SPACE);
+                    }
+                    defaultValue = sb.toString();
+                }
+                
+                tokens.consume("FOR");
+                String alterColumnName = parseName(tokens);
+                
+                AstNode columnNode = nodeFactory().node(alterColumnName, alterTableNode, TYPE_ALTER_COLUMN_DEFINITION);
+                columnNode.setProperty(StandardDdlLexicon.DEFAULT_OPTION, StandardDdlLexicon.DEFAULT_ID_LITERAL);
+                columnNode.setProperty(StandardDdlLexicon.DEFAULT_VALUE, defaultValue);
+                
+                
             } else {
                 // This segment can also be enclosed in "()" brackets to handle multiple ColumnDefinition ADDs
                 if (tokens.matches(L_PAREN, "REF")) {
@@ -1042,20 +1164,8 @@ public class SqlServerDdlParser extends StandardDdlParser
                 }
             }
 
-            parseUntilTerminator(tokens); // COULD BE "NESTED TABLE xxxxxxxx" option clause
-
-            markEndOfStatement(tokens, alterTableNode);
-
-            return alterTableNode;
-        } else if (tokens.matches("ALTER", "TABLE", TokenStream.ANY_VALUE, "DROP")) {
-            markStartOfStatement(tokens);
-
-            tokens.consume(ALTER, TABLE);
-
-            String tableName = parseName(tokens);
-
-            AstNode alterTableNode = nodeFactory().node(tableName, parentNode, TYPE_ALTER_TABLE_STATEMENT);
-
+        } else if (tokens.matches("DROP")) {
+            
             tokens.consume(DROP);
 
             if (tokens.canConsume("CONSTRAINT")) {
@@ -1081,37 +1191,22 @@ public class SqlServerDdlParser extends StandardDdlParser
                 } else if (tokens.canConsume(DropBehavior.RESTRICT)) {
                     columnNode.setProperty(DROP_BEHAVIOR, DropBehavior.RESTRICT);
                 }
-            } else {
-                parseUntilTerminator(tokens); // EXAMPLE: "DROP UNIQUE (email)", or "DROP (col_1, col_2)"
             }
 
-            markEndOfStatement(tokens, alterTableNode);
-
-            return alterTableNode;
-        } else if (tokens.matches("ALTER", "TABLE", TokenStream.ANY_VALUE, "RENAME")) {
+        } else if (tokens.matches("RENAME")) {
 
             // ALTER TABLE customers RENAME TO my_customers;
             // ALTER TABLE customers RENAME CONSTRAINT cust_fname_nn TO cust_firstname_nn;
-            markStartOfStatement(tokens);
-
-            tokens.consume(ALTER, TABLE);
-
-            String oldName = parseName(tokens);
-            AstNode alterTableNode = nodeFactory().node(oldName, parentNode, TYPE_ALTER_TABLE_STATEMENT);
-
+            
             if (tokens.canConsume("RENAME", "TO")) {
                 String newName = parseName(tokens);
                 alterTableNode.setProperty(NEW_NAME, newName);
-
-                parseUntilTerminator(tokens);
-
+                
             } else if (tokens.canConsume("RENAME", "COLUMN")) {
                 String oldColumnName = parseName(tokens);
                 tokens.consume("TO");
                 String newColumnName = parseName(tokens);
-
-                parseUntilTerminator(tokens);
-
+                
                 AstNode renameColumnNode = nodeFactory().node(oldColumnName, alterTableNode, TYPE_RENAME_COLUMN);
                 renameColumnNode.setProperty(NEW_NAME, newColumnName);
 
@@ -1119,21 +1214,21 @@ public class SqlServerDdlParser extends StandardDdlParser
                 String oldConstraintName = parseName(tokens);
                 tokens.consume("TO");
                 String newConstraintName = parseName(tokens);
-
-                parseUntilTerminator(tokens);
-
+                
                 AstNode renameColumnNode = nodeFactory().node(oldConstraintName, alterTableNode, TYPE_RENAME_CONSTRAINT);
                 renameColumnNode.setProperty(NEW_NAME, newConstraintName);
             }
-
-            markEndOfStatement(tokens, alterTableNode);
-
-            return alterTableNode;
-        } else if (tokens.matches("ALTER", "TABLE", TokenStream.ANY_VALUE, "MODIFY")) {
-
+            
+        } else if (tokens.matches("MODIFY")) {
+            
         }
+        
 
-        return super.parseAlterTableStatement(tokens, parentNode);
+        parseUntilTerminator(tokens); // parse the rest
+
+        markEndOfStatement(tokens, alterTableNode);
+
+        return alterTableNode;
     }
 
     @Override
@@ -1956,71 +2051,300 @@ public class SqlServerDdlParser extends StandardDdlParser
      */
     class SqlServerDataTypeParser extends DataTypeParser {
 
-        /*
-         * (non-Javadoc)
-         * @see org.modeshape.sequencer.ddl.datatype.DataTypeParser#parseCustomType(org.modeshape.common.text.DdlTokenStream)
-         */
+        String[] getArraySurroundedWithSquareBrackets(String[] original) {
+            String[] extendedArray = new String[original.length + 2];
+            extendedArray[0] = "[";
+            for(int i = 0; i < original.length; ++i) {
+                extendedArray[i+1] = original[i];
+            }
+            extendedArray[extendedArray.length - 1] = "]";
+            
+            return extendedArray;
+        }
+        
+        
+        boolean tokensMatchesWithSquareBrackets(DdlTokenStream tokens, String expected) {
+            return (tokens.matches(expected)
+                    || tokens.matches("[", expected, "]"));
+        }
+        
+        boolean tokensMatchesWithSquareBrackets(DdlTokenStream tokens, String[] expected) {
+            if(tokens.matches(expected)) {
+                return true;
+            }
+            
+            String[] joinedArray = getArraySurroundedWithSquareBrackets(expected);
+            return tokens.matches(joinedArray);
+        }
+        
+
+        public boolean tokensMatchesAnyOfWithSquareBrackets(DdlTokenStream tokens, String firstOption, 
+                String... additionalOptions) {
+            
+            if (tokensMatchesWithSquareBrackets(tokens, firstOption)) {
+                return true;
+            }
+            for (String nextOption : additionalOptions) {
+                if (tokensMatchesWithSquareBrackets(tokens, nextOption)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        
+        protected String consumeWithSquareBrackets( DdlTokenStream tokens,
+                                                    DataType dataType,
+                                                    boolean addSpacePrefix ) throws ParsingException {
+            boolean isWithBrackets = false;
+            
+            if(tokens.matches("[")) {
+                isWithBrackets = true;
+                tokens.consume("[");
+            }
+            
+            String value = tokens.consume();
+            
+            if(isWithBrackets) {
+                tokens.consume("]");
+            }
+
+            dataType.appendSource(addSpacePrefix, value);
+
+            return value;
+        }
+        
+
+        protected String consumeWithSquareBrackets( DdlTokenStream tokens,
+                                                    DataType dataType,
+                                                    boolean addSpacePrefix,
+                                                    String[] additionalStrs ) throws ParsingException {
+            boolean isWithBrackets = false;
+            
+            if(tokens.matches("[")) {
+                isWithBrackets = true;
+                tokens.consume("[");
+            }
+            
+            tokens.consume(additionalStrs);
+
+            if(isWithBrackets) {
+                tokens.consume("]");
+            }
+            
+            StringBuffer value = new StringBuffer(100);
+
+            int i = 0;
+
+            for (String str : additionalStrs) {
+                if (i == 0) {
+                    value.append(str);
+                } else {
+                    value.append(SPACE).append(str);
+                }
+                dataType.appendSource(addSpacePrefix, str);
+                i++;
+            }
+
+            return value.toString();
+        }
+        
+        
+
+        @Override
+        public boolean isDatatype( DdlTokenStream tokens ) throws ParsingException {
+            // Loop through the registered statement start string arrays and look for exact matches.
+
+            for (String[] stmts : basicCharStringTypes) {
+                if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+            }
+
+            for (String[] stmts : basicNationalCharStringTypes) {
+                if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+            }
+
+            for (String[] stmts : basicBitStringTypes) {
+                if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+            }
+
+            for (String[] stmts : basicExactNumericTypes) {
+                if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+            }
+
+            for (String[] stmts : basicApproxNumericStringTypes) {
+                if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+            }
+
+            for (String[] stmts : basicDateTimeTypes) {
+                if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+            }
+
+            for (String[] stmts : basicMiscTypes) {
+                if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+            }
+
+            // If no type is found, assume it's a custom type
+            return isCustomDataType(tokens);
+        }
+
+        @Override
+        protected boolean isDatatype( DdlTokenStream tokens, int type ) throws ParsingException {
+            // Loop through the registered statement start string arrays and look for exact matches.
+
+            switch (type) {
+                case DataTypes.DTYPE_CODE_CHAR_STRING: {
+                    for (String[] stmts : basicCharStringTypes) {
+                        if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+                    }
+                }
+                    break;
+                case DataTypes.DTYPE_CODE_NCHAR_STRING: {
+                    for (String[] stmts : basicNationalCharStringTypes) {
+                        if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+                    }
+                }
+                    break;
+                case DataTypes.DTYPE_CODE_BIT_STRING: {
+                    for (String[] stmts : basicBitStringTypes) {
+                        if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+                    }
+                }
+                    break;
+                case DataTypes.DTYPE_CODE_EXACT_NUMERIC: {
+                    for (String[] stmts : basicExactNumericTypes) {
+                        if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+                    }
+                }
+                    break;
+                case DataTypes.DTYPE_CODE_APROX_NUMERIC: {
+                    for (String[] stmts : basicApproxNumericStringTypes) {
+                        if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+                    }
+                }
+                    break;
+                case DataTypes.DTYPE_CODE_DATE_TIME: {
+                    for (String[] stmts : basicDateTimeTypes) {
+                        if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+                    }
+                }
+                    break;
+                case DataTypes.DTYPE_CODE_MISC: {
+                    for (String[] stmts : basicMiscTypes) {
+                        if (tokensMatchesWithSquareBrackets(tokens, stmts)) return true;
+                    }
+                }
+                    break;
+            }
+
+            return false;
+        }
+        
+        
+        
+        @Override
+        public DataType parse(DdlTokenStream tokens) throws ParsingException {
+            DataType result = null;
+            
+            if (isDatatype(tokens, DataTypes.DTYPE_CODE_CHAR_STRING)) {
+                result = parseCharStringType(tokens);
+            } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_NCHAR_STRING)) {
+                result = parseNationalCharStringType(tokens);
+            } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_BIT_STRING)) {
+                result = parseBitStringType(tokens);
+            } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_EXACT_NUMERIC)) {
+                result = parseExactNumericType(tokens);
+            } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_APROX_NUMERIC)) {
+                result = parseApproxNumericType(tokens);
+            } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_DATE_TIME)) {
+                result = parseDateTimeType(tokens);
+            } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_MISC)) {
+                result = parseMiscellaneousType(tokens);
+            } else {
+                result = parseCustomType(tokens);
+            }
+            
+            // form DataTypeParser
+            if (tokens.canConsume('[')) {
+                if (!tokens.canConsume(']')) {
+                    // assume integer value
+                    tokens.consume();
+                    tokens.consume(']');
+                }
+
+                if (tokens.canConsume('[')) {
+                    if (!tokens.canConsume(']')) {
+                        // assume integer value
+                        tokens.consume();
+                        tokens.consume(']');
+                    }
+                }
+            }
+            
+            return result;
+        }
+        
         @SuppressWarnings("synthetic-access")
         @Override
         protected DataType parseCustomType( DdlTokenStream tokens ) throws ParsingException {
             DataType dataType = null;
             String typeName = null;
 
-            if (tokens.matches(SqlServerDataTypes.DTYPE_BIGINT)) {
+            if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_BIGINT)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_BIGINT);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_BIGINT);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_MONEY)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_MONEY)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_MONEY);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_MONEY);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_SMALLMONEY)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_SMALLMONEY)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_SMALLMONEY);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_SMALLMONEY);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_TINYINT)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_TINYINT)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_TINYINT);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_TINYINT);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_DATETIMEOFFSET)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_DATETIMEOFFSET)) {
                 // datetimeoffset [ (fractional seconds precision) ]
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_DATETIMEOFFSET);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_DATETIMEOFFSET);
                 dataType.setName(typeName);
                 if (tokens.matches(L_PAREN)) {
                     int precision = (int)parseBracketedLong(tokens, dataType);
                     dataType.setPrecision(precision);
                 }
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_DATETIME2)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_DATETIME2)) {
                 //  datetime2 [ (fractional seconds precision) ]
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_DATETIME2);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_DATETIME2);
                 dataType.setName(typeName);
                 if (tokens.matches(L_PAREN)) {
                     int precision = (int)parseBracketedLong(tokens, dataType);
                     dataType.setPrecision(precision);
                 }
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_DATETIME)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_DATETIME)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_DATETIME);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_DATETIME);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_SMALLDATETIME)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_SMALLDATETIME)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_SMALLDATETIME);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_SMALLDATETIME);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_NTEXT)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_NTEXT)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_NTEXT);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_NTEXT);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_TEXT)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_TEXT)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_TEXT);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_TEXT);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_NVARCHAR)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_NVARCHAR)) {
                 //  nvarchar [ ( n | max ) ]
 
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_NVARCHAR);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_NVARCHAR);
                 dataType.setName(typeName);
                 
                 if(tokens.canConsume(L_PAREN, "MAX", R_PAREN)) {
@@ -2032,15 +2356,15 @@ public class SqlServerDdlParser extends StandardDdlParser
                     dataType.setLength(length);
                 }
                 
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_VARBINARY)
-                    || tokens.matches(SqlServerDataTypes.DTYPE_BINARY_VARYING)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_VARBINARY)
+                    || tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_BINARY_VARYING)) {
                 //  varbinary [ ( n | max ) ]
                 
                 dataType = new DataType();
-                if (tokens.matches(SqlServerDataTypes.DTYPE_VARBINARY)) {
-                    typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_VARBINARY);
-                } else if (tokens.matches(SqlServerDataTypes.DTYPE_BINARY_VARYING)) {
-                    typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_BINARY_VARYING);
+                if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_VARBINARY)) {
+                    typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_VARBINARY);
+                } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_BINARY_VARYING)) {
+                    typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_BINARY_VARYING);
                 } else {
                     throw new RuntimeException("Unimplemented yet");
                 }
@@ -2056,43 +2380,43 @@ public class SqlServerDdlParser extends StandardDdlParser
                     dataType.setLength(length);
                 }
                 
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_BINARY)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_BINARY)) {
                 //  binary [ ( n ) ] 
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_BINARY);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_BINARY);
                 dataType.setName(typeName);
                 if (tokens.matches(L_PAREN)) {
                     long length = parseBracketedLong(tokens, dataType);
                     dataType.setLength(length);
                 }
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_IMAGE)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_IMAGE)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_IMAGE);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_IMAGE);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_HIERARCHYID)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_HIERARCHYID)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_HIERARCHYID);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_HIERARCHYID);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_SQL_VARIANT)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_SQL_VARIANT)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_SQL_VARIANT);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_SQL_VARIANT);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_TIMESTAMP_SQLSERVER)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_TIMESTAMP_SQLSERVER)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_TIMESTAMP_SQLSERVER);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_TIMESTAMP_SQLSERVER);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_ROWVERSION)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_ROWVERSION)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_ROWVERSION);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_ROWVERSION);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_UNIQUEIDENTIFIER)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_UNIQUEIDENTIFIER)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_UNIQUEIDENTIFIER);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_UNIQUEIDENTIFIER);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_XML)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_XML)) {
                 // xml ( [ CONTENT | DOCUMENT ] xml_schema_collection )
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_XML);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_XML);
                 dataType.setName(typeName);
                 if (tokens.canConsume(L_PAREN)) {
                     tokens.canConsume("CONTENT");
@@ -2100,18 +2424,14 @@ public class SqlServerDdlParser extends StandardDdlParser
                     parseName(tokens);
                     tokens.consume(R_PAREN);
                 }
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_GEOGRAPHY)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_GEOGRAPHY)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_GEOGRAPHY);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_GEOGRAPHY);
                 dataType.setName(typeName);
-            } else if (tokens.matches(SqlServerDataTypes.DTYPE_GEOMETRY)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, SqlServerDataTypes.DTYPE_GEOMETRY)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, true, SqlServerDataTypes.DTYPE_GEOMETRY);
+                typeName = consumeWithSquareBrackets(tokens, dataType, true, SqlServerDataTypes.DTYPE_GEOMETRY);
                 dataType.setName(typeName);
-            }
-
-            if (dataType == null) {
-                dataType = super.parseCustomType(tokens);
             }
 
             return dataType;
@@ -2123,24 +2443,24 @@ public class SqlServerDdlParser extends StandardDdlParser
             DataType dataType = null;
             String typeName = null;
 
-            if (tokens.matches(DataTypes.DTYPE_VARCHAR)
-                    || tokens.matches(DataTypes.DTYPE_CHAR_VARYING)
-                    || tokens.matches(DataTypes.DTYPE_CHARACTER_VARYING)) {
+            if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_VARCHAR)
+                    || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHAR_VARYING)
+                    || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHARACTER_VARYING)) {
                 
-                if (tokens.matches(DataTypes.DTYPE_VARCHAR)) {
+                if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_VARCHAR)) {
                     typeName = getStatementTypeName(DataTypes.DTYPE_VARCHAR);
                     dataType = new DataType(typeName);
-                    consume(tokens, dataType, false, DataTypes.DTYPE_VARCHAR);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_VARCHAR);
                     
-                } else if (tokens.matches(DataTypes.DTYPE_CHAR_VARYING)) {
+                } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHAR_VARYING)) {
                     typeName = getStatementTypeName(DataTypes.DTYPE_CHAR_VARYING);
                     dataType = new DataType(typeName);
-                    consume(tokens, dataType, false, DataTypes.DTYPE_CHAR_VARYING);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_CHAR_VARYING);
                     
-                } else if (tokens.matches(DataTypes.DTYPE_CHARACTER_VARYING)) {
+                } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHARACTER_VARYING)) {
                     typeName = getStatementTypeName(DataTypes.DTYPE_CHARACTER_VARYING);
                     dataType = new DataType(typeName);
-                    consume(tokens, dataType, false, DataTypes.DTYPE_CHARACTER_VARYING);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_CHARACTER_VARYING);
                 } else {
                     throw new RuntimeException("Unimplemented yet");
                 }
@@ -2168,26 +2488,26 @@ public class SqlServerDdlParser extends StandardDdlParser
             DataType dataType = null;
             String typeName = null;
             
-            if (tokens.matches(DataTypes.DTYPE_NCHAR_VARYING)
-                    || tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR_VARYING)
-                    || tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
+            if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NCHAR_VARYING)
+                    || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHAR_VARYING)
+                    || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
                 //  national char varying [ ( n | max ) ]
                 
                 dataType = new DataType();
-                if (tokens.matches(DataTypes.DTYPE_NCHAR_VARYING)) {
+                if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NCHAR_VARYING)) {
                     typeName = getStatementTypeName(DataTypes.DTYPE_NCHAR_VARYING);
                     dataType = new DataType(typeName);
-                    consume(tokens, dataType, false, DataTypes.DTYPE_NCHAR_VARYING);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_NCHAR_VARYING);
                     
-                } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR_VARYING)) {
+                } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHAR_VARYING)) {
                     typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
                     dataType = new DataType(typeName);
-                    consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
                     
-                } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
+                } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
                     typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
                     dataType = new DataType(typeName);
-                    consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
                     
                 } else {
                     throw new RuntimeException("Unimplemented yet");
@@ -2216,7 +2536,9 @@ public class SqlServerDdlParser extends StandardDdlParser
         @Override
         protected boolean isCustomDataType( DdlTokenStream tokens ) throws ParsingException {
             for (String[] stmt : sqlServerDataTypeStrings) {
-                if (tokens.matches(stmt)) return true;
+                if (tokensMatchesWithSquareBrackets(tokens, stmt)) {
+                    return true;
+                }
             }
             return false;
         }
@@ -2226,10 +2548,68 @@ public class SqlServerDdlParser extends StandardDdlParser
             DataType dataType = null;
             String typeName = null;
 
-            if (tokens.matches(DataTypes.DTYPE_BIT)) {
+            if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_BIT)) {
                 typeName = getStatementTypeName(DataTypes.DTYPE_BIT);
                 dataType = new DataType(typeName);
-                consume(tokens, dataType, false, DataTypes.DTYPE_BIT);
+                consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_BIT);
+            }
+
+            return dataType;
+        }
+        
+        @Override
+        protected DataType parseExactNumericType( DdlTokenStream tokens ) throws ParsingException {
+            DataType dataType = null;
+            String typeName = null;
+
+            if (tokensMatchesAnyOfWithSquareBrackets(tokens, "INTEGER", "INT", "SMALLINT")) {
+                dataType = new DataType();
+                typeName = consumeWithSquareBrackets(tokens, dataType, false);
+                dataType.setName(typeName);
+                
+            } else if (tokensMatchesAnyOfWithSquareBrackets(tokens, "NUMERIC", "DECIMAL", "DEC")) {
+                dataType = new DataType();
+                typeName = consumeWithSquareBrackets(tokens, dataType, false);
+                dataType.setName(typeName);
+                
+                if (tokens.matches(L_PAREN)) {
+                    consume(tokens, dataType, false, L_PAREN);
+                    
+                    int precision = (int)parseLong(tokens, dataType);
+                    dataType.setPrecision(precision);
+                    
+                    if (canConsume(tokens, dataType, false, COMMA)) {
+                        int scale = (int)parseLong(tokens, dataType);
+                        dataType.setScale(scale);
+                    }
+                    consume(tokens, dataType, false, R_PAREN);
+                }
+            }
+
+            return dataType;
+        }
+        
+        @Override
+        protected DataType parseApproxNumericType( DdlTokenStream tokens ) throws ParsingException {
+            DataType dataType = null;
+            String typeName = null;
+
+            if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_REAL)) {
+                dataType = new DataType();
+                typeName = consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_REAL);
+                dataType.setName(typeName);
+            } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_DOUBLE_PRECISION)) {
+                dataType = new DataType();
+                typeName = consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_DOUBLE_PRECISION);
+                dataType.setName(typeName);
+            } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_FLOAT)) {
+                dataType = new DataType();
+                typeName = consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_FLOAT);
+                dataType.setName(typeName);
+                if (tokens.matches(L_PAREN)) {
+                    int precision = (int)parseBracketedLong(tokens, dataType);
+                    dataType.setPrecision(precision);
+                }
             }
 
             return dataType;
@@ -2240,13 +2620,13 @@ public class SqlServerDdlParser extends StandardDdlParser
             DataType dataType = null;
             String typeName = null;
 
-            if (tokens.matches(DataTypes.DTYPE_DATE)) {
+            if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_DATE)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, false, DataTypes.DTYPE_DATE);
+                typeName = consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_DATE);
                 dataType.setName(typeName);
-            } else if (tokens.matches(DataTypes.DTYPE_TIME)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_TIME)) {
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, false, DataTypes.DTYPE_TIME);
+                typeName = consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_TIME);
                 dataType.setName(typeName);
 
                 if (tokens.matches(L_PAREN)) {
@@ -2256,11 +2636,64 @@ public class SqlServerDdlParser extends StandardDdlParser
 
                 canConsume(tokens, dataType, true, "WITH", "TIME", "ZONE");
                 
-            } else if (tokens.matches(DataTypes.DTYPE_TIMESTAMP)) {
+            } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_TIMESTAMP)) {
                 // SQL Server TIMESTAMP is NOT a DateTimeType
                 dataType = new DataType();
-                typeName = consume(tokens, dataType, false, DataTypes.DTYPE_TIMESTAMP);
+                typeName = consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_TIMESTAMP);
                 dataType.setName(typeName);
+            }
+
+            return dataType;
+        }
+        
+        
+        @Override
+        protected DataType parseMiscellaneousType( DdlTokenStream tokens ) throws ParsingException {
+            DataType dataType = null;
+            String typeName = null;
+
+            if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_INTERVAL)) {
+                dataType = new DataType();
+                typeName = consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_INTERVAL);
+                dataType.setName(typeName);
+                // <non-second datetime field> TO <end field>
+                // 
+                // CASE 2a: { YEAR | MONTH | DAY | HOUR | MINUTE } [ [ <left paren> <interval leading field precision> <right paren> ]
+                // CASE 2b: SECOND [ <left paren> <interval leading field precision> [ <comma> <interval fractional seconds precision>
+                // ] <right paren> ]
+
+                // CASE 1: { YEAR | MONTH | DAY | HOUR | MINUTE } TO { YEAR | MONTH | DAY | HOUR | MINUTE }
+                if (tokens.matchesAnyOf("YEAR", "MONTH", "DAY", "HOUR", "MINUTE")) {
+                    // Consume first
+                    consume(tokens, dataType, true);
+
+                    if (canConsume(tokens, dataType, true, "TO")) {
+                        // CASE 1:
+                        // assume "YEAR | MONTH | DAY | HOUR | MINUTE" and consume
+                        consume(tokens, dataType, true);
+                    } else if (tokens.matches(L_PAREN, DdlTokenStream.ANY_VALUE, R_PAREN)) {
+                        // CASE 2a:
+                        consume(tokens, dataType, true, L_PAREN);
+                        consume(tokens, dataType, true);
+                        consume(tokens, dataType, true, R_PAREN);
+                    } else {
+                        System.out.println("  WARNING:  PROBLEM parsing INTERVAL data type. Check your DDL for incomplete statement.");
+                    }
+                } else if (canConsume(tokens, dataType, true, "SECOND")) {
+                    // CASE 2b:
+                    if (canConsume(tokens, dataType, true, L_PAREN)) {
+
+                        consume(tokens, dataType, true); // PRECISION
+                        if (canConsume(tokens, dataType, true, COMMA)) {
+                            consume(tokens, dataType, true); // fractional seconds precision
+                        }
+                        canConsume(tokens, dataType, true, R_PAREN);
+                    } else {
+                        System.out.println("  WARNING:  PROBLEM parsing INTERVAL data type. Check your DDL for incomplete statement.");
+                    }
+                } else {
+                    System.out.println("  WARNING:  PROBLEM parsing INTERVAL data type. Check your DDL for incomplete statement.");
+                }
             }
 
             return dataType;

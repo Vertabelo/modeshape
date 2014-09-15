@@ -39,13 +39,13 @@ import org.modeshape.sequencer.ddl.node.AstNode;
  * A parser for SQL data types.
  */
 public class DataTypeParser implements DdlConstants {
-    private static List<String[]> basicCharStringTypes = new ArrayList<String[]>();
-    private static List<String[]> basicNationalCharStringTypes = new ArrayList<String[]>();
-    private static List<String[]> basicBitStringTypes = new ArrayList<String[]>();
-    private static List<String[]> basicExactNumericTypes = new ArrayList<String[]>();
-    private static List<String[]> basicApproxNumericStringTypes = new ArrayList<String[]>();
-    private static List<String[]> basicDateTimeTypes = new ArrayList<String[]>();
-    private static List<String[]> basicMiscTypes = new ArrayList<String[]>();
+    protected static List<String[]> basicCharStringTypes = new ArrayList<String[]>();
+    protected static List<String[]> basicNationalCharStringTypes = new ArrayList<String[]>();
+    protected static List<String[]> basicBitStringTypes = new ArrayList<String[]>();
+    protected static List<String[]> basicExactNumericTypes = new ArrayList<String[]>();
+    protected static List<String[]> basicApproxNumericStringTypes = new ArrayList<String[]>();
+    protected static List<String[]> basicDateTimeTypes = new ArrayList<String[]>();
+    protected static List<String[]> basicMiscTypes = new ArrayList<String[]>();
 
     private int defaultLength = 255;
     private int defaultPrecision = 0;
@@ -101,7 +101,7 @@ public class DataTypeParser implements DdlConstants {
      * @return is registered data type
      * @throws ParsingException
      */
-    public final boolean isDatatype( DdlTokenStream tokens ) throws ParsingException {
+    public boolean isDatatype( DdlTokenStream tokens ) throws ParsingException {
         // Loop through the registered statement start string arrays and look for exact matches.
 
         for (String[] stmts : basicCharStringTypes) {
@@ -144,8 +144,7 @@ public class DataTypeParser implements DdlConstants {
      * @return is registered data type
      * @throws ParsingException
      */
-    private boolean isDatatype( DdlTokenStream tokens,
-                                int type ) throws ParsingException {
+    protected boolean isDatatype( DdlTokenStream tokens, int type ) throws ParsingException {
         // Loop through the registered statement start string arrays and look for exact matches.
 
         switch (type) {
@@ -218,7 +217,7 @@ public class DataTypeParser implements DdlConstants {
      */
     public DataType parse( DdlTokenStream tokens ) throws ParsingException {
         DataType result = null;
-
+        
         if (isDatatype(tokens, DataTypes.DTYPE_CODE_CHAR_STRING)) {
             result = parseCharStringType(tokens);
         } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_NCHAR_STRING)) {
@@ -236,6 +235,7 @@ public class DataTypeParser implements DdlConstants {
         } else {
             result = parseCustomType(tokens);
         }
+        
 
         /*
          * (FROM http://www.postgresql.org/docs/8.4/static/arrays.html) 
