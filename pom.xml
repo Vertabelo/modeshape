@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.modeshape</groupId>
     <artifactId>modeshape-parent</artifactId>
-	<version>3.7.1.Final-ep7</version>
+	<version>3.7.1.Final-ep8</version>
     <relativePath>modeshape-parent/pom.xml</relativePath>
   </parent>
 
