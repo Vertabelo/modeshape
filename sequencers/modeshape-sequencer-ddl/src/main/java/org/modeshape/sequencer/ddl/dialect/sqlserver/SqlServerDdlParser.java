@@ -1099,7 +1099,11 @@ public class SqlServerDdlParser extends StandardDdlParser
         String tableName = parseName(tokens);
 
         AstNode alterTableNode = nodeFactory().node(tableName, parentNode, TYPE_ALTER_TABLE_STATEMENT);
-
+        
+        // EDWM-1098
+        tokens.canConsume("WITH", "CHECK");
+        tokens.canConsume("WITH", "NOCHECK");
+        
         if (tokens.matches("ADD")) {
 
             // ALTER TABLE
