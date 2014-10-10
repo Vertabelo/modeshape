@@ -83,52 +83,6 @@ public class RepositoryRestoreTest extends SingleUseAbstractTest {
         stream.close();
     }
 
-    @Test
-    public void shouldBackupRepositoryWithMultipleWorkspaces() throws Exception {
-        loadContent();
-        Problems problems = session().getWorkspace().getRepositoryManager().backupRepository(backupDirectory);
-        assertNoProblems(problems);
-
-        assertContentInWorkspace(repository(), "default");
-        assertContentInWorkspace(repository(), "ws2");
-        assertContentInWorkspace(repository(), "ws3");
-
-        // Start up a new repository
-        ((LocalEnvironment)environment).setShared(true);
-        RepositoryConfiguration config = RepositoryConfiguration.read("config/restore-repo-config.json").with(environment);
-        JcrRepository newRepository = new JcrRepository(config);
-        try {
-            newRepository.start();
-
-            // And restore it from the contents ...
-            JcrSession newSession = newRepository.login();
-            try {
-                Problems restoreProblems = newSession.getWorkspace().getRepositoryManager().restoreRepository(backupDirectory);
-                assertNoProblems(restoreProblems);
-            } finally {
-                newSession.logout();
-            }
-
-            // Before we assert the content, create a backup of it (for comparison purposes when debugging) ...
-            newSession = newRepository.login();
-            try {
-                Problems backupProblems = newSession.getWorkspace().getRepositoryManager().backupRepository(backupDirectory2);
-                assertNoProblems(backupProblems);
-            } finally {
-                newSession.logout();
-            }
-
-            assertWorkspaces(newRepository, "default", "ws2", "ws3");
-
-            assertContentInWorkspace(newRepository, null);
-            assertContentInWorkspace(newRepository, "ws2");
-            assertContentInWorkspace(newRepository, "ws3");
-            queryContentInWorkspace(newRepository, null);
-        } finally {
-            newRepository.shutdown().get(10, TimeUnit.SECONDS);
-        }
-    }
-
     private void assertWorkspaces( JcrRepository newRepository,
                                    String... workspaceNames ) throws RepositoryException {
         Set<String> expectedNames = new HashSet<String>();
