@@ -298,6 +298,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 		//      interval hour to minute
 	
 	interface PostgresDataTypes {
+	        static final String[] DTYPE_BIGINT = {"BIGINT"};
 		static final String[] DTYPE_BIGSERIAL = {"BIGSERIAL"};
 		static final String[] DTYPE_BOX = {"BOX"};
 		static final String[] DTYPE_BYTEA = {"BYTEA"};
@@ -333,14 +334,14 @@ public interface PostgresDdlConstants extends DdlConstants {
 
 		
 		static final List<String[]> CUSTOM_DATATYPE_START_PHRASES = 
-	  		Arrays.asList(DTYPE_BIGSERIAL, DTYPE_BOOL, DTYPE_BOOLEAN, DTYPE_BOX, DTYPE_BYTEA,
+	  		Arrays.asList(DTYPE_BIGINT, DTYPE_BIGSERIAL, DTYPE_BOOL, DTYPE_BOOLEAN, DTYPE_BOX, DTYPE_BYTEA,
                             DTYPE_CIDR, DTYPE_CIRCLE, DTYPE_FLOAT4, DTYPE_FLOAT8, DTYPE_INET, DTYPE_INT2, DTYPE_INT4, DTYPE_INT8,
                             DTYPE_LINE, DTYPE_LSEG, DTYPE_MACADDR, DTYPE_MONEY, DTYPE_PATH, DTYPE_POINT, DTYPE_POLYGON,
                             DTYPE_SERIAL, DTYPE_SERIAL4, DTYPE_SERIAL8, DTYPE_TEXT, DTYPE_TIMESTAMPZ, DTYPE_TSQUERY,
                             DTYPE_TSVECTOR, DTYPE_TXID_SNAPSHOT, DTYPE_UUID, DTYPE_XML, DTYPE_OID);
 		
 	  	static final List<String> CUSTOM_DATATYPE_START_WORDS = 
-	  		Arrays.asList("BIGSERIAL", "BOX", "BOOLEAN", "BOOL", "BYTEA",
+	  		Arrays.asList("BIGINT", "BIGSERIAL", "BOX", "BOOLEAN", "BOOL", "BYTEA",
                             "CIDR", "CIRCLE", "FLOAT4", "FLOAT8", "INET", "INT2", "INT4", "INT8",
                             "LINE", "LSEG", "MACADDR", "MONEY", "PATH", "POINT", "POLYGON",
                             "SERIAL", "SERIAL4", "SERIAL8", "TEXT", "TIMESTAMPZ", "TSQUERY",

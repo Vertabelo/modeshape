@@ -235,6 +235,49 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
+    @Test
+    public void shouldParseCreateTable_5() {
+        printTest("shouldParseCreateTable_5()");
+        String content = "CREATE TABLE assets (" +
+        		"    id integer NOT NULL," +
+        		"    name text NOT NULL," +
+        		"    display_name text NOT NULL," +
+        		"    category_id integer," +
+        		"    created_at timestamp without time zone NOT NULL," +
+        		"    updated_at timestamp without time zone NOT NULL," +
+        		"    last_seen_at timestamp without time zone," +
+        		"    bytes_in bigint DEFAULT 0," +
+        		"    bytes_out bigint DEFAULT 0," +
+        		"    connection_attempts integer DEFAULT 0," +
+        		"    list_status text DEFAULT 'none'::text," +
+        		"    conviction_score integer DEFAULT 0," +
+        		"    conviction_status text DEFAULT 'observed'::text," +
+        		"    connection_status text DEFAULT 'none'::text," +
+        		"    risk_factor integer DEFAULT 0," +
+        		"    number_of_threats_risk_score integer DEFAULT 0," +
+        		"    max_local_severity_risk_score integer DEFAULT 0," +
+        		"    total_bytes_in_risk_score integer DEFAULT 0," +
+        		"    total_bytes_out_risk_score integer DEFAULT 0," +
+        		"    total_number_of_connection_attempts_risk_score integer DEFAULT 0," +
+        		"    av_coverage_risk_score integer DEFAULT 0," +
+        		"    asset_category_priority_risk_score integer DEFAULT 0," +
+        		"    number_of_threats_risk_bucket integer," +
+        		"    max_local_severity_risk_bucket integer," +
+        		"    total_bytes_in_risk_bucket integer," +
+        		"    total_bytes_out_risk_bucket integer," +
+        		"    total_number_of_connection_attempts_risk_bucket integer," +
+        		"    av_coverage_risk_bucket integer," +
+        		"    asset_category_priority_risk_bucket integer," +
+        		"    overall_risk_bucket integer," +
+        		"    av_coverage integer DEFAULT 0," +
+        		"    asset_status text," +
+        		"    detected_os text," +
+        		"    first_seen_at timestamp without time zone);";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
     // LISTEN virtual;
 
     @Test
