@@ -782,6 +782,7 @@ public class PostgresDdlParser extends StandardDdlParser
                     precision = integer(tokens.consume());
                     tokens.canConsume(R_PAREN);
                 }
+                
             } else if (tokens.canConsume("USER")) {
                 optionID = DEFAULT_ID_USER;
                 defaultValue = "USER";
@@ -801,6 +802,7 @@ public class PostgresDdlParser extends StandardDdlParser
                 optionID = DEFAULT_ID_LITERAL;
                 while (!tokens.canConsume(R_PAREN)) {
                     defaultValue = defaultValue + tokens.consume();
+                    defaultValue += parsePossibleCastExpression(tokens);
                 }
             } else if (tokens.matches("NOW")) {
                 optionID = DEFAULT_ID_LITERAL;
@@ -820,6 +822,8 @@ public class PostgresDdlParser extends StandardDdlParser
                 if (tokens.canConsume(".")) {
                     defaultValue = defaultValue + '.' + tokens.consume();
                 }
+                
+                defaultValue += parsePossibleCastExpression(tokens);
             }
 
             columnNode.setProperty(DEFAULT_OPTION, optionID);
@@ -832,6 +836,19 @@ public class PostgresDdlParser extends StandardDdlParser
 
         return false;
     }
+    
+    
+    protected String parsePossibleCastExpression(DdlTokenStream tokens) {
+        StringBuffer sb = new StringBuffer();
+        
+        if(tokens.canConsume(":", ":")) {
+            sb.append("::");
+            sb.append(tokens.consume());
+        }
+        
+        return sb.toString();
+    }
+    
 
     @Override
     protected AstNode parseCustomStatement( DdlTokenStream tokens,
