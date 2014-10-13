@@ -1573,6 +1573,9 @@ public class PostgresDdlParser extends StandardDdlParser
         } else if (tokens.matches("LANGUAGE")) {
             objectType = tokens.consume();
             objectName = parseName(tokens);
+        } else if (tokens.matches("EXTENSION")) {
+            objectType = tokens.consume();
+            objectName = parseName(tokens);
         } else if (tokens.matches("ROLE")) {
             objectType = tokens.consume();
             objectName = parseName(tokens);

@@ -345,6 +345,17 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(childNode, TYPE_COMMENT_ON_STATEMENT));
     }
 
+
+    @Test
+    public void shouldParseCommentOnExtenstion() {
+        printTest("shouldParseCommentOnExtenstion()");
+        String content = "COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_COMMENT_ON_STATEMENT));
+    }
+
+    
     @Test
     public void shouldParseCreateFunctionWithMultipleSemicolons() {
         printTest("shouldParseCreateFunctionWithMultipleSemicolons()");
