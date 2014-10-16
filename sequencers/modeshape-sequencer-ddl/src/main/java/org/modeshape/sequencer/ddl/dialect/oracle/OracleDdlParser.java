@@ -1407,6 +1407,12 @@ public class OracleDdlParser extends StandardDdlParser
 
                                 if (!columnNodes.isEmpty()) {
                                     // find column
+                                    if((possibleColumn.startsWith("\"") && possibleColumn.endsWith("\""))
+                                            || (possibleColumn.startsWith("'") && possibleColumn.endsWith("'"))
+                                            || (possibleColumn.startsWith("`") && possibleColumn.endsWith("`"))) {
+                                        possibleColumn = possibleColumn.substring(1, possibleColumn.length() -1);
+                                    }
+                                    
                                     for (final AstNode colNode : columnNodes) {
                                         if (colNode.getName().toUpperCase().equals(possibleColumn.toUpperCase())) {
                                             final AstNode colRef = nodeFactory().node(possibleColumn, indexNode, TYPE_COLUMN_REFERENCE);

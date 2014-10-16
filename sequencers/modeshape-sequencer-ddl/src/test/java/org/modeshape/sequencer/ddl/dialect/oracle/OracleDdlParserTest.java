@@ -601,4 +601,27 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         assertThat(tableNode.childrenWithName("COL#C").size(), is(1));
     }
 
+    @Test
+    public void shouldParseCreateIndexTest() {
+        final String content = "  CREATE TABLE \"HAWAII_APPLICATION_T\"     (" +
+        		"   \"PK_APPLICATION_ID\" VARCHAR2(75 CHAR)," +
+        		"        \"APPLICANT_PERSON_ID\" VARCHAR2(75 CHAR)," +
+        		"      \"SCREEN_NAME\" VARCHAR2(75 CHAR)," +
+        		"      \"MASTER_CASE_ID\" VARCHAR2(75 CHAR)," +
+        		"   \"MEDICAID_CASE_ID\" VARCHAR2(75 CHAR)," +
+        		"         \"CASE_TYPE\" VARCHAR2(75 CHAR)," +
+        		"        \"CONFIRMATION_NUMBER\" VARCHAR2(75 CHAR)," +
+        		"      \"STATUS\" VARCHAR2(75 CHAR)," +
+        		"   \"APPLICATION_DATA\" BLOB," +
+        		"      \"CATEGORY\" VARCHAR2(75 CHAR)," +
+        		"         \"CREATE_DATE\" TIMESTAMP (6)," +
+        		"          \"MODIFIED_DATE\" TIMESTAMP (6)," +
+        		"        \"CREATED_BY\" VARCHAR2(75 CHAR)," +
+        		"       \"MODIFIED_BY\" VARCHAR2(75 CHAR)    );" +
+        		"" +
+        		"CREATE INDEX \"IX_1631FA9\" ON \"HAWAII_APPLICATION_T\" (\"APPLICANT_PERSON_ID\");";
+
+        this.parser.parse(content, this.rootNode, null);
+        assertThat(this.rootNode.getChildCount(), is(2));
+    }
 }
