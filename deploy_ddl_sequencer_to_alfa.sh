@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=ep10
+version=ep11-dev
 
 scp modeshape-common/target/modeshape-common-3.7.1.Final-${version}.jar alfa:/var/www/maven/modeshape/jars/
 scp modeshape-common/target/modeshape-common-3.7.1.Final-${version}-sources.jar alfa:/var/www/maven/modeshape/src/modeshape-common-3.7.1.Final-${version}.zip
