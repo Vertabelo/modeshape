@@ -1,1 +1,1 @@
-find . -type f -print0 | xargs -0 sed -i 's|<version>3.7.1.Final-ep11</version>|<version>3.7.1.Final-ep11</version>|g'
+find . -type f -print0 | xargs -0 sed -i 's|<version>3.7.1.Final-ep12-dev</version>|<version>3.7.1.Final-ep12-dev</version>|g'
