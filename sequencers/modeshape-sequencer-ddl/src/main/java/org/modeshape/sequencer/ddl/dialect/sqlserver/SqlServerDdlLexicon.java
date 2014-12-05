@@ -43,6 +43,9 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String TYPE_FUNCTION_PARAMETER                          = PREFIX + ":functionParameter";
     public static final String TYPE_INDEX_ORDERABLE                             = PREFIX + ":indexOrderable";
     public static final String TYPE_COLUMN_DEFINITION                           = PREFIX + ":columnDefinition";
+    
+    public static final String TYPE_EXECUTE_STATEMENT                   = PREFIX + ":execute";
+    public static final String TYPE_EXECUTE_PARAMETER                   = PREFIX + ":parameter";
 
     // PROPERTY NAMES
     public static final String COMMENT                  = PREFIX + ":comment";
@@ -86,5 +89,14 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String COLUMN_SPARSE        = PREFIX + ":sparse";
     public static final String COLUMN_IDENTITY      = PREFIX + ":identity";
     public static final String COLUMN_ROWGUIDCOL    = PREFIX + ":rowguidcol";
+    
+    // execute properties
+    public static final String BODY                 = PREFIX + ":body";
+    public static final String SERVER_NAME          = PREFIX + ":serverName";
+    public static final String USER                 = PREFIX + ":user";
+    public static final String RETURN_STATUS        = PREFIX + ":returnStatus";
+    public static final String OUTPUT               = PREFIX + ":output";
+    public static final String PARAMETER            = PREFIX + ":parameter";
+
     
 }

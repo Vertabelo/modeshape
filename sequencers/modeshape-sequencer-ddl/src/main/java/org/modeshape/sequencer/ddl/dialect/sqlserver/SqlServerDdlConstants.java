@@ -300,6 +300,9 @@ public interface SqlServerDdlConstants extends DdlConstants {
         static final String[] STMT_ENABLE_TRIGGER = {"ENABLE", "TRIGGER"};
         static final String[] STMT_TRUNCATE_TABLE = {"TRUNCATE", "TABLE"};
         static final String[] STMT_UPDATE_STATISTICS = {"UPDATE", "STATISTICS"};
+        
+        static final String[] STMT_EXEC = {"EXEC"};
+        static final String[] STMT_EXECUTE = {"EXECUTE"};
 
         
         static final String[] STMT_SET_DATEFIRST = {SET, "DATEFIRST"};
@@ -357,7 +360,8 @@ public interface SqlServerDdlConstants extends DdlConstants {
             STMT_BEGIN_DISTRIBUTED_TRANSACTION, STMT_BEGIN_DISTRIBUTED_TRAN, STMT_ROLLBACK_TRANSACTION, 
             STMT_ROLLBACK_TRAN, STMT_BEGIN_TRANSACTION, STMT_BEGIN_TRAN, STMT_ROLLBACK_WORK, STMT_ROLLBACK, 
             STMT_COMMIT_TRANSACTION, STMT_COMMIT_TRAN, STMT_SAVE_TRANSACTION, STMT_SAVE_TRAN, STMT_COMMIT_WORK, 
-            STMT_COMMIT, STMT_DISABLE_TRIGGER, STMT_ENABLE_TRIGGER, STMT_TRUNCATE_TABLE, STMT_UPDATE_STATISTICS
+            STMT_COMMIT, STMT_DISABLE_TRIGGER, STMT_ENABLE_TRIGGER, STMT_TRUNCATE_TABLE, STMT_UPDATE_STATISTICS,
+            STMT_EXEC, STMT_EXECUTE
         };
         
         // CREATE TABLE, CREATE VIEW, and GRANT statements.

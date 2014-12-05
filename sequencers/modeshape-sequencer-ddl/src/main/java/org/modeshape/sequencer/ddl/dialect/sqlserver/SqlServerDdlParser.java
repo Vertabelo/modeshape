@@ -47,6 +47,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_REFERENC
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.AS_FILETABLE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.BODY;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.CLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_FILESTREAM;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_IDENTITY;
@@ -59,6 +60,8 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NONCLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NOT_FOR_REPLICATION;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.ON_CLAUSE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.OUTPUT;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.RETURN_STATUS;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_AS_DATA_TYPE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_CACHE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_CYCLE;
@@ -69,13 +72,16 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_NO_MAX_VALUE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_NO_MIN_VALUE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_START_WITH;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SERVER_NAME;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TEXTIMAGE_ON_CLAUSE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_BACKSLASH_TERMINATOR;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_INDEX_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_SEQUENCE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_EXECUTE_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_RENAME_COLUMN;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_RENAME_CONSTRAINT;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.UNIQUE_INDEX;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.USER;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.VIEW_WITH_ATTRIBUTES;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.VIEW_WITH_CHECK_OPTION;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.WHERE_CLAUSE;
@@ -347,6 +353,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             return parseStatement(tokens, STMT_TRUNCATE_TABLE, parentNode, TYPE_STATEMENT);
         } else if (tokens.matches(STMT_UPDATE_STATISTICS)) {
             return parseStatement(tokens, STMT_UPDATE_STATISTICS, parentNode, TYPE_STATEMENT);
+        } else if (tokens.matches(STMT_EXEC) || tokens.matches(STMT_EXECUTE)) {
+            return parseExecuteStatement(tokens, parentNode);
         } else {
             return super.parseCustomStatement(tokens, parentNode);
         }
@@ -536,6 +544,90 @@ public class SqlServerDdlParser extends StandardDdlParser
         return result;
     }
     
+    protected AstNode parseExecuteStatement(DdlTokenStream tokens, AstNode parentNode) {
+        // źródło: http://msdn.microsoft.com/en-us/library/ms188332.aspx
+        assert tokens != null;
+        assert parentNode != null;
+        
+        markStartOfStatement(tokens);
+        
+        tokens.canConsume("EXEC");
+        tokens.canConsume("EXECUTE");
+        
+        AstNode executeNode ;
+        
+        if (tokens.matches("(")) {
+            // to nam nie jest potrzebne, więc parsowanie odpuszczam
+            // robienie tego porządnie
+            String body = parseContentBetweenParens(tokens);
+            executeNode = nodeFactory().node("", parentNode, TYPE_EXECUTE_STATEMENT);
+            executeNode.setProperty(BODY, body);
+            
+            if (tokens.canConsume("AS")) {
+                tokens.canConsume("LOGIN");
+                tokens.canConsume("USER");
+                tokens.consume("=");
+                String userName = tokens.consume();
+                
+                executeNode.setProperty(USER, userName);
+            }
+            
+            if (tokens.canConsume("AT")) {
+                String serverName = tokens.consume();
+                executeNode.setProperty(SERVER_NAME, serverName);
+            }
+        } else {
+            String returnStatus = null;
+            if (tokens.matches(DdlTokenStream.ANY_VALUE, "=")) {
+                returnStatus = tokens.consume();
+                tokens.consume("=");
+            }
+            
+            String procedureName = parseName(tokens);
+            executeNode = nodeFactory().node(procedureName, parentNode, TYPE_EXECUTE_STATEMENT);
+            
+            if (returnStatus != null) {
+                executeNode.setProperty(RETURN_STATUS, returnStatus);
+            }
+            
+            
+            do {
+                AstNode parameterNode = nodeFactory().node("", executeNode, SqlServerDdlLexicon.TYPE_EXECUTE_PARAMETER);
+                executeNode.addLastChild(parameterNode);
+                if (tokens.matches(DdlTokenStream.ANY_VALUE, "=")) {
+                    String parameter = tokens.consume();
+                    tokens.consume("=");
+                    
+                    parameterNode.setProperty(SqlServerDdlLexicon.PARAMETER, parameter);
+                }
+                
+                if (tokens.hasNext() && !tokens.matches(COMMA)) {
+                    String value = parseUntilCommaOrTerminatorOrWith(tokens).trim();
+                    parameterNode.setProperty(SqlServerDdlLexicon.VALUE, value);
+                } 
+                
+                testPrint(""+parameterNode);
+                testPrint(""+tokens.matches(COMMA));
+            } while (tokens.canConsume(COMMA));
+            
+            parseUntilCommaOrTerminator(tokens);
+        }
+        
+        markEndOfStatement(tokens, executeNode);
+        return executeNode;
+    }
+    
+    protected String parseUntilCommaOrTerminatorOrWith( DdlTokenStream tokens ) throws ParsingException {
+        StringBuffer sb = new StringBuffer();
+        // parse until next statement
+        while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) 
+                && !tokens.matches(COMMA) && !tokens.matches("WITH") && !isTerminator(tokens)) {
+            sb.append(SPACE).append(tokens.consume());
+        }
+
+        return sb.toString();
+    }
+
     @Override
     protected AstNode parseCreateTableStatement( DdlTokenStream tokens,
                                                  AstNode parentNode ) throws ParsingException {

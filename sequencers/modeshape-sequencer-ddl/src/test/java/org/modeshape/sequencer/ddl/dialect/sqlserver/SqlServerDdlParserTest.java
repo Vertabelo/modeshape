@@ -23,6 +23,7 @@
  */
 package org.modeshape.sequencer.ddl.dialect.sqlserver;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
@@ -379,4 +380,82 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(childNode, TYPE_ALTER_TABLE_STATEMENT));
     }
     
+    @Test
+    public void shouldParseExecuteProcedure() {
+        String content = "EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'BGN02' , " 
+                    + "@level0type=N'SCHEMA',@level0name=N'dbo', " 
+                    + "@level1type=N'TABLE',@level1name=N'DHCS834Inbound', @level2type=N'COLUMN',@level2name=N'BGN02'";
+        
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        
+        assertTrue(hasMixinType(childNode, SqlServerDdlLexicon.TYPE_EXECUTE_STATEMENT));
+        assertTrue("sys.sp_addextendedproperty".equals(childNode.getName()));
+        
+        assertEquals(8, childNode.getChildren().size());
+        
+        AstNode parameter1Node = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(parameter1Node, SqlServerDdlLexicon.TYPE_EXECUTE_PARAMETER));
+        assertEquals("@name", parameter1Node.getProperty(SqlServerDdlLexicon.PARAMETER));
+        assertEquals("N'MS_Description'", parameter1Node.getProperty(SqlServerDdlLexicon.VALUE));
+    }
+    
+    @Test
+    public void shouldParseExecuteProcedure3() {
+        String content = "EXEC sp_addextendedproperty "
+                + "@name  = N'MS_Description', "
+                + "@value = N'Product description', "
+                + "@level0type = N'SCHEMA', "
+                + "@level0name = N'dbo', "
+                + "@level1type = N'TABLE', "
+                + "@level1name = N'product'";
+        
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        
+        assertTrue(hasMixinType(childNode, SqlServerDdlLexicon.TYPE_EXECUTE_STATEMENT));
+        assertTrue("sp_addextendedproperty".equals(childNode.getName()));
+        
+        assertEquals(6, childNode.getChildren().size());
+        
+        AstNode parameter1Node = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(parameter1Node, SqlServerDdlLexicon.TYPE_EXECUTE_PARAMETER));
+        assertEquals("@name", parameter1Node.getProperty(SqlServerDdlLexicon.PARAMETER));
+        assertEquals("N'MS_Description'", parameter1Node.getProperty(SqlServerDdlLexicon.VALUE));
+        
+        AstNode parameter2Node = childNode.getChildren().get(1);
+        assertTrue(hasMixinType(parameter2Node, SqlServerDdlLexicon.TYPE_EXECUTE_PARAMETER));
+        assertEquals("@value", parameter2Node.getProperty(SqlServerDdlLexicon.PARAMETER));
+        assertEquals("N'Product description'", parameter2Node.getProperty(SqlServerDdlLexicon.VALUE));
+    }
+    
+    @Test
+    public void shouldParseExecuteProcedure2() {
+        String content = "EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'BGN02' , " 
+                    + "@level0type=N'SCHEMA',@level0name=N'dbo', " 
+                    + "@level1type=N'TABLE',@level1name=N'DHCS834Inbound', @level2type=N'COLUMN',@level2name=N'BGN02'"
+                    + " WITH RECOMPILE RESULT SET UNDEFINED ";
+        
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        
+        assertTrue(hasMixinType(childNode, SqlServerDdlLexicon.TYPE_EXECUTE_STATEMENT));
+        assertTrue("sys.sp_addextendedproperty".equals(childNode.getName()));
+        
+        assertEquals(8, childNode.getChildren().size());
+        
+        AstNode parameter1Node = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(parameter1Node, SqlServerDdlLexicon.TYPE_EXECUTE_PARAMETER));
+        assertEquals("@name", parameter1Node.getProperty(SqlServerDdlLexicon.PARAMETER));
+        assertEquals("N'MS_Description'", parameter1Node.getProperty(SqlServerDdlLexicon.VALUE));
+    }
+    
+    @Test
+    public void shouldParseExecute() {
+        String content = "EXEC (@variable) AS login = 'user'; "; 
+        
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, SqlServerDdlLexicon.TYPE_EXECUTE_STATEMENT));
+    }
 }
