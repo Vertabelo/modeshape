@@ -249,6 +249,27 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
+
+    @Test
+    public void shouldParseCreateTable_10() {
+        // zgłoszone przez klienta
+        printTest("shouldParseCreateTable_10");
+        String content = "CREATE TABLE [tbl_Search_Criteria](" +
+        		"  [Search_Criteria_ID] [int]NOT NULL IDENTITY  ," +
+        		"  [Payer_ID] [int] NULL," +
+        		"  [Search_Criteria] [varchar](500) NULL," +
+        		"  [VerificationType] [char](1) NULL," +
+        		"  [IsDefault] [bit] NULL," +
+        		"  [Created_On] [smalldatetime] NOT NULL default getdate()," +
+        		"  [Created_By] [varchar](50) NOT NULL," +
+        		"  [Updated_On] [smalldatetime] NULL," +
+        		"  [Updated_By] [varchar](50) NULL," +
+        		"  CONSTRAINT [PK_tbl_SearchCriteria_New] PRIMARY KEY ( [Search_Criteria_ID] ) )";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+    
     
 
     @Test

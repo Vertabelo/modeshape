@@ -2542,6 +2542,7 @@ public class SqlServerDdlParser extends StandardDdlParser
             if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_VARCHAR)
                     || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHAR_VARYING)
                     || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHARACTER_VARYING)) {
+                // varchar
                 
                 if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_VARCHAR)) {
                     typeName = getStatementTypeName(DataTypes.DTYPE_VARCHAR);
@@ -2557,6 +2558,34 @@ public class SqlServerDdlParser extends StandardDdlParser
                     typeName = getStatementTypeName(DataTypes.DTYPE_CHARACTER_VARYING);
                     dataType = new DataType(typeName);
                     consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_CHARACTER_VARYING);
+                } else {
+                    throw new RuntimeException("Unimplemented yet");
+                }
+                
+                if(tokens.canConsume(L_PAREN, "MAX", R_PAREN)) {
+                    // EDWM-687 support for varchar(max)
+                    dataType.setName(dataType.getName() + "(max)");
+                    dataType.appendSource(false, "(max)");
+                    
+                } else if(tokens.matches(L_PAREN)) {
+                    long length = parseBracketedLong(tokens, dataType);
+                    dataType.setLength(length);
+                }
+                
+            } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHAR) 
+                    || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHARACTER)) {
+                // char
+                
+                if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHAR)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_CHAR);
+                    dataType = new DataType(typeName);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_CHAR);
+                    
+                } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_CHARACTER)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_CHARACTER);
+                    dataType = new DataType(typeName);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_CHARACTER);
+                    
                 } else {
                     throw new RuntimeException("Unimplemented yet");
                 }
