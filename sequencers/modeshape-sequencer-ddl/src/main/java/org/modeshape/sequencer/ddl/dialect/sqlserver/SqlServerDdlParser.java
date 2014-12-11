@@ -60,7 +60,6 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NONCLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NOT_FOR_REPLICATION;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.ON_CLAUSE;
-import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.OUTPUT;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.RETURN_STATUS;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_AS_DATA_TYPE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.SEQ_CACHE;
@@ -1608,9 +1607,14 @@ public class SqlServerDdlParser extends StandardDdlParser
 
                                 if (!columnNodes.isEmpty()) {
                                     // find column
+                                    String possibleColumnName = possibleColumn;
+                                    if(possibleColumn.startsWith("[") && possibleColumn.endsWith("]")) {
+                                        possibleColumnName = possibleColumn.substring(1, possibleColumn.length() - 1);
+                                    }
+                                    
                                     for (final AstNode colNode : columnNodes) {
-                                        if (colNode.getName().toUpperCase().equals(possibleColumn.toUpperCase())) {
-                                            final AstNode colRef = nodeFactory().node(possibleColumn, indexNode, TYPE_COLUMN_REFERENCE);
+                                        if (colNode.getName().toUpperCase().equals(possibleColumnName.toUpperCase())) {
+                                            final AstNode colRef = nodeFactory().node(possibleColumnName, indexNode, TYPE_COLUMN_REFERENCE);
                                             
                                             if (asc || desc) {
                                                 colRef.addMixin(SqlServerDdlLexicon.TYPE_INDEX_ORDERABLE);

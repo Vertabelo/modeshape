@@ -29,7 +29,9 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_ST
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_REFERENCE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_SEQUENCE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_INDEX_STATEMENT;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -478,5 +480,33 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         assertScoreAndParse(content, null, 1);
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, SqlServerDdlLexicon.TYPE_EXECUTE_STATEMENT));
+    }
+
+    @Test
+    public void shouldParseCreateIndex() {
+        printTest("shouldParseCreateIndex()");
+        String content = "CREATE TABLE [bap].[proje_anahtar_kelime] (" +
+        		"    [id] int NOT NULL," +
+        		"    [proje_id] int NULL," +
+        		"    [anahtarkelime_id] int NULL); " +
+        		"" +
+        		"CREATE INDEX [proje_idx] " +
+        		"    ON [bap].[proje_anahtar_kelime] ([proje_id] ASC) " +
+        		"    WITH (STATISTICS_NORECOMPUTE = ON);";
+        
+        assertScoreAndParse(content, null, 2);
+        
+        // check create table
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        
+        // check create index
+        childNode = rootNode.getChildren().get(1);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_INDEX_STATEMENT));
+        
+        assertEquals(1, childNode.getChildren().size());
+        AstNode indexChildNode = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(indexChildNode, TYPE_COLUMN_REFERENCE));
+        assertEquals("proje_id", indexChildNode.getName());
     }
 }
