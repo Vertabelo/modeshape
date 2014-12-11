@@ -354,7 +354,7 @@ public class StandardDdlParserTest extends DdlParserTestHelper {
         assertTrue(column.getProperty(DATATYPE_PRECISION) == null);
         assertEquals("NULL", column.getProperty(NULLABLE));
         assertEquals(DEFAULT_ID_LITERAL, column.getProperty(DEFAULT_OPTION));
-        assertEquals("12345", column.getProperty(DEFAULT_VALUE));
+        assertEquals("(12345)", column.getProperty(DEFAULT_VALUE));
 
         tableNode.removeAllChildren();
 
@@ -372,7 +372,7 @@ public class StandardDdlParserTest extends DdlParserTestHelper {
         assertEquals(2, column.getProperty(DATATYPE_SCALE));
         assertTrue(column.getProperty(DATATYPE_LENGTH) == null);
         assertEquals(DEFAULT_ID_LITERAL, column.getProperty(DEFAULT_OPTION));
-        assertEquals("6.213", column.getProperty(DEFAULT_VALUE));
+        assertEquals("(6.213)", column.getProperty(DEFAULT_VALUE));
     }
 
     @FixFor( "MODE-820" )
@@ -702,7 +702,7 @@ public class StandardDdlParserTest extends DdlParserTestHelper {
         assertTrue(column.getProperty(DATATYPE_PRECISION) == null);
         assertEquals("NOT NULL", column.getProperty(NULLABLE));
         assertEquals(DEFAULT_ID_LITERAL, column.getProperty(DEFAULT_OPTION));
-        assertEquals("100", column.getProperty(DEFAULT_VALUE));
+        assertEquals("(100)", column.getProperty(DEFAULT_VALUE));
     }
 
     @Test
