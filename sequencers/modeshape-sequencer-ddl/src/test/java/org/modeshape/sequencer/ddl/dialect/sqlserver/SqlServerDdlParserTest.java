@@ -271,6 +271,18 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
+
+    @Test
+    public void shouldParseCreateTable_11() {
+        // z modelu klienta
+        printTest("shouldParseCreateTable_11");
+        String content = "CREATE TABLE [bap].[proje] (" +
+        		"     [id] int NOT NULL, " +
+        		"     [baska_kurum_destegi_durum] bit NULL DEFAULT ((0)) )";
+        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
     
     
 

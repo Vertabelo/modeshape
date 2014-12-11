@@ -2802,12 +2802,10 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             } else if (tokens.canConsume("NULL") || tokens.canConsume("NULL")) {
                 optionID = DEFAULT_ID_NULL;
                 defaultValue = "NULL";
-            } else if (tokens.canConsume(L_PAREN)) {
+            } else if (tokens.matches(L_PAREN)) {
                 optionID = DEFAULT_ID_LITERAL;
+                defaultValue = "(" + parseContentBetweenParens(tokens) + ")";
                 
-                while (!tokens.canConsume(R_PAREN)) {
-                    defaultValue = defaultValue + tokens.consume();
-                }
             } else {
                 optionID = DEFAULT_ID_LITERAL;
                 // Assume default was EMPTY or ''
