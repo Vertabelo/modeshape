@@ -36,6 +36,7 @@ import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.TY
 import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.TYPE_GRANT_ON_FUNCTION_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.TYPE_LISTEN_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.TYPE_RENAME_COLUMN;
+import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.TYPE_COLUMN_DEFINITION;
 import org.junit.Before;
 import org.junit.Test;
 import org.modeshape.sequencer.ddl.DdlConstants;
@@ -277,6 +278,20 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
+
+    @Test
+    public void shouldParseCreateTable_character_varrying_no_length() {
+        printTest("shouldParseCreateTable_character_varying_no_length()");
+        String content = "create table foo (bar character varying);";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        
+        AstNode columnNode = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
+        
+    }
+    
 
     // LISTEN virtual;
 

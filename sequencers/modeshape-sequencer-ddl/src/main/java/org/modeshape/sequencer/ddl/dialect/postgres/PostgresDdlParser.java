@@ -27,7 +27,9 @@ import org.modeshape.common.text.ParsingException;
 import org.modeshape.sequencer.ddl.DdlParserProblem;
 import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
+import org.modeshape.sequencer.ddl.DdlConstants.DataTypes;
 import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
+
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.ALL_PRIVILEGES;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DDL_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DDL_LENGTH;
@@ -65,12 +67,15 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_MISSING_TERMIN
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
+
 import org.modeshape.sequencer.ddl.StandardDdlParser;
 import org.modeshape.sequencer.ddl.datatype.DataType;
 import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
 
 import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.*;
+
 import org.modeshape.sequencer.ddl.node.AstNode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -2165,11 +2170,27 @@ public class PostgresDdlParser extends StandardDdlParser
          */
         @Override
         protected DataType parseCharStringType( DdlTokenStream tokens ) throws ParsingException {
-            DataType result = super.parseCharStringType(tokens);
+
+            DataType dataType = null;
+            String typeName = null;
+
+            // EDWM-1251
+            if (tokens.matches(DataTypes.DTYPE_CHARACTER_VARYING)) {
+                typeName = getStatementTypeName(DataTypes.DTYPE_CHARACTER_VARYING);
+                dataType = new DataType(typeName);
+                consume(tokens, dataType, false,
+                        DataTypes.DTYPE_CHARACTER_VARYING);
+                if (tokens.matches(L_PAREN)) {
+                    long length = parseBracketedLong(tokens, dataType);
+                    dataType.setLength(length);
+                }
+            } else {
+                dataType = super.parseCharStringType(tokens);
+            }
 
             tokens.canConsume("FOR", "BIT", "DATA");
 
-            return result;
+            return dataType;
         }
 
         /**
