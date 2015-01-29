@@ -2652,6 +2652,38 @@ public class SqlServerDdlParser extends StandardDdlParser
                 }
                 
                 return dataType;
+                
+            } else if(tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NCHAR)
+                    || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHAR)
+                    || tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHARACTER)) {
+                //  national char varying [ ( n | max ) ]
+                
+                dataType = new DataType();
+                if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NCHAR)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_NCHAR);
+                    dataType = new DataType(typeName);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_NCHAR);
+                    
+                } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHAR)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHAR);
+                    dataType = new DataType(typeName);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR);
+                    
+                } else if (tokensMatchesWithSquareBrackets(tokens, DataTypes.DTYPE_NATIONAL_CHARACTER)) {
+                    typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHARACTER);
+                    dataType = new DataType(typeName);
+                    consumeWithSquareBrackets(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER);
+                    
+                } else {
+                    throw new RuntimeException("Unimplemented yet");
+                }
+                
+                if(tokens.matches(L_PAREN)) {
+                    long length = parseBracketedLong(tokens, dataType);
+                    dataType.setLength(length);
+                }
+                
+                return dataType;
             }
             
             return super.parseNationalCharStringType(tokens);
