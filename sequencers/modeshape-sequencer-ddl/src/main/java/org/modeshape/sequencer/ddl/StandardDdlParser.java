@@ -2446,7 +2446,17 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             while (true) {
 
                 tokens.consume('['); // [ bracket
-                sb.append(consumeIdentifier(tokens)); // name
+                
+                // the name may contain spaces (at least in SQL Server 2012)
+                boolean first = true;
+                while(!tokens.matches(']')) {
+                    if(!first) {
+                        sb.append(SPACE);
+                    }
+                    sb.append(consumeIdentifier(tokens));
+                    first = false;
+                }
+                
                 tokens.consume(']'); // ] bracket
                 if (tokens.matches('.')) {
                     sb.append(tokens.consume()); // '.'
