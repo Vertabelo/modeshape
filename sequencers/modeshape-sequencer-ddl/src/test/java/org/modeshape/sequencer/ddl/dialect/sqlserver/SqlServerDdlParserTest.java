@@ -24,6 +24,7 @@
 package org.modeshape.sequencer.ddl.dialect.sqlserver;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
@@ -33,11 +34,14 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_REFEREN
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_SEQUENCE_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_INDEX_STATEMENT;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
+import org.modeshape.sequencer.ddl.StandardDdlLexicon;
+import org.modeshape.sequencer.ddl.dialect.sqlite.SqliteDdlLexicon;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 public class SqlServerDdlParserTest extends DdlParserTestHelper {
@@ -546,5 +550,33 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         AstNode indexChildNode = childNode.getChildren().get(0);
         assertTrue(hasMixinType(indexChildNode, TYPE_COLUMN_REFERENCE));
         assertEquals("proje_id", indexChildNode.getName());
+    }
+    
+    @Test
+    public void shouldParseIdentity() {
+        String content = "CREATE TABLE t (ID int IDENTITY(1,2));"; 
+        
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT));
+        
+        AstNode columnNode = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, StandardDdlLexicon.TYPE_COLUMN_DEFINITION));
+        assertNotNull(columnNode.getProperty(SqlServerDdlLexicon.COLUMN_IDENTITY));
+        assertEquals("1", columnNode.getProperty(SqlServerDdlLexicon.COLUMN_IDENTITY_SEED));
+        assertEquals("2", columnNode.getProperty(SqlServerDdlLexicon.COLUMN_IDENTITY_INCREMENT));
+    }
+    
+    @Test
+    public void shouldParseIdentity2() {
+        String content = "CREATE TABLE t (ID int IDENTITY);"; 
+        
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT));
+        
+        AstNode columnNode = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, StandardDdlLexicon.TYPE_COLUMN_DEFINITION));
+        assertNotNull(columnNode.getProperty(SqlServerDdlLexicon.COLUMN_IDENTITY));
     }
 }

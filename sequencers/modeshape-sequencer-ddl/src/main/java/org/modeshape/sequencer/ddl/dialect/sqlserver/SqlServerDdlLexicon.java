@@ -88,6 +88,8 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String COLUMN_FILESTREAM    = PREFIX + ":filestream";
     public static final String COLUMN_SPARSE        = PREFIX + ":sparse";
     public static final String COLUMN_IDENTITY      = PREFIX + ":identity";
+    public static final String COLUMN_IDENTITY_SEED      = PREFIX + ":identity_seed";
+    public static final String COLUMN_IDENTITY_INCREMENT      = PREFIX + ":identity_increment";
     public static final String COLUMN_ROWGUIDCOL    = PREFIX + ":rowguidcol";
     
     // execute properties

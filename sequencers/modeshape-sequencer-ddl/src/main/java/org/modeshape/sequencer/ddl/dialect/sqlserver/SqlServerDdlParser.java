@@ -1167,8 +1167,20 @@ public class SqlServerDdlParser extends StandardDdlParser
     protected boolean parseIdentityClause(DdlTokenStream tokens, AstNode columnNode) throws ParsingException {
         // IDENTITY [ ( seed ,increment ) ] [ NOT FOR REPLICATION ] 
         if(tokens.canConsume("IDENTITY")) {
+            
             if(tokens.matches(L_PAREN)) {
-                parseContentBetweenParens(tokens);
+                String identityStatement = parseContentBetweenParens(tokens);
+                
+                DdlTokenStream identityTokens = new DdlTokenStream(identityStatement, DdlTokenStream.ddlTokenizer(true), false);
+                identityTokens.start();
+                
+                String seed = identityTokens.consume();
+                columnNode.setProperty(SqlServerDdlLexicon.COLUMN_IDENTITY_SEED, seed);
+                
+                identityTokens.consume(",");
+                
+                String increment = identityTokens.consume();
+                columnNode.setProperty(SqlServerDdlLexicon.COLUMN_IDENTITY_INCREMENT, increment);
             }
             
             tokens.canConsume("NOT", "FOR", "REPLICATION");
