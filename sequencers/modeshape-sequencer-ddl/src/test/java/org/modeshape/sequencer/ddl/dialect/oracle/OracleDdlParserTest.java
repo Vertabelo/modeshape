@@ -23,13 +23,28 @@
  */
 package org.modeshape.sequencer.ddl.dialect.oracle;
 
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.matchers.JUnitMatchers.hasItems;
-import java.util.List;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.matchers.JUnitMatchers.hasItems;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_GRANT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_INDEXTYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ANALYZE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_COMMENT_ON_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_FUNCTION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_JAVA_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_MATERIALIZED_VIEW_LOG_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_MATERIALIZED_VIEW_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_PROCEDURE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_TRIGGER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ROLLBACK_STATEMENT;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.modeshape.common.FixFor;
@@ -37,9 +52,6 @@ import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_GRANT_STATEMENT;
-import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.*;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 public class OracleDdlParserTest extends DdlParserTestHelper {
@@ -624,4 +636,20 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         this.parser.parse(content, this.rootNode, null);
         assertThat(this.rootNode.getChildCount(), is(2));
     }
+    
+    @Test 
+    public void shoudTestNumericWithPercentInsteadOfNumber() {
+        
+        final String content = "create table FOO(BAR NUMBER(%,%));";
+        this.parser.parse(content, this.rootNode, null);
+        
+        final AstNode tableNode = this.rootNode.getChildren().get(0);
+        assertThat(tableNode.getName(), is("FOO"));
+        assertThat(tableNode.getChildCount(), is(1)); // 1 columns
+        
+        System.out.println(this.rootNode);
+        assertThat(this.rootNode.getChildCount(), is(3));
+        
+    }
+    
 }

@@ -27,12 +27,18 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_LENGTH;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_NAME;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_PRECISION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_SCALE;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.modeshape.common.text.ParsingException;
+import org.modeshape.common.text.Position;
 import org.modeshape.sequencer.ddl.DdlConstants;
+import org.modeshape.sequencer.ddl.DdlParserProblem;
+import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
+import org.modeshape.sequencer.ddl.DdlConstants.Problems;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 /**
@@ -50,11 +56,15 @@ public class DataTypeParser implements DdlConstants {
     private int defaultLength = 255;
     private int defaultPrecision = 0;
     private int defaultScale = 0;
-
+    
+    private ArrayList<DdlParserProblem> problems;
+    
     public DataTypeParser() {
         super();
 
         initialize();
+        
+        this.problems = new ArrayList<DdlParserProblem>();
     }
 
     private void initialize() {
@@ -94,6 +104,14 @@ public class DataTypeParser implements DdlConstants {
 
     }
 
+    public void addProblem( DdlParserProblem problem ) {
+        problems.add(problem);
+    }
+    
+    public ArrayList<DdlParserProblem> getProblems() {
+        return problems;
+    }
+    
     /**
      * Method determines if the next set of tokens matches one of the registered data type token sets.
      * 
@@ -462,12 +480,24 @@ public class DataTypeParser implements DdlConstants {
             if (tokens.matches(L_PAREN)) {
                 consume(tokens, dataType, false, L_PAREN);
                 
-                int precision = (int)parseLong(tokens, dataType);
-                dataType.setPrecision(precision);
+                try {
+                    int precision = (int)parseLong(tokens, dataType);
+                    dataType.setPrecision(precision);
+                } catch (NumberFormatException e) {
+                    String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
+                    DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
+                    addProblem(problem);
+                }
                 
                 if (canConsume(tokens, dataType, false, COMMA)) {
-                    int scale = (int)parseLong(tokens, dataType);
-                    dataType.setScale(scale);
+                    try {
+                        int scale = (int)parseLong(tokens, dataType);
+                        dataType.setScale(scale);
+                    } catch (NumberFormatException e) {
+                        String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
+                        DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
+                        addProblem(problem);
+                    }
                 }
                 consume(tokens, dataType, false, R_PAREN);
             }
@@ -931,4 +961,6 @@ public class DataTypeParser implements DdlConstants {
             columnNode.setProperty(DATATYPE_SCALE, datatype.getScale());
         }
     }
+
+
 }

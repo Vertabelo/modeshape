@@ -39,8 +39,10 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTI
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_REFERENCE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.*;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.modeshape.common.text.ParsingException;
 import org.modeshape.common.text.Position;
 import org.modeshape.common.util.CheckArg;
@@ -2105,12 +2107,24 @@ public class OracleDdlParser extends StandardDdlParser
                 if (tokens.matches(L_PAREN)) {
                     consume(tokens, dataType, false, L_PAREN);
                     
-                    int precision = (int)parseLongOrAsterisk(tokens, dataType);
-                    dataType.setPrecision(precision);
+                    try {
+                        int precision = (int)parseLongOrAsterisk(tokens, dataType);
+                        dataType.setPrecision(precision);
+                    } catch (NumberFormatException e) {
+                        String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
+                        DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
+                        addProblem(problem);
+                    }
                     
                     if (canConsume(tokens, dataType, false, COMMA)) {
-                        int scale = (int)parseLong(tokens, dataType);
-                        dataType.setScale(scale);
+                        try {
+                            int scale = (int)parseLong(tokens, dataType);
+                            dataType.setScale(scale);
+                        } catch (NumberFormatException e) {
+                            String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
+                            DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
+                            addProblem(problem);
+                        }
                     }
                     consume(tokens, dataType, false, R_PAREN);
                 }
@@ -2141,6 +2155,7 @@ public class OracleDdlParser extends StandardDdlParser
                 tokens.consume("*");
                 return 38;
             }
+            
             return parseLong(tokens, dataType);
         }
 

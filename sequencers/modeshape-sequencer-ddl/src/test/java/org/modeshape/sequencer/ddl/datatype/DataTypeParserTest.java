@@ -549,6 +549,22 @@ public class DataTypeParserTest implements DdlConstants {
     }
 
     @Test
+    public void shouldParseNUMERICWithPercentInsteadOfNumber() {
+        printTest("shouldParseNUMERIC()");
+        String typeString = getDataTypeString(DataTypes.DTYPE_NUMERIC);
+       
+        String content = typeString + " (%, %)";
+        DdlTokenStream tokens = getTokens(content);
+        DataType dType = parser.parse(tokens);
+        Assert.assertNotNull("DataType was NOT found for Type = " + typeString, dType);
+        Assert.assertEquals("Wrong DataType found", typeString, dType.getName());
+        Assert.assertEquals("DataType length is not correct", -1, dType.getPrecision()); // PRECISION
+        Assert.assertEquals("DataType length is not correct", -1, dType.getScale()); // SCALE
+       
+    }
+    
+    
+    @Test
     public void shouldParseDECIMAL() {
         printTest("shouldParseDECIMAL()");
         String typeString = getDataTypeString(DataTypes.DTYPE_DECIMAL);

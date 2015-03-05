@@ -45,6 +45,7 @@ public final class DdlSequencerI18n {
     public static I18n errorInstantiatingParserForGrammarClasspath;
     public static I18n ddlNotScoredByParsers;
     public static I18n unknownParser;
+    public static I18n errorParsingDataTypeParameter;
 
     static {
         try {

@@ -227,6 +227,12 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         for (DdlParserProblem problem : problems) {
             attachNewProblem(problem, rootNode);
         }
+        
+        for (DdlParserProblem problem : this.datatypeParser.getProblems()) {
+            attachNewProblem(problem, rootNode);
+        }
+        
+        
 
         // // Compute the score based upon the number of AST nodes ...
         // // System.out.println("\n\n " + getId() + " (score=" + (getScore(rootNode) - 1 - (problems.size() * 2)) + ")\n" +
