@@ -23,6 +23,8 @@
  */
 package org.modeshape.sequencer.ddl.dialect.postgres;
 
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.Namespace.PREFIX;
+
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
 
 /**
@@ -140,6 +142,8 @@ public class PostgresDdlLexicon  extends StandardDdlLexicon {
     public static final String TYPE_GRANT_ON_SCHEMA_STATEMENT         = Namespace.PREFIX + ":grantOnSchemaStatement";
     public static final String TYPE_GRANT_ON_TABLESPACE_STATEMENT     = Namespace.PREFIX + ":grantOnTablespaceStatement";
     public static final String TYPE_GRANT_ROLES_STATEMENT             = Namespace.PREFIX + ":grantRolesStatement";
+    
+    public static final String TYPE_REVOKE_ON_SCHEMA_STATEMENT = PREFIX + ":revokeOnSchemaStatement";
     
     public static final String TYPE_RENAME_COLUMN 					= Namespace.PREFIX + ":renamedColumn";
     

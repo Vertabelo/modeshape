@@ -494,5 +494,31 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, PostgresDdlLexicon.TYPE_CREATE_INDEX_STATEMENT));
     }
+    
+    @Test
+    public void shouldParseRevokeOnSchema() {
+        printTest("shouldParseRevokeOnSchema()");
+        String content = "REVOKE ALL ON SCHEMA public FROM public;";
+        assertScoreAndParse(content, null, 1);
+        
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, PostgresDdlLexicon.TYPE_REVOKE_ON_SCHEMA_STATEMENT));
+
+        assertEquals(1, childNode.getChildCount());
+
+    }
+    
+    @Test
+    public void shouldParseGrantAllOnSchema() {
+        printTest("shouldParseGrantAllOnSchema()");
+        String content = "GRANT ALL ON SCHEMA public TO postgres;";
+        assertScoreAndParse(content, null, 1);
+        
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, PostgresDdlLexicon.TYPE_GRANT_ON_SCHEMA_STATEMENT));
+
+        assertEquals(1, childNode.getChildCount());
+
+    }
 
 }

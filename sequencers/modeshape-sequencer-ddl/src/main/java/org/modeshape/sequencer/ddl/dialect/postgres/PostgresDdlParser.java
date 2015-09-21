@@ -64,9 +64,15 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_TABLE_STA
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_VIEW_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_GRANT_ON_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_MISSING_TERMINATOR;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_REVOKE_ON_CHARACTER_SET_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_REVOKE_ON_COLLATION_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_REVOKE_ON_DOMAIN_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_REVOKE_ON_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_REVOKE_ON_TRANSLATION_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.WITH_GRANT_OPTION;
 
 import org.modeshape.sequencer.ddl.StandardDdlParser;
 import org.modeshape.sequencer.ddl.datatype.DataType;
@@ -1172,7 +1178,8 @@ public class PostgresDdlParser extends StandardDdlParser
 
         tokens.consume("GRANT");
 
-        if (tokens.canConsume("ALL", "PRIVILEGES")) {
+        if (tokens.canConsume("ALL")) {
+        	tokens.canConsume("PRIVILEGES");
             allPrivileges = true;
         } else {
             parseGrantPrivileges(tokens, privileges);
@@ -1367,6 +1374,96 @@ public class PostgresDdlParser extends StandardDdlParser
 
         } while (tokens.canConsume(COMMA));
 
+    }
+    
+    protected AstNode parseRevokeStatement( DdlTokenStream tokens,
+    		AstNode parentNode ) throws ParsingException {
+    	assert tokens != null;
+    	assert parentNode != null;
+    	assert tokens.matches(REVOKE);
+
+    	markStartOfStatement(tokens);
+
+    	// <revoke statement> ::=
+    	// REVOKE [ GRANT OPTION FOR ]
+    	// <privileges>
+    	// ON <object name>
+    	// FROM <grantee> [ { <comma> <grantee> }... ] <drop behavior>
+
+    	AstNode revokeNode = null;
+    	boolean allPrivileges = false;
+    	boolean withGrantOption = false;
+
+    	List<AstNode> privileges = new ArrayList<AstNode>();
+
+    	tokens.consume("REVOKE");
+
+    	withGrantOption = tokens.canConsume("WITH", "GRANT", "OPTION");
+
+    	if (tokens.canConsume("ALL")) {
+    		tokens.canConsume("PRIVILEGES");
+    		allPrivileges = true;
+    	} else {
+    		parseGrantPrivileges(tokens, privileges);
+    	}
+    	tokens.consume("ON");
+
+    	if (tokens.canConsume("DOMAIN")) {
+    		String name = parseName(tokens);
+    		revokeNode = nodeFactory().node(name, parentNode, TYPE_REVOKE_ON_DOMAIN_STATEMENT);
+    	} else if (tokens.canConsume("COLLATION")) {
+    		String name = parseName(tokens);
+    		revokeNode = nodeFactory().node(name, parentNode, TYPE_REVOKE_ON_COLLATION_STATEMENT);
+    	} else if (tokens.canConsume("CHARACTER", "SET")) {
+    		String name = parseName(tokens);
+    		revokeNode = nodeFactory().node(name, parentNode, TYPE_REVOKE_ON_CHARACTER_SET_STATEMENT);
+    	} else if (tokens.canConsume("TRANSLATION")) {
+    		String name = parseName(tokens);
+    		revokeNode = nodeFactory().node(name, parentNode, TYPE_REVOKE_ON_TRANSLATION_STATEMENT);
+    	} else if (tokens.canConsume("SCHEMA")) { 
+    		String name = parseName(tokens);
+    		revokeNode = nodeFactory().node(name, parentNode, TYPE_REVOKE_ON_SCHEMA_STATEMENT);
+    	} else {
+    		tokens.canConsume(TABLE); // OPTIONAL
+    		String name = parseName(tokens);
+    		revokeNode = nodeFactory().node(name, parentNode, TYPE_REVOKE_ON_TABLE_STATEMENT);
+    	}
+
+    	// Attach privileges to grant node
+    	for (AstNode node : privileges) {
+    		node.setParent(revokeNode);
+    	}
+
+    	if (allPrivileges) {
+    		revokeNode.setProperty(ALL_PRIVILEGES, allPrivileges);
+    	}
+
+    	tokens.consume("FROM");
+
+    	do {
+    		String grantee = parseName(tokens);
+    		nodeFactory().node(grantee, revokeNode, GRANTEE);
+    	} while (tokens.canConsume(COMMA));
+
+    	String behavior = null;
+
+    	if (tokens.canConsume("CASCADE")) {
+    		behavior = "CASCADE";
+    	} else if (tokens.canConsume("RESTRICT")) {
+    		behavior = "RESTRICT";
+    	}
+
+    	if (behavior != null) {
+    		revokeNode.setProperty(DROP_BEHAVIOR, behavior);
+    	}
+
+    	if (withGrantOption) {
+    		revokeNode.setProperty(WITH_GRANT_OPTION, "WITH GRANT OPTION");
+    	}
+
+    	markEndOfStatement(tokens, revokeNode);
+
+    	return revokeNode;
     }
 
     private List<AstNode> parseMultipleGrantTargets( DdlTokenStream tokens,
