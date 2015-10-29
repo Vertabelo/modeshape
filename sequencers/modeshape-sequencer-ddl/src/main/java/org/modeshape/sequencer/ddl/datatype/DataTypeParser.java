@@ -122,6 +122,8 @@ public class DataTypeParser implements DdlConstants {
     public boolean isDatatype( DdlTokenStream tokens ) throws ParsingException {
         // Loop through the registered statement start string arrays and look for exact matches.
 
+      
+        
         for (String[] stmts : basicCharStringTypes) {
             if (tokens.matches(stmts)) return true;
         }
@@ -235,7 +237,6 @@ public class DataTypeParser implements DdlConstants {
      */
     public DataType parse( DdlTokenStream tokens ) throws ParsingException {
         DataType result = null;
-        
         if (isDatatype(tokens, DataTypes.DTYPE_CODE_CHAR_STRING)) {
             result = parseCharStringType(tokens);
         } else if (isDatatype(tokens, DataTypes.DTYPE_CODE_NCHAR_STRING)) {

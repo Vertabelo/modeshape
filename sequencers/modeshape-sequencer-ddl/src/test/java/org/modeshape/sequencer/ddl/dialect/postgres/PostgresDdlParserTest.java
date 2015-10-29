@@ -292,6 +292,30 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         
     }
     
+    @Test
+    public void shouldParseCreateTable_tztsrange() {
+        printTest("shouldParseCreateTable_tztsrange()");
+        String content = "create table foo (bar tztsrange);";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        
+        AstNode columnNode = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
+    }
+
+    @Test
+    public void shouldParseCreateTable_TIMESTAMPTZ() { 
+        
+        printTest("shouldParseCreateTable_timestamptz()");
+        String content = "create table foo (bar TIMESTAMPTZ);";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        
+        AstNode columnNode = childNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
+    }
 
     // LISTEN virtual;
 
