@@ -293,9 +293,9 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
     }
     
     @Test
-    public void shouldParseCreateTable_tztsrange() {
-        printTest("shouldParseCreateTable_tztsrange()");
-        String content = "create table foo (bar tztsrange);";
+    public void shouldParseCreateTable_tstzrange() {
+        printTest("shouldParseCreateTable_tstzrange()");
+        String content = "create table foo (bar tstzrange);";
         assertScoreAndParse(content, null, 1);
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));

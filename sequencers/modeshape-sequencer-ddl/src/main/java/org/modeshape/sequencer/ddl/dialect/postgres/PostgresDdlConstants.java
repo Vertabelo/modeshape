@@ -42,7 +42,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 		"BIGSERIAL", "BOX", "BOOLEAN", "BOOL", "BYTEA", "CIDR", "CIRCLE", "FLOAT4", "FLOAT8", "INET", "INT2", "INT4", "INT8",
         "LINE", "LSEG", "MACADDR", "MONEY", "PATH", "POINT", "POLYGON",
         "SERIAL", "SERIAL4", "SERIAL8", "TEXT", "TIMESTAMPZ", "TSQUERY",
-        "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID", "TIMESTAMPTZ", "TZTSRANGE"
+        "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID", "TIMESTAMPTZ", "TSTZRANGE"
 	};
 
 	interface PostgresStatementStartPhrases {
@@ -332,7 +332,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 		static final String[] DTYPE_TIMESTAMPTZ = {"TIMESTAMPTZ" }; 
         static final String[] DTYPE_VARBIT = {"VARBIT"}; 
         static final String[] DTYPE_OID = {"OID"};
-        static final String[] DTYPE_TZTSRANGE = {"TZTSRANGE"};
+        static final String[] DTYPE_TSTZRANGE = {"TSTZRANGE"};
 
 		
 		static final List<String[]> CUSTOM_DATATYPE_START_PHRASES = 
@@ -340,13 +340,13 @@ public interface PostgresDdlConstants extends DdlConstants {
                             DTYPE_CIDR, DTYPE_CIRCLE, DTYPE_FLOAT4, DTYPE_FLOAT8, DTYPE_INET, DTYPE_INT2, DTYPE_INT4, DTYPE_INT8,
                             DTYPE_LINE, DTYPE_LSEG, DTYPE_MACADDR, DTYPE_MONEY, DTYPE_PATH, DTYPE_POINT, DTYPE_POLYGON,
                             DTYPE_SERIAL, DTYPE_SERIAL4, DTYPE_SERIAL8, DTYPE_TEXT, DTYPE_TIMESTAMPZ, DTYPE_TSQUERY,
-                            DTYPE_TSVECTOR, DTYPE_TXID_SNAPSHOT, DTYPE_UUID, DTYPE_XML, DTYPE_OID, DTYPE_TZTSRANGE, DTYPE_TIMESTAMPTZ);
+                            DTYPE_TSVECTOR, DTYPE_TXID_SNAPSHOT, DTYPE_UUID, DTYPE_XML, DTYPE_OID, DTYPE_TSTZRANGE, DTYPE_TIMESTAMPTZ);
 		
 	  	static final List<String> CUSTOM_DATATYPE_START_WORDS = 
 	  		Arrays.asList("BIGINT", "BIGSERIAL", "BOX", "BOOLEAN", "BOOL", "BYTEA",
                             "CIDR", "CIRCLE", "FLOAT4", "FLOAT8", "INET", "INT2", "INT4", "INT8",
                             "LINE", "LSEG", "MACADDR", "MONEY", "PATH", "POINT", "POLYGON",
                             "SERIAL", "SERIAL4", "SERIAL8", "TEXT", "TIMESTAMPZ", "TSQUERY",
-                            "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID", "TZTSRANGE", "TIMESTAMPTZ");
+                            "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID", "TSTZRANGE", "TIMESTAMPTZ");
 	}
 }
