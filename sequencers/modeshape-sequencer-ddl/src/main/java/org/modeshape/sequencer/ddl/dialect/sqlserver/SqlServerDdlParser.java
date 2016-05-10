@@ -87,6 +87,8 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.WITH_OPTIONS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.modeshape.common.text.ParsingException;
@@ -130,7 +132,7 @@ public class SqlServerDdlParser extends StandardDdlParser
      */
     @Override
     protected boolean areNextTokensCreateTableOptions( final DdlTokenStream tokens ) throws ParsingException {
-        // current token can't be a terminator or the next n-tokens can't be a statement  
+        // current token can't be a terminator or the next n-tokens can't be a statement
         return (tokens.hasNext() && !isTerminator(tokens) && (tokens.computeNextStatementStartKeywordCount() == 0));
     }
 
@@ -498,26 +500,111 @@ public class SqlServerDdlParser extends StandardDdlParser
     @Override
     protected boolean isTableConstraint( DdlTokenStream tokens ) throws ParsingException {
         boolean result = false;
-
-        if ((tokens.matches("PRIMARY", "KEY"))
-                || (tokens.matches("FOREIGN", "KEY")) 
-                || (tokens.matches("UNIQUE"))
-                || (tokens.matches("CHECK"))) {
+        if (isConstraint(new LinkedListMatcher(tokens))) {
             result = true;
         } else if (tokens.matches("CONSTRAINT")) {
-            if (tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "UNIQUE")
-                    || tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "PRIMARY", "KEY")
-                    || tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "FOREIGN", "KEY")
-                    || tokens.matches("CONSTRAINT", DdlTokenStream.ANY_VALUE, "CHECK")
-                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "UNIQUE")
-                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "PRIMARY", "KEY")
-                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "FOREIGN", "KEY")
-                    || tokens.matches("CONSTRAINT", "[", DdlTokenStream.ANY_VALUE, "]", "CHECK")) {
-                result = true;
-            }
+            result = matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("PRIMARY", "KEY"))
+                    || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("FOREIGN", "KEY"))
+                    || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("UNIQUE"))
+                    || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("CHECK"));
+        }
+        return result;
+    }
+
+
+    private boolean isConstraint(LinkedListMatcher matcher) {
+        return (matcher.matches("PRIMARY", "KEY")) || (matcher.matches("FOREIGN", "KEY"))
+                || (matcher.matches("UNIQUE")) || (matcher.matches("CHECK"));
+    }
+
+    private boolean matchWithName(DdlTokenStream tokens, Iterable<String> beforeToken, Iterable<String> afterToken) {
+        LinkedListMatcher matcher = new LinkedListMatcher(tokens);
+        for(String token: beforeToken) {
+            matcher.add(token);
         }
 
-        return result;
+        if (!matcher.matches()) {
+            return false;
+        }
+
+        if (matcher.matches("[")) {
+            matcher.add("[");
+            if (matcher.matches(DdlTokenStream.ANY_VALUE)) {
+                matcher.add(DdlTokenStream.ANY_VALUE);
+                matchDots(matcher);
+                if (matcher.matches("]") == false) {
+                    return false;
+                }
+                matcher.add("]");
+            } else {
+                return false;
+            }
+        } else if (matcher.matches(DdlTokenStream.ANY_VALUE)) {
+            matcher.add(DdlTokenStream.ANY_VALUE);
+            matchDots(matcher);
+        }
+
+        for(String token: afterToken) {
+            matcher.add(token);
+        }
+
+        return matcher.matches();
+    }
+
+    /**
+     * Klasa służąca do matchowania, niezmieniająca stanu DdlTokenStreama (nie używa metod zmieniających stan streama)
+     *
+     *
+     * @author  Adam Mościcki
+     */
+    class LinkedListMatcher {
+        private final DdlTokenStream tokensStream;
+        private final LinkedList<String> tokensToMatch;
+        public LinkedListMatcher(DdlTokenStream tokensStream) {
+            this.tokensStream = tokensStream;
+            this.tokensToMatch = new LinkedList<String>();
+        }
+
+        /**
+         * Sprawdza czy aktualny stan tokenów do spawdzenia zgadza się z tymi ze strumienia
+         *
+         * @return {true} jeśli tak, {false} w p.p.
+         */
+        public boolean matches() {
+            return tokensStream.matches(tokensToMatch);
+        }
+
+        /**
+         * Sprawdza czy lista tokenów jest zgodna ze strumieniem
+         *
+         * @param first pierwszy token
+         * @param last kolejne
+         * @return {true} jeśli tak, {false} w p.p.
+         */
+        public boolean matches(String first, String... last) {
+            int argSize = last.length + 1;
+            this.add(first, last);
+            boolean result = tokensStream.matches(tokensToMatch);
+
+            while(argSize > 0) {
+                tokensToMatch.removeLast();
+                argSize--;
+            }
+            return result;
+        }
+
+        /**
+         * Dodaje tokeny do sprawdzenia
+         *
+         * @param first pierwszy token
+         * @param last kolejne
+         */
+        public void add(String first, String... last) {
+            tokensToMatch.add(first);
+            for (String token: last) {
+                tokensToMatch.add(token);
+            }
+        }
     }
     
     @Override
@@ -716,9 +803,8 @@ public class SqlServerDdlParser extends StandardDdlParser
          */
         consumeComment(tokens);
 
-        if (tokens.matches("UNIQUE") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "UNIQUE")
-                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "UNIQUE")) {
+        if (tokens.matches("UNIQUE")
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("UNIQUE"))) {
             String uc_name = "UC_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 uc_name = parseName(tokens); // UNIQUE CONSTRAINT NAME
@@ -748,8 +834,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             consumeComment(tokens);
             
         } else if (tokens.matches("PRIMARY", "KEY") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "PRIMARY", "KEY")
-                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "PRIMARY", "KEY")) {
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("PRIMARY", "KEY"))) {
+
             String pk_name = "PK_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 pk_name = parseName(tokens);
@@ -778,8 +864,7 @@ public class SqlServerDdlParser extends StandardDdlParser
             consumeComment(tokens);
 
         } else if (tokens.matches("FOREIGN", "KEY")
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "FOREIGN", "KEY")
-                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "FOREIGN", "KEY")) {
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("FOREIGN", "KEY"))) {
             String fk_name = "FK_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 fk_name = parseName(tokens);
@@ -806,9 +891,8 @@ public class SqlServerDdlParser extends StandardDdlParser
             
             consumeComment(tokens);
             
-        } else if (tokens.matches("CHECK") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "CHECK")
-                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "CHECK")) {
+        } else if (tokens.matches("CHECK")
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("CHECK"))) {
             String ck_name = "CHECK_1";
             if(tokens.canConsume("CONSTRAINT")) {
                 ck_name = parseName(tokens);
@@ -825,6 +909,50 @@ public class SqlServerDdlParser extends StandardDdlParser
             String clause = consumeParenBoundedTokens(tokens, true);
             constraintNode.setProperty(CHECK_SEARCH_CONDITION, clause);
         }
+    }
+
+    @Override
+    protected String parseName( DdlTokenStream tokens ) {
+        // Basically we want to construct a name that could have the form:
+        // [schemaName].[tableName].[columnName]
+        // NOTE: "[]" brackets are optional
+        StringBuffer sb = new StringBuffer();
+
+        if (tokens.matches('[')) {
+            // We have the bracketed case, so assume all brackets
+            while (true) {
+
+                tokens.consume('['); // [ bracket
+
+                // the name may contain spaces (at least in SQL Server 2012)
+                while(!tokens.matches(']')) {
+                    sb.append(consumeIdentifier(tokens));
+                }
+
+                tokens.consume(']'); // ] bracket
+                if (tokens.matches('.')) {
+                    sb.append(tokens.consume()); // '.'
+                } else {
+                    break;
+                }
+            }
+        } else {
+
+            // We have the NON-bracketed case, so assume all brackets
+            while (true) {
+
+                sb.append(consumeIdentifier(tokens)); // name
+
+                if (tokens.matches('.')) {
+                    sb.append(tokens.consume()); // '.'
+                } else {
+                    break;
+                }
+
+            }
+        }
+
+        return sb.toString();
     }
     
     protected void parsePkOrUniqueColumnNameList( DdlTokenStream tokens,
@@ -1038,8 +1166,8 @@ public class SqlServerDdlParser extends StandardDdlParser
         } else if (tokens.canConsume("NOT", "NULL")) {
             columnNode.setProperty(NULLABLE, "NOT NULL");
             result = true;
-        } else if (tokens.matches("UNIQUE") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "UNIQUE")) {
+        } else if (tokens.matches("UNIQUE")
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("UNIQUE"))) {
             result = true;
             String uc_name = "UC_1";
             if(tokens.canConsume("CONSTRAINT")) {
@@ -1069,8 +1197,8 @@ public class SqlServerDdlParser extends StandardDdlParser
 
             consumeComment(tokens);
             
-        } else if (tokens.matches("PRIMARY", "KEY") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "PRIMARY", "KEY")) {
+        } else if (tokens.matches("PRIMARY", "KEY")
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList( "PRIMARY", "KEY"))) {
             result = true;
             String pk_name = "PK_1";
             if(tokens.canConsume("CONSTRAINT")) {
@@ -1100,7 +1228,7 @@ public class SqlServerDdlParser extends StandardDdlParser
             consumeComment(tokens);
 
         } else if (tokens.matches("FOREIGN", "KEY")
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "FOREIGN", "KEY")) {
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList( "FOREIGN", "KEY"))) {
             result = true;
             String fk_name = "FK_1";
             if(tokens.canConsume("CONSTRAINT")) {
@@ -1130,7 +1258,7 @@ public class SqlServerDdlParser extends StandardDdlParser
             consumeComment(tokens);
             
         } else if (tokens.matches("CHECK") 
-                || tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "CHECK")) {
+                || matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("CHECK"))) {
             result = true;
             String ck_name = "CHECK_1";
             if(tokens.canConsume("CONSTRAINT")) {
@@ -1154,14 +1282,28 @@ public class SqlServerDdlParser extends StandardDdlParser
     
     @Override
     protected boolean parseDefaultClause(DdlTokenStream tokens, AstNode columnNode) throws ParsingException {
-        if(tokens.matches("CONSTRAINT", TokenStream.ANY_VALUE, "DEFAULT")
-                || tokens.matches("CONSTRAINT", "[", TokenStream.ANY_VALUE, "]", "DEFAULT")) {
-            // [ CONSTRAINT constraint_name ] DEFAULT constant_expression
-            // doc: "To maintain compatibility with earlier versions of SQL Server, a constraint name can be assigned to a DEFAULT."
+
+        boolean parsePossible = false;
+        // [ CONSTRAINT constraint_name ] DEFAULT constant_expression
+        // doc: "To maintain compatibility with earlier versions of SQL Server, a constraint name can be assigned to a DEFAULT."
+
+        if (matchWithName(tokens, Arrays.asList("CONSTRAINT", "["), Arrays.asList("]", "DEFAULT"))) {
+            parsePossible = true;
+        } else if(matchWithName(tokens, Arrays.asList("CONSTRAINT"), Arrays.asList("DEFAULT"))) {
+            parsePossible = true;
+        }
+
+        if (parsePossible) {
             tokens.consume("CONSTRAINT");
             parseName(tokens);
         }
         return super.parseDefaultClause(tokens, columnNode);
+    }
+
+    private void matchDots(LinkedListMatcher matcher) {
+        while (matcher.matches(".", TokenStream.ANY_VALUE)) {
+            matcher.add(".", TokenStream.ANY_VALUE);
+        }
     }
     
     protected boolean parseIdentityClause(DdlTokenStream tokens, AstNode columnNode) throws ParsingException {

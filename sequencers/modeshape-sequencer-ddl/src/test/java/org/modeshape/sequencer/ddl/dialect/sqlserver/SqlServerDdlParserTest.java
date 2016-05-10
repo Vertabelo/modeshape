@@ -579,4 +579,60 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(columnNode, StandardDdlLexicon.TYPE_COLUMN_DEFINITION));
         assertNotNull(columnNode.getProperty(SqlServerDdlLexicon.COLUMN_IDENTITY));
     }
+
+
+    @Test
+    public void shoudParseWithDot() {
+        String content = "CREATE TABLE [dbo].[Blade]("
+        + "[Id] [uniqueidentifier] NOT NULL CONSTRAINT [DF_dbo.Blade_Id]  DEFAULT (newsequentialid()),"
+        + "[Position] [nvarchar](max) NULL,"
+        + "[SerialNumber] [nvarchar](max) NULL,"
+        + "[NumberConfidence] [nvarchar](max) NULL,"
+        + "[Length] [decimal](25, 10) NULL,"
+        + "[Width] [decimal](25, 10) NULL,"
+        + "[Manufacturer] [nvarchar](max) NULL,"
+        + "[Type] [nvarchar](max) NULL,"
+        + "[TurbineId] [uniqueidentifier] NOT NULL DEFAULT ('00000000-0000-0000-0000-000000000000'),"
+        + "        CONSTRAINT [PK_dbo.Blade] PRIMARY KEY CLUSTERED"
+        + "        ("
+        + "        [Id] ASC"
+        + ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]"
+        + ") ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]"
+        + ");";
+        assertScoreAndParse(content, null, 1);
+        AstNode createTableName = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(createTableName, StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT));
+        assertEquals(10, createTableName.getChildCount());
+        AstNode pk = createTableName.getChildren().get(9);
+        assertTrue(hasMixinType(pk, StandardDdlLexicon.TYPE_TABLE_CONSTRAINT));
+    }
+
+
+    @Test
+    public void shoudParseWithTwoDots() {
+        String content = "CREATE TABLE [dbo].[Inspection](\n" +
+                "\t[Id] [uniqueidentifier] NOT NULL CONSTRAINT [DF_dbo.Inspection_Id]  DEFAULT (newsequentialid()),\n" +
+                /*"\t[Inspectors] [nvarchar](max) NULL,\n" +
+                "\t[Company] [nvarchar](max) NULL,\n" +
+                "\t[Type] [int] NULL,\n" +
+                "\t[Date] [datetime2](7) NULL,\n" +
+                "\t[IsDeleted] [bit] NOT NULL DEFAULT ((0)),\n" +*/
+                " CONSTRAINT [PK_dbo.Inspection] PRIMARY KEY CLUSTERED \n" +
+                "(\n" +
+                "\t[Id] ASC\n" +
+                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]\n" +
+                ") ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]";
+        assertScoreAndParse(content, null, 1);
+        AstNode createTableName = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(createTableName, StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void alterTableConstraintWithDots() {
+        String content = "ALTER TABLE [dbo].[Blade]  WITH CHECK ADD  CONSTRAINT [FK_dbo.Blade_dbo.Node_Id] FOREIGN KEY([Id])\n" +
+                "REFERENCES [dbo].[Node] ([Id])";
+        assertScoreAndParse(content, null, 1);
+        AstNode createTableName = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(createTableName, StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT));
+    }
 }
