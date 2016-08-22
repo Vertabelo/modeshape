@@ -96,6 +96,7 @@ public class PostgresDdlParser extends StandardDdlParser
      * The Postress parser identifier.
      */
     public static final String ID = "POSTGRES";
+    public static final int TRIES_OF_PARSE = 1000;
 
     static List<String[]> postgresDataTypeStrings = new ArrayList<String[]>();
 
@@ -555,7 +556,13 @@ public class PostgresDdlParser extends StandardDdlParser
         // terminator
         // or a new statement
 
+        // w niektórych przypadkach poniższa pętla sie nie kończy
+        // zabezpiecznie na ten przypadek
+        int triesGuard = TRIES_OF_PARSE;
         while (tokens.hasNext() && !tokens.matches(getTerminator()) && !tokens.matches(DdlTokenizer.STATEMENT_KEY)) {
+            if (triesGuard == 0) {
+                throw new IllegalStateException("Parsing is taking too much time");
+            }
             boolean parsedDefaultClause = parseDefaultClause(tokens, columnNode);
             if (!parsedDefaultClause) {
                 parseCollateClause(tokens, columnNode);
@@ -565,6 +572,7 @@ public class PostgresDdlParser extends StandardDdlParser
             if (tokens.matches(COMMA)) {
                 break;
             }
+            triesGuard--;
         }
     }
 

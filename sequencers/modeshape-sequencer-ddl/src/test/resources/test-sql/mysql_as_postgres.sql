@@ -1,0 +1,4 @@
+SET NAMES 'utf8';
+
+ALTER TABLE `PREFIX_delivery` ADD `id_shop` INT UNSIGNED NULL DEFAULT NULL AFTER `id_delivery`;
+ALTER TABLE `PREFIX_delivery` ADD `id_group_shop` INT UNSIGNED NULL DEFAULT NULL AFTER `id_shop`;
