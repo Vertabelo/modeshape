@@ -57,6 +57,7 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INCLUDE_COLUMNS;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_CLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_NONCLUSTERED;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_COLUMNSTORE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NONCLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NOT_FOR_REPLICATION;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.ON_CLAUSE;
@@ -369,7 +370,8 @@ public class SqlServerDdlParser extends StandardDdlParser
 
         if (tokens.matches(STMT_CREATE_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_INDEX)
             || tokens.matches(STMT_CREATE_CLUSTERED_INDEX) || tokens.matches(STMT_CREATE_NONCLUSTERED_INDEX)
-            || tokens.matches(STMT_CREATE_UNIQUE_CLUSTERED_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_NONCLUSTERED_INDEX)) {
+            || tokens.matches(STMT_CREATE_UNIQUE_CLUSTERED_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_NONCLUSTERED_INDEX)
+            || tokens.matches(STMT_CREATE_NONCLUSTERED_COLUMNSTORE_INDEX) || tokens.matches(STMT_CREATE_CLUSTERED_COLUMNSTORE_INDEX)) {
             return parseCreateIndex(tokens, parentNode);
             
         } else if (tokens.matches(STMT_CREATE_SEQUENCE)) {
@@ -388,8 +390,6 @@ public class SqlServerDdlParser extends StandardDdlParser
             return parseStatement(tokens, STMT_CREATE_BROKER_PRIORITY, parentNode, TYPE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_CERTIFICATE)) {
             return parseStatement(tokens, STMT_CREATE_CERTIFICATE, parentNode, TYPE_STATEMENT);
-        } else if (tokens.matches(STMT_CREATE_NONCLUSTERED_COLUMNSTORE_INDEX)) {
-            return parseStatement(tokens, STMT_CREATE_NONCLUSTERED_COLUMNSTORE_INDEX, parentNode, TYPE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_COLUMNSTORE_INDEX)) {
             return parseStatement(tokens, STMT_CREATE_COLUMNSTORE_INDEX, parentNode, TYPE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_CONTRACT)) {
@@ -428,6 +428,10 @@ public class SqlServerDdlParser extends StandardDdlParser
             return parseStatement(tokens, STMT_CREATE_CLUSTERED_INDEX, parentNode, TYPE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_NONCLUSTERED_INDEX)) {
             return parseStatement(tokens, STMT_CREATE_NONCLUSTERED_INDEX, parentNode, TYPE_STATEMENT);
+        } else if (tokens.matches(STMT_CREATE_CLUSTERED_COLUMNSTORE_INDEX)) {
+            return parseStatement(tokens, STMT_CREATE_CLUSTERED_COLUMNSTORE_INDEX, parentNode, TYPE_STATEMENT);
+        } else if (tokens.matches(STMT_CREATE_NONCLUSTERED_COLUMNSTORE_INDEX)) {
+            return parseStatement(tokens, STMT_CREATE_NONCLUSTERED_COLUMNSTORE_INDEX, parentNode, TYPE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_UNIQUE_CLUSTERED_INDEX)) {
             return parseStatement(tokens, STMT_CREATE_UNIQUE_CLUSTERED_INDEX, parentNode, TYPE_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_UNIQUE_NONCLUSTERED_INDEX)) {
@@ -1871,7 +1875,8 @@ public class SqlServerDdlParser extends StandardDdlParser
         assert parentNode != null;
         assert (tokens.matches(STMT_CREATE_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_INDEX)
                 || tokens.matches(STMT_CREATE_CLUSTERED_INDEX) || tokens.matches(STMT_CREATE_NONCLUSTERED_INDEX)
-                || tokens.matches(STMT_CREATE_UNIQUE_CLUSTERED_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_NONCLUSTERED_INDEX));
+                || tokens.matches(STMT_CREATE_UNIQUE_CLUSTERED_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_NONCLUSTERED_INDEX)
+                || tokens.matches(STMT_CREATE_NONCLUSTERED_COLUMNSTORE_INDEX) || tokens.matches(STMT_CREATE_CLUSTERED_COLUMNSTORE_INDEX));
 
         markStartOfStatement(tokens);
         tokens.consume(CREATE);
@@ -1879,6 +1884,7 @@ public class SqlServerDdlParser extends StandardDdlParser
         final boolean isUnique = tokens.canConsume(UNIQUE);
         final boolean isClustered = tokens.canConsume("CLUSTERED");
         final boolean isNonclustered = tokens.canConsume("NONCLUSTERED");
+        final boolean isColumnstore = tokens.canConsume("COLUMNSTORE");
 
         tokens.consume(INDEX);
         final String indexName = parseName(tokens);
@@ -1894,6 +1900,7 @@ public class SqlServerDdlParser extends StandardDdlParser
         indexNode.setProperty(UNIQUE_INDEX, isUnique);
         indexNode.setProperty(INDEX_CLUSTERED, isClustered);
         indexNode.setProperty(INDEX_NONCLUSTERED, isNonclustered);
+        indexNode.setProperty(INDEX_COLUMNSTORE, isColumnstore);
         
         // parse left-paren content right-paren
         final String columnExpressionList = parseContentBetweenParens(tokens);

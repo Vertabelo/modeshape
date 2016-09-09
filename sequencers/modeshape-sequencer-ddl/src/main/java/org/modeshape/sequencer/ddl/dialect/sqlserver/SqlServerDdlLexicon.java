@@ -57,6 +57,7 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String INDEX_ORDER              = PREFIX + ":order";
     public static final String INDEX_CLUSTERED          = PREFIX + ":clustered";
     public static final String INDEX_NONCLUSTERED       = PREFIX + ":nonclustered";
+    public static final String INDEX_COLUMNSTORE        = PREFIX + ":columnstore";
     public static final String WHERE_CLAUSE             = PREFIX + ":whereClause";
     public static final String ON_CLAUSE                = PREFIX + ":onClause";
     public static final String INCLUDE_COLUMNS          = PREFIX + ":includeColumns";
