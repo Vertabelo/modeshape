@@ -968,29 +968,50 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
 
         while (tokens.hasNext() && !tokens.matches(COMMA) && !tokens.matches(SEMICOLON) && 
                 !tokens.matches("FIRST") && !tokens.matches("AFTER")) {
-            boolean parsedNullClause = parseNullClause(tokens, columnNode);
-            boolean parsedDefaultClause = parseDefaultClause(tokens, columnNode);
-            boolean parsedAutoIncrementClause = parseAutoIncrementClause(tokens, columnNode);
-            boolean parsedKeyClause = parseKeyClause(tokens, columnNode);
-            boolean parsedCommentClause = parseCommentClause(tokens, columnNode);
-            boolean parsedColumnFormatClause = parseColumnFormatClause(tokens, columnNode, unusedTokensSB);
-            boolean parsedStorageClause = parseStorageClause(tokens, columnNode, unusedTokensSB);
-            boolean parsedReferenceClause = parseReferenceClause(tokens, columnNode);
 
-            if (!parsedNullClause
-                    && !parsedDefaultClause 
-                    && !parsedAutoIncrementClause
-                    && !parsedKeyClause
-                    && !parsedCommentClause
-                    && !parsedColumnFormatClause
-                    && !parsedStorageClause
-                    && !parsedReferenceClause) {
-                // THIS IS AN ERROR. NOTHING FOUND.
-                // NEED TO absorb tokens
-                unusedTokensSB.append(SPACE).append(tokens.consume());
+            if (parseGeneratedAsClause(tokens, columnNode)) {
+                // GENERATED COLUMN
+                boolean parsedUniqueKeyClause = parseUniqueKeyClause(tokens, columnNode);
+                boolean parsedCommentClause = parseCommentClause(tokens, columnNode);
+                boolean parsedNullClause = parseNullClause(tokens, columnNode);
+                boolean parsedPrimaryKeyClause = parsePrimaryKeyClause(tokens, columnNode);
+
+                if (!parsedUniqueKeyClause
+                        && !parsedCommentClause 
+                        && !parsedNullClause
+                        && !parsedPrimaryKeyClause) {
+                    // THIS IS AN ERROR. NOTHING FOUND.
+                    // NEED TO absorb tokens
+                    unusedTokensSB.append(SPACE).append(tokens.consume());
+                }
+
+                tokens.canConsume(DdlTokenizer.COMMENT);
+            } else {
+                // NORMAL COLUMN
+                boolean parsedNullClause = parseNullClause(tokens, columnNode);
+                boolean parsedDefaultClause = parseDefaultClause(tokens, columnNode);
+                boolean parsedAutoIncrementClause = parseAutoIncrementClause(tokens, columnNode);
+                boolean parsedKeyClause = parseKeyClause(tokens, columnNode);
+                boolean parsedCommentClause = parseCommentClause(tokens, columnNode);
+                boolean parsedColumnFormatClause = parseColumnFormatClause(tokens, columnNode, unusedTokensSB);
+                boolean parsedStorageClause = parseStorageClause(tokens, columnNode, unusedTokensSB);
+                boolean parsedReferenceClause = parseReferenceClause(tokens, columnNode);
+
+                if (!parsedNullClause
+                        && !parsedDefaultClause 
+                        && !parsedAutoIncrementClause
+                        && !parsedKeyClause
+                        && !parsedCommentClause
+                        && !parsedColumnFormatClause
+                        && !parsedStorageClause
+                        && !parsedReferenceClause) {
+                    // THIS IS AN ERROR. NOTHING FOUND.
+                    // NEED TO absorb tokens
+                    unusedTokensSB.append(SPACE).append(tokens.consume());
+                }
+
+                tokens.canConsume(DdlTokenizer.COMMENT);
             }
-
-            tokens.canConsume(DdlTokenizer.COMMENT);
         }
 
         if (unusedTokensSB.length() > 0) {
@@ -1000,7 +1021,26 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
             addProblem(problem, tableNode);
         }
     }
-    
+
+    private boolean parseGeneratedAsClause(DdlTokenStream tokens, AstNode columnNode) {
+        if (!tokens.canConsume("GENERATED", "ALWAYS", "AS") && !tokens.canConsume("AS")) {
+            return false;
+        } 
+
+        tokens.consume("(");
+        String generatedAs = parseUntilCustomTokenOrTerminator(tokens, ")");
+        columnNode.setProperty(MySqlDdlLexicon.GENERATED_AS, generatedAs);
+        tokens.consume(")");
+
+        if (tokens.canConsume("STORED")) {
+            columnNode.setProperty(MySqlDdlLexicon.GENERATED_VALUE_STORAGE, "STORED");
+        } else {
+            tokens.canConsume("VIRTUAL");
+            columnNode.setProperty(MySqlDdlLexicon.GENERATED_VALUE_STORAGE, "VIRTUAL");
+        }
+
+        return true;
+    }
 
     private boolean parseReferenceClause(DdlTokenStream tokens, AstNode columnNode) {
 //        REFERENCES tbl_name (index_col_name,...)
@@ -1099,6 +1139,10 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
     }
 
     private boolean parseKeyClause(DdlTokenStream tokens, AstNode columnNode) {
+        return parseUniqueKeyClause(tokens, columnNode) || parsePrimaryKeyClause(tokens, columnNode);
+    }
+
+    private boolean parseUniqueKeyClause(DdlTokenStream tokens, AstNode columnNode) {
         if (tokens.canConsume("UNIQUE")) {
             tokens.canConsume("KEY");
 
@@ -1111,7 +1155,12 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
             nodeFactory().node(columnNode.getName(), constraintNode, TYPE_COLUMN_REFERENCE);
             
             return true;
-        } else if (tokens.canConsume("PRIMARY", "KEY") || tokens.canConsume("KEY")) {
+        }
+        return false;
+    }
+
+    private boolean parsePrimaryKeyClause(DdlTokenStream tokens, AstNode columnNode) {
+        if (tokens.canConsume("PRIMARY", "KEY") || tokens.canConsume("KEY")) {
             String pk_name = "PK_1"; // PRIMARY KEY NAME
 
             AstNode constraintNode = nodeFactory().node(pk_name, columnNode.getParent(), TYPE_TABLE_CONSTRAINT);
@@ -1119,9 +1168,8 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
 
             nodeFactory().node(columnNode.getName(), constraintNode, TYPE_COLUMN_REFERENCE);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     private boolean parseAutoIncrementClause(DdlTokenStream tokens, AstNode columnNode) {
@@ -1806,7 +1854,7 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
                 
             } else if (tokens.matches(DTYPE_MEDIUMBLOB) || tokens.matches(DTYPE_LONGBLOB) 
                        || tokens.matches(DTYPE_TINYBLOB) || tokens.matches(DTYPE_YEAR) || tokens.matches(DTYPE_DATETIME)
-                       || tokens.matches(DTYPE_BOOLEAN) || tokens.matches(DTYPE_BOOL)) {
+                       || tokens.matches(DTYPE_BOOLEAN) || tokens.matches(DTYPE_BOOL) || tokens.matches(DTYPE_JSON)) {
                 String typeName = tokens.consume();
                 dataType = new DataType(typeName);
             } else if (tokens.matches(DTYPE_MEDIUMINT) || tokens.matches(DTYPE_TINYINT) || tokens.matches(DTYPE_VARBINARY)

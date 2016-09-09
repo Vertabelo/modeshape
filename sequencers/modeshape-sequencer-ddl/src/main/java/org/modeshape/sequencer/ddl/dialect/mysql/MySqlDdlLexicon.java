@@ -109,4 +109,7 @@ public class MySqlDdlLexicon  extends StandardDdlLexicon {
     public static final String OLD_NAME = Namespace.PREFIX + ":oldName";
     public static final String INDEX_ORDER = Namespace.PREFIX + ":indexOrder";
     public static final String ON_UPDATE_CURRENT_TIMESTAMP = Namespace.PREFIX + ":onUpdateCurrentTimestamp";
+    
+    public static final String GENERATED_AS = Namespace.PREFIX + ":generatedAs";
+    public static final String GENERATED_VALUE_STORAGE = Namespace.PREFIX + ":generatedValueStorage";
 }

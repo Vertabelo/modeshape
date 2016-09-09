@@ -818,31 +818,6 @@ public class PostgresDdlParser extends StandardDdlParser
         return createViewNode;
     }
 
-    /**
-     * Utility method which parses tokens until the specified token is found, terminator occurs or there are no more tokens.
-     * 
-     * @param tokens the {@link DdlTokenStream} representing the tokenized DDL content; may not be null
-     * @return the parsed string
-     * @throws ParsingException
-     */
-    protected String parseUntilCustomTokenOrTerminator( DdlTokenStream tokens,
-                                                  String terminationToken ) throws ParsingException {
-        StringBuffer sb = new StringBuffer();
-        if (doUseTerminator()) {
-            while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !isTerminator(tokens)
-                   && !tokens.matches(terminationToken)) {
-                sb.append(SPACE).append(tokens.consume());
-            }
-        } else {
-            // parse until next statement
-            while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !tokens.matches(terminationToken)) {
-                sb.append(SPACE).append(tokens.consume());
-            }
-        }
-
-        return sb.toString();
-    }
-
     @Override
     protected boolean parseDefaultClause( DdlTokenStream tokens,
                                           AstNode columnNode ) {
