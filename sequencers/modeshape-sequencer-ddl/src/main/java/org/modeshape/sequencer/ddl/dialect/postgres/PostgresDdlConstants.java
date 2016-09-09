@@ -128,6 +128,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 	    static final String[] STMT_CREATE_TYPE = {CREATE, "TYPE"};
 	    static final String[] STMT_CREATE_USER = {CREATE, "USER"};
 	    static final String[] STMT_CREATE_USER_MAPPING = {CREATE, "USER", "MAPPING"};
+		static final String[] STMT_CREATE_MATERIALIZED_VIEW = {CREATE, "MATERIALIZED", VIEW}; // EDWM-2505
 
 	    
 	    static final String[][] CREATE_PHRASES = { 
@@ -142,7 +143,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 	    	STMT_CREATE_SERVER, STMT_CREATE_TABLESPACE, STMT_CREATE_TEXT_SEARCH_CONFIGURATION, STMT_CREATE_TEXT_SEARCH_DICTIONARY,
 	    	STMT_CREATE_TEXT_SEARCH_PARSER,STMT_CREATE_TEXT_SEARCH_TEMPLATE, STMT_CREATE_TEXT_SEARCH, 
 	    	STMT_CREATE_TRIGGER, STMT_CREATE_TYPE,
-	    	STMT_CREATE_USER_MAPPING, STMT_CREATE_USER
+	    	STMT_CREATE_USER_MAPPING, STMT_CREATE_USER, STMT_CREATE_MATERIALIZED_VIEW
 		};
 	    
 	    static final String[] STMT_DROP_AGGREGATE = {DROP, "AGGREGATE"};
@@ -334,6 +335,8 @@ public interface PostgresDdlConstants extends DdlConstants {
         static final String[] DTYPE_OID = {"OID"};
         static final String[] DTYPE_TSTZRANGE = {"TSTZRANGE"};
         static final String[] DTYPE_GEOMETRY = {"GEOMETRY"}; // EDWM-2407 Dodanie typu GEOMETRY z PostGISa
+        static final String[] DTYPE_JSON = {"JSON"};
+        static final String[] DTYPE_JSONB = {"JSONB"};
 
 		
 		static final List<String[]> CUSTOM_DATATYPE_START_PHRASES = 
@@ -342,13 +345,13 @@ public interface PostgresDdlConstants extends DdlConstants {
                             DTYPE_LINE, DTYPE_LSEG, DTYPE_MACADDR, DTYPE_MONEY, DTYPE_PATH, DTYPE_POINT, DTYPE_POLYGON,
                             DTYPE_SERIAL, DTYPE_SERIAL4, DTYPE_SERIAL8, DTYPE_TEXT, DTYPE_TIMESTAMPZ, DTYPE_TSQUERY,
                             DTYPE_TSVECTOR, DTYPE_TXID_SNAPSHOT, DTYPE_UUID, DTYPE_XML, DTYPE_OID, DTYPE_TSTZRANGE, DTYPE_TIMESTAMPTZ,
-                            DTYPE_GEOMETRY);
+                            DTYPE_GEOMETRY, DTYPE_JSON, DTYPE_JSONB);
 		
 	  	static final List<String> CUSTOM_DATATYPE_START_WORDS = 
 	  		Arrays.asList("BIGINT", "BIGSERIAL", "BOX", "BOOLEAN", "BOOL", "BYTEA",
                             "CIDR", "CIRCLE", "FLOAT4", "FLOAT8", "INET", "INT2", "INT4", "INT8",
                             "LINE", "LSEG", "MACADDR", "MONEY", "PATH", "POINT", "POLYGON",
                             "SERIAL", "SERIAL4", "SERIAL8", "TEXT", "TIMESTAMPZ", "TSQUERY",
-                            "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID", "TSTZRANGE", "TIMESTAMPTZ", "GEOMETRY");
+                            "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID", "TSTZRANGE", "TIMESTAMPTZ", "GEOMETRY", "JSON", "JSONB");
 	}
 }

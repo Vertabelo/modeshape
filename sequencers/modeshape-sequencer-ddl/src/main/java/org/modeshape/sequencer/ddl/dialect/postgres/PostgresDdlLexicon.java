@@ -170,6 +170,8 @@ public class PostgresDdlLexicon  extends StandardDdlLexicon {
     public static final String INDEX_ORDER = Namespace.PREFIX + ":order";
     public static final String UNLOGGED = Namespace.PREFIX + ":unlogged";
     public static final String WITH_OPTIONS = Namespace.PREFIX + ":withOptions";
+    public static final String MATERIALIZED = Namespace.PREFIX + ":materialized";
+    public static final String WITH_CHECK_OPTION = Namespace.PREFIX + ":withCheckOption";
 
     // sequence properties
     public static final String SEQ_INCREMENT_BY   = Namespace.PREFIX + ":incrementBy";

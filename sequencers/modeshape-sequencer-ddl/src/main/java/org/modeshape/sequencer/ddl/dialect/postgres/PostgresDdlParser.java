@@ -73,6 +73,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTI
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.WITH_GRANT_OPTION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.OR_REPLACE_CLAUSE;
 
 import org.modeshape.sequencer.ddl.StandardDdlParser;
 import org.modeshape.sequencer.ddl.datatype.DataType;
@@ -525,6 +526,18 @@ public class PostgresDdlParser extends StandardDdlParser
         }
     }
 
+    protected void parseConstraintAttributes( DdlTokenStream tokens, AstNode constraintNode ) throws ParsingException {
+        assert tokens != null;
+        assert constraintNode != null;
+
+        super.parseConstraintAttributes(tokens, constraintNode);
+
+        if (tokens.canConsume("NOT", "VALID")) {
+            AstNode attrNode = nodeFactory().node("CONSTRAINT_ATTRIBUTE", constraintNode, TYPE_CONSTRAINT_ATTRIBUTE);
+            attrNode.setProperty(PROPERTY_VALUE, "NOT VALID");
+        }
+    }
+    
     private void parseSingleCommaTerminatedColumnDefinition( DdlTokenStream tokens,
                                                              AstNode tableNode,
                                                              boolean isAlterTable ) throws ParsingException {
@@ -633,6 +646,8 @@ public class PostgresDdlParser extends StandardDdlParser
             return parseStatement(tokens, STMT_CREATE_USER_MAPPING, parentNode, TYPE_CREATE_USER_MAPPING_STATEMENT);
         } else if (tokens.matches(STMT_CREATE_USER)) {
             return parseStatement(tokens, STMT_CREATE_USER, parentNode, TYPE_CREATE_USER_STATEMENT);
+        } else if (tokens.matches(STMT_CREATE_MATERIALIZED_VIEW)) {
+            return parseCreateViewStatement(tokens, parentNode);
         }
 
         return super.parseCreateStatement(tokens, parentNode);
@@ -738,7 +753,94 @@ public class PostgresDdlParser extends StandardDdlParser
         assert tokens != null;
         assert parentNode != null;
 
-        return super.parseCreateViewStatement(tokens, parentNode);
+        markStartOfStatement(tokens);
+        // <view definition> ::=
+        // CREATE [ MATERIALIZED ] VIEW <table name> [ <left paren> <view column list><right paren> ]
+        // AS <query expression>
+        // [ WITH [ <levels clause> ] CHECK OPTION ]
+        // <levels clause> ::=
+        // CASCADED | LOCAL
+
+        // NOTE: the query expression along with the CHECK OPTION clause require no SQL statement terminator.
+        // So the CHECK OPTION clause will NOT
+
+        String stmtType = "CREATE";
+        tokens.consume("CREATE");
+        
+        boolean orReplaceClause = false;
+        if (tokens.canConsume("OR", "REPLACE")) {
+            orReplaceClause = true;
+            stmtType = stmtType + SPACE + "OR REPLACE";
+        }
+
+        boolean isMaterialized = false;
+        if (tokens.canConsume("MATERIALIZED")) {
+            isMaterialized = true;
+            stmtType = stmtType + SPACE + "MATERIALIZED";
+        }
+
+        tokens.consume("VIEW");
+        stmtType = stmtType + SPACE + "VIEW";
+
+        String name = parseName(tokens);
+
+        AstNode createViewNode = nodeFactory().node(name, parentNode, TYPE_CREATE_VIEW_STATEMENT);
+        createViewNode.setProperty(OR_REPLACE_CLAUSE, orReplaceClause);
+        createViewNode.setProperty(PostgresDdlLexicon.MATERIALIZED, isMaterialized);
+        
+        // CONSUME COLUMNS
+        parseColumnNameList(tokens, createViewNode, TYPE_COLUMN_REFERENCE);
+
+        tokens.consume("AS");
+
+        String queryExpression = parseUntilCustomTokenOrTerminator(tokens, "WITH");
+
+        createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
+
+        // WITH CHECK OPTION
+        if (tokens.canConsume("WITH")) {
+            String withCheckOption = "CASCADED";
+            
+            if (tokens.matches("LOCAL")) {
+                withCheckOption = "LOCAL";
+                tokens.consume("LOCAL");
+            } else if (tokens.matches("CASCADED")) {
+                withCheckOption = "CASCADED";
+                tokens.consume("CASCADED");
+            }
+
+            tokens.consume("CHECK", "OPTION");
+            createViewNode.setProperty(PostgresDdlLexicon.WITH_CHECK_OPTION, withCheckOption);
+        }
+
+        markEndOfStatement(tokens, createViewNode);
+
+        return createViewNode;
+    }
+
+    /**
+     * Utility method which parses tokens until the specified token is found, terminator occurs or there are no more tokens.
+     * 
+     * @param tokens the {@link DdlTokenStream} representing the tokenized DDL content; may not be null
+     * @return the parsed string
+     * @throws ParsingException
+     */
+    protected String parseUntilCustomTokenOrTerminator( DdlTokenStream tokens,
+                                                  String terminationToken ) throws ParsingException {
+        StringBuffer sb = new StringBuffer();
+        if (doUseTerminator()) {
+            while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !isTerminator(tokens)
+                   && !tokens.matches(terminationToken)) {
+                sb.append(SPACE).append(tokens.consume());
+            }
+        } else {
+            // parse until next statement
+            while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !tokens.matches(terminationToken)) {
+                sb.append(SPACE).append(tokens.consume());
+            }
+        }
+
+        return sb.toString();
     }
 
     @Override
@@ -2325,7 +2427,8 @@ public class PostgresDdlParser extends StandardDdlParser
                 || tokens.matches(PostgresDataTypes.DTYPE_VARBIT) || tokens.matches(PostgresDataTypes.DTYPE_XML)
                 || tokens.matches(PostgresDataTypes.DTYPE_OID)|| tokens.matches(PostgresDataTypes.DTYPE_BIGINT)
                 || tokens.matches(PostgresDataTypes.DTYPE_TSTZRANGE)|| tokens.matches(PostgresDataTypes.DTYPE_TIMESTAMPTZ)
-                || tokens.matches(PostgresDataTypes.DTYPE_GEOMETRY)) {
+                || tokens.matches(PostgresDataTypes.DTYPE_GEOMETRY) || tokens.matches(PostgresDataTypes.DTYPE_JSON)
+                || tokens.matches(PostgresDataTypes.DTYPE_JSONB)) {
                 typeName = tokens.consume();
                 result = new DataType(typeName);
             }
