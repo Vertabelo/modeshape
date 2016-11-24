@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.modeshape</groupId>
         <artifactId>modeshape-parent</artifactId>
-        <version>3.7.1.Final-ep19-dev</version>
+        <version>3.7.1.Final-ep19</version>
         <relativePath>../../modeshape-parent</relativePath>
     </parent>
 
