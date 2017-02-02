@@ -44,6 +44,8 @@ public interface PostgresDdlConstants extends DdlConstants {
         "SERIAL", "SERIAL4", "SERIAL8", "TEXT", "TIMESTAMPZ", "TSQUERY",
         "TSVECTOR", "TXID_SNAPSHOT", "UUID", "XML", "OID", "TIMESTAMPTZ", "TSTZRANGE"
 	};
+	
+	public static final String[] IF_NOT_EXISTS = {"IF", "NOT", "EXISTS"};
 
 	interface PostgresStatementStartPhrases {
 		static final String[] STMT_ALTER_AGGREGATE = {ALTER, "AGGREGATE"};
@@ -129,6 +131,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 	    static final String[] STMT_CREATE_USER = {CREATE, "USER"};
 	    static final String[] STMT_CREATE_USER_MAPPING = {CREATE, "USER", "MAPPING"};
 		static final String[] STMT_CREATE_MATERIALIZED_VIEW = {CREATE, "MATERIALIZED", VIEW}; // EDWM-2505
+		static final String[] STMT_CREATE_TABLE_IF_NOT_EXISTS = {CREATE, TABLE, "IF", "NOT", "EXISTS"};
 
 	    
 	    static final String[][] CREATE_PHRASES = { 
@@ -143,7 +146,7 @@ public interface PostgresDdlConstants extends DdlConstants {
 	    	STMT_CREATE_SERVER, STMT_CREATE_TABLESPACE, STMT_CREATE_TEXT_SEARCH_CONFIGURATION, STMT_CREATE_TEXT_SEARCH_DICTIONARY,
 	    	STMT_CREATE_TEXT_SEARCH_PARSER,STMT_CREATE_TEXT_SEARCH_TEMPLATE, STMT_CREATE_TEXT_SEARCH, 
 	    	STMT_CREATE_TRIGGER, STMT_CREATE_TYPE,
-	    	STMT_CREATE_USER_MAPPING, STMT_CREATE_USER, STMT_CREATE_MATERIALIZED_VIEW
+	    	STMT_CREATE_USER_MAPPING, STMT_CREATE_USER, STMT_CREATE_MATERIALIZED_VIEW, STMT_CREATE_TABLE_IF_NOT_EXISTS
 		};
 	    
 	    static final String[] STMT_DROP_AGGREGATE = {DROP, "AGGREGATE"};

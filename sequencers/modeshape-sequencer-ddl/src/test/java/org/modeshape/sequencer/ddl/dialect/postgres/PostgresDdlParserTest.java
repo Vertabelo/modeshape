@@ -365,7 +365,92 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(childNode, TYPE_CREATE_RULE_STATEMENT));
 
     }
+    
+    // CREATE TABLE IF NOT EXISTS
+    @Test
+    public void shouldParseCreateTableIfNotExists() {
+        printTest("shouldParseCreateTableIfNotExists()");
+        String content = "CREATE TABLE IF NOT EXISTS product (" +
+                "    id int NOT NULL," +
+                "    product_category_id int NOT NULL," +
+                "    name varchar(50));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+    
+    @Test
+    public void shouldParseCreateTempTableIfNotExists() {
+        printTest("shouldParseCreateTempTableIfNotExists()");
+        String content = "CREATE TEMP TABLE IF NOT EXISTS product (" +
+                "    id int NOT NULL," +
+                "    product_category_id int NOT NULL," +
+                "    name varchar(50));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+    
+    @Test
+    public void shouldPareseCreateGlobalTempTableIfNotExists() {
+        printTest("shouldPareseCreateGlobalTempTableIfNotExists()");
+        String content = "CREATE GLOBAL TEMP TABLE IF NOT EXISTS product (" +
+                "    id int NOT NULL," +
+                "    product_category_id int NOT NULL," +
+                "    name varchar(50));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+    
+    @Test
+    public void shouldParseCreateLocalTempTableIfNotExists() {
+        printTest("shouldParseCreateLocalTempTableIfNotExists()");
+        String content = "CREATE LOCAL TEMP TABLE IF NOT EXISTS product (" +
+                "    id int NOT NULL," +
+                "    product_category_id int NOT NULL," +
+                "    name varchar(50));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
 
+    @Test
+    public void shouldParseCreateGlobalTemporaryTableIfNotExists() {
+        printTest("shouldParseCreateGlobalTemporaryTableIfNotExists()");
+        String content = "CREATE GLOBAL TEMPORARY TABLE IF NOT EXISTS product (" +
+                "    id int NOT NULL," +
+                "    product_category_id int NOT NULL," +
+                "    name varchar(50));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void shouldParseCreateLocalTemporaryTableIfNotExists() {
+        printTest("shouldParseCreateLocalTemporaryTableIfNotExists()");
+        String content = "CREATE LOCAL TEMPORARY TABLE IF NOT EXISTS product (" +
+                "    id int NOT NULL," +
+                "    product_category_id int NOT NULL," +
+                "    name varchar(50));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+    
+    @Test
+    public void shouldParseCreateUnloggedTableIfNotExists() {
+        printTest("shouldParseCreateUnloggedTableIfNotExists()");
+        String content = "CREATE UNLOGGED TABLE IF NOT EXISTS product (" +
+                "    id int NOT NULL," +
+                "    product_category_id int NOT NULL," +
+                "    name varchar(50));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+    
     @Test
     public void shouldParseAlterForeignDataWrapper() {
         printTest("");

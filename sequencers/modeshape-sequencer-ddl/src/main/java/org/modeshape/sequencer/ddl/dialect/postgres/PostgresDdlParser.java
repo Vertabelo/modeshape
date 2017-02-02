@@ -27,7 +27,6 @@ import org.modeshape.common.text.ParsingException;
 import org.modeshape.sequencer.ddl.DdlParserProblem;
 import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
-import org.modeshape.sequencer.ddl.DdlConstants.DataTypes;
 import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
 
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.ALL_PRIVILEGES;
@@ -598,8 +597,7 @@ public class PostgresDdlParser extends StandardDdlParser
         assert tokens != null;
         assert parentNode != null;
 
-        if (tokens.matches(STMT_CREATE_TEMP_TABLE) || tokens.matches(STMT_CREATE_GLOBAL_TEMP_TABLE)
-            || tokens.matches(STMT_CREATE_LOCAL_TEMP_TABLE) || tokens.matches(STMT_CREATE_UNLOGGED_TABLE)) {
+        if (matchesCreateTableStatement(tokens)) {
             return parseCreateTableStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_AGGREGATE)) {
             return parseStatement(tokens, STMT_CREATE_AGGREGATE, parentNode, TYPE_CREATE_AGGREGATE_STATEMENT);
@@ -660,6 +658,8 @@ public class PostgresDdlParser extends StandardDdlParser
 
         return super.parseCreateStatement(tokens, parentNode);
     }
+    
+
 
     @Override
     protected AstNode parseCreateTableStatement( DdlTokenStream tokens,
@@ -680,7 +680,8 @@ public class PostgresDdlParser extends StandardDdlParser
         }
 
         tokens.consume("TABLE"); // TABLE
-        tokens.canConsume("IF", "NOT", "EXISTS");
+        
+        tokens.canConsume(IF_NOT_EXISTS);
 
         String tableName = parseName(tokens);
         AstNode tableNode = nodeFactory().node(tableName, parentNode, TYPE_CREATE_TABLE_STATEMENT);
@@ -1549,6 +1550,35 @@ public class PostgresDdlParser extends StandardDdlParser
     	markEndOfStatement(tokens, revokeNode);
 
     	return revokeNode;
+    }
+    
+    private boolean matchesCreateTableStatement(DdlTokenStream tokens) {
+        return tokens.matches(STMT_CREATE_TEMP_TABLE) 
+                || tokens.matches(STMT_CREATE_GLOBAL_TEMP_TABLE)
+                || tokens.matches(STMT_CREATE_LOCAL_TEMP_TABLE)
+                || tokens.matches(STMT_CREATE_UNLOGGED_TABLE)
+                || tokens.matches(STMT_CREATE_TABLE_IF_NOT_EXISTS)
+                || tokens.matches(joinMatches(STMT_CREATE_TEMP_TABLE, IF_NOT_EXISTS))
+                || tokens.matches(joinMatches(STMT_CREATE_GLOBAL_TEMP_TABLE, IF_NOT_EXISTS))
+                || tokens.matches(joinMatches(STMT_CREATE_LOCAL_TEMP_TABLE, IF_NOT_EXISTS))
+                || tokens.matches(joinMatches(STMT_CREATE_UNLOGGED_TABLE, IF_NOT_EXISTS))
+                || tokens.matches(joinMatches(STMT_CREATE_GLOBAL_TEMPORARY_TABLE, IF_NOT_EXISTS))
+                || tokens.matches(joinMatches(STMT_CREATE_LOCAL_TEMPORARY_TABLE, IF_NOT_EXISTS));
+    }
+    
+    private String[] joinMatches(String[] match1, String[] match2) {
+        int iterator = 0;
+        String[] matches = new String[match1.length + match2.length];
+        
+        for (String match : match1) {
+            matches[iterator++] = match;
+        }
+        
+        for (String match: match2) {
+            matches[iterator++] = match;
+        }
+        
+        return matches;
     }
 
     private List<AstNode> parseMultipleGrantTargets( DdlTokenStream tokens,
