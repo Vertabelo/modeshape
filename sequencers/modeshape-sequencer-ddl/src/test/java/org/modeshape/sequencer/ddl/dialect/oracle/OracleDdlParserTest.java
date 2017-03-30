@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItems;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_GRANT_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_INDEXTYPE_STATEMENT;
@@ -650,6 +651,30 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         System.out.println(this.rootNode);
         assertThat(this.rootNode.getChildCount(), is(3));
         
+    }
+    
+    @Test
+    public void shouldParseCreateViewAndReturnOriginalQueryExpression() {
+    	printTest("shouldParseCreateViewAndReturnOriginalQueryExpression");
+    	String viewQuery = "SELECT \n" + 
+    						"pua.user_profile_id, " + 
+    						"au.user_profile_id IS NOT NULL as is_anonymous, \n" + 
+    						"FROM poll_user_answer pua \n"+
+    						"LEFT JOIN anonymous_user au ON au.user_profile_id = pua.user_profile_id";
+    	
+    	String content = "CREATE VIEW poll_view as " + viewQuery;
+    	assertScoreAndParse(content, null, 1);
+    	
+    	AstNode viewNode = rootNode.getChildren().get(0);
+    	String returnedQuery = viewNode.getProperty(CREATE_VIEW_QUERY_EXPRESSION).toString();
+    	
+    	assertEquals("poll_view", viewNode.getName());
+    	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
+    }
+    
+    
+    private static String replaceMultipleWhiteSpaces(String a) {
+    	return a.replaceAll("\\s+", " ").trim();
     }
     
 }

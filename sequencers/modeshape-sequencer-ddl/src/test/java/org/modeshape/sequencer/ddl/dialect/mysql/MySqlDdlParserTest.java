@@ -24,8 +24,11 @@
 package org.modeshape.sequencer.ddl.dialect.mysql;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CONSTRAINT_TYPE;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
@@ -1155,5 +1158,29 @@ public class MySqlDdlParserTest extends DdlParserTestHelper {
         String content = "ALTER TABLE purchase ADD CONSTRAINT client_order FOREIGN KEY client_order (client_id) REFERENCES client (id);";
         
         assertScoreAndParse(content, null, 1);
+    }
+    
+    @Test
+    public void shouldParseCreateViewAndReturnOriginalQueryExpression() {
+    	printTest("shouldParseCreateViewAndReturnOriginalQueryExpression");
+    	String viewQuery = "SELECT \n" + 
+    						"pua.user_profile_id, " + 
+    						"au.user_profile_id IS NOT NULL as is_anonymous, \n" + 
+    						"FROM poll_user_answer pua \n"+
+    						"LEFT JOIN anonymous_user au ON au.user_profile_id = pua.user_profile_id";
+    	
+    	String content = "CREATE VIEW poll_view as " + viewQuery;
+    	assertScoreAndParse(content, null, 1);
+    	
+    	AstNode viewNode = rootNode.getChildren().get(0);
+    	String returnedQuery = viewNode.getProperty(CREATE_VIEW_QUERY_EXPRESSION).toString();
+    	
+    	assertEquals("poll_view", viewNode.getName());
+    	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
+    }
+    
+    
+    private static String replaceMultipleWhiteSpaces(String a) {
+    	return a.replaceAll("\\s+", " ").trim();
     }
 }

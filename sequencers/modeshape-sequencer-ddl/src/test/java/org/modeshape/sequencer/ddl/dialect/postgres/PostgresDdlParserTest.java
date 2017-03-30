@@ -25,6 +25,7 @@ package org.modeshape.sequencer.ddl.dialect.postgres;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_SCHEMA_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_COLUMN_DEFINITION;
@@ -39,6 +40,7 @@ import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.TY
 import static org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlLexicon.TYPE_COLUMN_DEFINITION;
 import org.junit.Before;
 import org.junit.Test;
+import org.modeshape.common.FixFor;
 import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
@@ -628,6 +630,31 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
 
         assertEquals(1, childNode.getChildCount());
 
+    }
+
+
+    @Test
+    public void shouldParseCreateViewAndReturnOriginalQueryExpression() {
+    	printTest("shouldParseCreateViewAndReturnOriginalQueryExpression");
+    	String viewQuery = "SELECT \n" + 
+    						"pua.user_profile_id, " + 
+    						"au.user_profile_id IS NOT NULL as is_anonymous, \n" + 
+    						"FROM poll_user_answer pua \n"+
+    						"LEFT JOIN anonymous_user au ON au.user_profile_id = pua.user_profile_id";
+    	
+    	String content = "CREATE VIEW poll_view as " + viewQuery;
+    	assertScoreAndParse(content, null, 1);
+    	
+    	AstNode viewNode = rootNode.getChildren().get(0);
+    	String returnedQuery = viewNode.getProperty(CREATE_VIEW_QUERY_EXPRESSION).toString();
+    	
+    	assertEquals("poll_view", viewNode.getName());
+    	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
+    }
+    
+    
+    private static String replaceMultipleWhiteSpaces(String a) {
+    	return a.replaceAll("\\s+", " ").trim();
     }
 
 }

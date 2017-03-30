@@ -948,7 +948,8 @@ public class StandardDdlParserTest extends DdlParserTestHelper {
         assertEquals("LASTNAME", columnRef.getName());
     }
 
-    @Test
+
+	@Test
     public void shouldParseMixedTerminatedStatements() {
         printTest("");
 
@@ -1015,4 +1016,30 @@ public class StandardDdlParserTest extends DdlParserTestHelper {
                          + "     create view view_1 (col1, col2) as select*from a with check option" + NEWLINE + ";";
         assertScoreAndParse(content, null, 1);
     }
+    
+    @Test
+    public void shouldParseCreateViewAndReturnOriginalQueryExpression() {
+    	printTest("shouldParseCreateViewAndReturnOriginalQueryExpression");
+    	String viewQuery = "SELECT \n" + 
+    						"pua.user_profile_id, " + 
+    						"au.user_profile_id IS NOT NULL as is_anonymous, \n" + 
+    						"FROM poll_user_answer pua \n"+
+    						"LEFT JOIN anonymous_user au ON au.user_profile_id = pua.user_profile_id";
+    	
+    	String content = "CREATE VIEW poll_view as " + viewQuery;
+    	assertScoreAndParse(content, null, 1);
+    	
+    	AstNode viewNode = rootNode.getChildren().get(0);
+    	String returnedQuery = viewNode.getProperty(CREATE_VIEW_QUERY_EXPRESSION).toString();
+    	
+    	assertEquals("poll_view", viewNode.getName());
+    	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
+    }
+    
+    
+    private static String replaceMultipleWhiteSpaces(String a) {
+    	return a.replaceAll("\\s+", " ").trim();
+    }
+
+
 }

@@ -2697,15 +2697,41 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
     protected String parseUntilCommaOrTerminator( DdlTokenStream tokens ) throws ParsingException {
         StringBuffer sb = new StringBuffer();
+        
+        boolean lastTokenWasPeriod = false;
         if (doUseTerminator()) {
             while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !isTerminator(tokens)
                    && !tokens.matches(COMMA)) {
-                sb.append(SPACE).append(tokens.consume());
+        	   String thisToken = tokens.consume();
+               boolean thisTokenIsPeriod = thisToken.equals(PERIOD);
+               if (lastTokenWasPeriod || thisTokenIsPeriod) {
+                   sb.append(thisToken);
+               } else {
+                   sb.append(SPACE).append(thisToken);
+               }
+               
+               if (thisTokenIsPeriod) {
+                   lastTokenWasPeriod = true;
+               } else {
+                   lastTokenWasPeriod = false;
+               }
             }
         } else {
             // parse until next statement
             while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !tokens.matches(COMMA)) {
-                sb.append(SPACE).append(tokens.consume());
+            	String thisToken = tokens.consume();
+                boolean thisTokenIsPeriod = thisToken.equals(PERIOD);
+                if (lastTokenWasPeriod || thisTokenIsPeriod) {
+                    sb.append(thisToken);
+                } else {
+                    sb.append(SPACE).append(thisToken);
+                }
+                
+                if (thisTokenIsPeriod) {
+                    lastTokenWasPeriod = true;
+                } else {
+                    lastTokenWasPeriod = false;
+                }
             }
         }
 
@@ -2722,15 +2748,41 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
     protected String parseUntilCustomTokenOrTerminator( DdlTokenStream tokens,
                                                   String terminationToken ) throws ParsingException {
         StringBuffer sb = new StringBuffer();
+        
+        boolean lastTokenWasPeriod = false;
         if (doUseTerminator()) {
             while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !isTerminator(tokens)
                    && !tokens.matches(terminationToken)) {
-                sb.append(SPACE).append(tokens.consume());
+                String thisToken = tokens.consume();
+                boolean thisTokenIsPeriod = thisToken.equals(PERIOD);
+                boolean thisTokenIsComma = thisToken.equals(COMMA);
+                if (lastTokenWasPeriod || thisTokenIsPeriod || thisTokenIsComma) {
+                    sb.append(thisToken);
+                } else {
+                    sb.append(SPACE).append(thisToken);
+                }
+                if (thisTokenIsPeriod) {
+                    lastTokenWasPeriod = true;
+                } else {
+                    lastTokenWasPeriod = false;
+                }
             }
         } else {
             // parse until next statement
             while (tokens.hasNext() && !tokens.matches(DdlTokenizer.STATEMENT_KEY) && !tokens.matches(terminationToken)) {
-                sb.append(SPACE).append(tokens.consume());
+                String thisToken = tokens.consume();
+                boolean thisTokenIsPeriod = thisToken.equals(PERIOD);
+                boolean thisTokenIsComma = thisToken.equals(COMMA);
+                if (lastTokenWasPeriod || thisTokenIsPeriod || thisTokenIsComma) {
+                    sb.append(thisToken);
+                } else {
+                    sb.append(SPACE).append(thisToken);
+                }
+                if (thisTokenIsPeriod) {
+                    lastTokenWasPeriod = true;
+                } else {
+                    lastTokenWasPeriod = false;
+                }            
             }
         }
 
