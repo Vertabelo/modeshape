@@ -214,6 +214,10 @@ public class SqliteDdlParser extends StandardDdlParser
         localTokens.start();
 
         do {
+            if (!localTokens.hasNext()) {
+                return;
+            }
+
             if (isTableConstraint(localTokens)) {
                 parseTableConstraint(localTokens, tableNode, false);
             } else {
@@ -359,7 +363,7 @@ public class SqliteDdlParser extends StandardDdlParser
             boolean isAlterTable ) throws ParsingException {
         assert tokens != null;
         assert tableNode != null;
-        
+
         String columnName = parseName(tokens);
         AstNode columnNode = nodeFactory().node(columnName, tableNode, TYPE_COLUMN_DEFINITION);
         

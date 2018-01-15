@@ -357,6 +357,18 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
+    @Test
+    public void shouldParseCreateTableWithColumnAtEnd() {
+        // z modelu klienta
+        printTest("shouldParseCreateTable_13");
+        String content = "CREATE TABLE TEST (" +
+                " test CHAR(20) NOT NULL," +
+                ");";
+        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
     // CREATE RULE notify_me AS ON UPDATE TO mytable DO ALSO NOTIFY mytable;
     @Test
     public void shouldParseCreateRule() {

@@ -583,6 +583,18 @@ public class MySqlDdlParserTest extends DdlParserTestHelper {
         AstNode index2 = indexes.get(1);
         assertThat(index2.getName(), is("IDX"));
     }
+
+    @Test
+    public void shouldParseCreateTableWithColumnAtEnd() {
+        // z modelu klienta
+        printTest("shouldParseCreateTable_13");
+        String content = "CREATE TABLE TEST (" +
+                " test CHAR(20) NOT NULL," +
+                ");";
+        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
     
     @Test
     public void parseCreateIndex() {

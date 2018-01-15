@@ -146,6 +146,18 @@ public class SqliteDdlParserTest extends DdlParserTestHelper {
     }
 
     @Test
+    public void shouldParseCreateTableWithColumnAtEnd() {
+        // z modelu klienta
+        printTest("shouldParseCreateTable_13");
+        String content = "CREATE TABLE TEST (" +
+                " test int not null," +
+                ");";
+        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
+    @Test
     public void shouldParseCreateView_1() {
         printTest("shouldParseCreateView_1()");
         String content = "CREATE VIEW one_view" +

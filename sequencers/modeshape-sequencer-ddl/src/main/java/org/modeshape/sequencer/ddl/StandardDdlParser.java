@@ -37,6 +37,7 @@ import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.*;
 import org.modeshape.sequencer.ddl.datatype.DataType;
 import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
+import org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlConstants;
 import org.modeshape.sequencer.ddl.node.AstNode;
 import org.modeshape.sequencer.ddl.node.AstNodeFactory;
 import java.math.BigInteger;
@@ -1291,7 +1292,9 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             } else if (isColumnDefinitionStart(localTokens)) {
                 parseColumnDefinition(localTokens, tableNode, false);
             } else {
-                unusedTokensSB.append(SPACE).append(localTokens.consume());
+                if (localTokens.hasNext()) {
+                    unusedTokensSB.append(SPACE).append(localTokens.consume());
+                }
             }
         } while (localTokens.canConsume(COMMA));
 
@@ -1303,6 +1306,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         }
 
     }
+
 
     /**
      * Utility method to parse the actual column definition. SQL-92 Structural Specification <column definition> ::= <column name>

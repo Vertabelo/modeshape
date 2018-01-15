@@ -29,9 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItems;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_GRANT_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.*;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_INDEXTYPE_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_INDEX_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ANALYZE_STATEMENT;
@@ -511,6 +509,18 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         assertThat(indexNode.getChildCount(), is(1));
         assertThat(indexNode.getFirstChild().getName(), is("Maxtemp"));
         assertMixinType(indexNode.getFirstChild(), StandardDdlLexicon.TYPE_COLUMN_REFERENCE);
+    }
+
+    @Test
+    public void shouldParseCreateTableWithColumnAtEnd() {
+        // z modelu klienta
+        printTest("shouldParseCreateTable_13");
+        String content = "CREATE TABLE TEST (" +
+                " test CHAR(20) NOT NULL," +
+                ");";
+        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
     @Test
