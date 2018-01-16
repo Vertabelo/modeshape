@@ -339,7 +339,6 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
-
     @Test
     public void shouldParseCreateMisc() {
         printTest("shouldParseCreateMisc()");

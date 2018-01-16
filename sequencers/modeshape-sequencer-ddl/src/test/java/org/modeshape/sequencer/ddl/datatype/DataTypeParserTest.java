@@ -238,7 +238,7 @@ public class DataTypeParserTest implements DdlConstants {
             // Expect exception
         }
 
-        Assert.assertNull("DataType should NOT have been found for Type = " + content, dType);
+        Assert.assertEquals("Without parenthesis", typeString, dType.getName());
     }
 
     /* ===========================================================================================================================

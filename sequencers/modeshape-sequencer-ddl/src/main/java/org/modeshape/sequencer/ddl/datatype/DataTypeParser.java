@@ -332,8 +332,10 @@ public class DataTypeParser implements DdlConstants {
             typeName = getStatementTypeName(DataTypes.DTYPE_VARCHAR);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_VARCHAR);
-            long length = parseBracketedLong(tokens, dataType);
-            dataType.setLength(length);
+            if (tokens.matches(L_PAREN)) {
+                long length = parseBracketedLong(tokens, dataType);
+                dataType.setLength(length);
+            }
         } else if (tokens.matches(DataTypes.DTYPE_CHAR_VARYING)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_CHAR_VARYING);
             dataType = new DataType(typeName);

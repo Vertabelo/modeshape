@@ -46,6 +46,9 @@ import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
+import java.io.InputStream;
+import java.util.Scanner;
+
 /**
  *
  */
@@ -293,6 +296,7 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
         
     }
+
     
     @Test
     public void shouldParseCreateTable_tstzrange() {
@@ -378,6 +382,20 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void shouldCreate1Tables() {
+        printTest("");
+        String sql = "CREATE TABLE business (\n" +
+                "  id SERIAL NOT NULL CONSTRAINT business_id_pk PRIMARY KEY,\n" +
+                "  name VARCHAR NOT NULL CONSTRAINT business_name_key UNIQUE,\n" +
+                "  zip_code   VARCHAR,\n" +
+                "  created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,\n" +
+                "  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL\n" +
+                ");";
+        assertScoreAndParse(sql, null, 1); // 1 oznacza brak błędów
+        assertTrue(hasMixinType(rootNode.getChild(0), TYPE_CREATE_TABLE_STATEMENT));
     }
 
     // CREATE RULE notify_me AS ON UPDATE TO mytable DO ALSO NOTIFY mytable;
@@ -674,8 +692,18 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
     	assertEquals("poll_view", viewNode.getName());
     	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
     }
-    
-    
+
+
+
+    @Test
+    public void parseFromFileTestExample() {
+        printTest("testParse");
+        InputStream inputStream = this.getClass().getResourceAsStream("/test-sql/postgres.sql");
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        String sql = s.hasNext() ? s.next() : "";
+        assertScoreAndParse(sql, null, 1);
+    }
+
     private static String replaceMultipleWhiteSpaces(String a) {
     	return a.replaceAll("\\s+", " ").trim();
     }
