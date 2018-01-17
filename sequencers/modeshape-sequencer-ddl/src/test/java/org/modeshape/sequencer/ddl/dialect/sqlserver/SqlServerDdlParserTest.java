@@ -688,7 +688,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
         InputStream inputStream = this.getClass().getResourceAsStream("/test-sql/mssql.sql");
         Scanner s = new Scanner(inputStream).useDelimiter("\\A");
         String sql = s.hasNext() ? s.next() : "";
-        assertScoreAndParse(sql, null, 53);
+        assertScoreAndParse(sql, null, 1);
     }
 
 
