@@ -16,85 +16,14 @@
 	<description>Builds the entire ModeShape distribution.</description>
 
 	<modules>
-        <!-- Order is important -->
-
-        <!-- First these -->
         <module>modeshape-parent</module>
-        <module>modeshape-assembly-descriptors</module>
-        <!-- Order is important -->
-        <module>modeshape-jcr-api</module>
-        <module>modeshape-common</module>
-        <module>modeshape-schematic</module>
-        <module>modeshape-jcr</module>
-        <module>modeshape-unit-test</module>
         <module>sequencers</module>
-
-        <!--
-            The REST client needs the JDBC driver
-        -->
-<!--        <module>web</module> -->
-        <module>modeshape-jdbc-local</module>
-<!--        <module>modeshape-jdbc</module> -->
-
-
     </modules>
 	<properties>
 		<rootDir>${project.basedir}</rootDir>
 	</properties>
 
 	<profiles>
-		<!-- 
-		  This profile is used to run the build plus the JCR TCK tests
-			and must be activated manually, as in "mvn ... -Pjcr-tck ..."
-		-->
-		<profile>
-			<id>jcr-tck</id>
-			<modules>
-				<module>modeshape-jcr-tck</module>
-			</modules>
-		</profile>
-		
-		<!-- 
-		  This profile is used to run the build plus the integration tests
-			and must be activated manually, as in "mvn ... -Pintegration ..."
-		-->
-		<profile>
-			<id>integration</id>
-			<modules>
-			  <!-- 
-			    Build the distribution before running the integration tests, 
-			    as some of the integration tests rely upon the distributions
-			  -->
-				<module>integration</module>
-			</modules>
-		</profile>
-		
-		<!-- 
-		  This profile is used to run longer-running performance tests,
-		  and must be activated manually, as in "mvn ... -Pperformance ..."
-		-->
-        <profile>
-            <id>performance</id>
-            <modules>
-                <!--
-                    The JBoss AS7 subsystem needs the web components and (local) JDBC drivers.
-                -->
-                <module>modeshape-performance-tests</module>
-            </modules>
-        </profile>
-		
-		<!-- 
-		  This profile is used to build everything for a release, including all assemblies,
-			and must be activated manually, as in "mvn ... -Passembly ..."
-		-->
-        <profile>
-            <id>assembly</id>
-            <modules>
-                <module>modeshape-client</module>
-                <module>demos</module>
-                <module>integration</module>
-            </modules>
-        </profile>
-		
+
 	</profiles>
 </project>

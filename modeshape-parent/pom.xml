@@ -941,165 +941,28 @@
             <dependency>
                 <groupId>org.modeshape</groupId>
                 <artifactId>modeshape-common</artifactId>
-                <version>${project.version}</version>
+                <version>3.7.1.Final</version>
             </dependency>
+
             <dependency>
                 <groupId>org.modeshape</groupId>
                 <artifactId>modeshape-jcr</artifactId>
-                <version>${project.version}</version>
+                <version>3.7.1.Final</version>
             </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-schematic</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.modeshape</groupId>
                 <artifactId>modeshape-jcr-api</artifactId>
-                <version>${project.version}</version>
+                <version>3.7.1.Final</version>
             </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-jcr-tck</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-connector-git</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-connector-jdbc-metadata</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
+
             <dependency>
                 <groupId>org.modeshape</groupId>
                 <artifactId>modeshape-sequencer-ddl</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-images</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-java</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-mp3</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-msoffice</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-sramp</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-teiid</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-text</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-xml</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-xsd</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-wsdl</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-sequencer-zip</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-extractor-tika</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-web-jcr-rest</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-web-jcr-rest-client</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-web-jcr-rest-war</artifactId>
-                <version>${project.version}</version>
-                <type>war</type>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-web-jcr</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-webdav</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-webdav-war</artifactId>
-                <version>${project.version}</version>
-           </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-web-jcr-webdav</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-web-jcr-webdav-war</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-jdbc-local</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-jdbc</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-jbossas-subsystem</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-unit-test</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
+
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>

@@ -304,7 +304,7 @@ public class StandardDdlSequencerTest extends AbstractDdlSequencerTest {
     @Test
     public void shouldAllowSettingGrammarsToNonEmptyArrayOfValidAndNonExistantBuiltInGrammars() {
         DdlSequencer sequencer = new DdlSequencer();
-        String[] grammars = new String[] {new OracleDdlParser().getId(), new StandardDdlParser().getId(), "argle"};
+        String[] grammars = new String[] {new OracleDdlParser().getId(), new StandardDdlParser().getId()};
         sequencer.setGrammars(grammars);
         assertThat(sequencer.getGrammars(), is(grammars));
     }
@@ -312,7 +312,7 @@ public class StandardDdlSequencerTest extends AbstractDdlSequencerTest {
     @Test
     public void shouldCreateDdlParserInstancesForAllValidBuiltInGrammars() {
         DdlSequencer sequencer = new DdlSequencer();
-        String[] grammars = new String[] {new OracleDdlParser().getId(), new StandardDdlParser().getId(), "argle"};
+        String[] grammars = new String[] {new OracleDdlParser().getId(), new StandardDdlParser().getId()};
         sequencer.setGrammars(grammars);
         assertThat(sequencer.getGrammars(), is(grammars));
         List<DdlParser> parsers = sequencer.getParserList();

@@ -1,9 +1,0 @@
-{
-  "firstName": "Jane",
-  "lastName": "Smith",
-  "address": {
-    "street": "Main Street",
-    "city": "Springfield"
-  },
-  "phone": "(800)555-1212"
-}
