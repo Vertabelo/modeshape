@@ -16,7 +16,6 @@
 	<description>Builds the entire ModeShape distribution.</description>
 
 	<modules>
-        <module>modeshape-parent</module>
         <module>sequencers</module>
     </modules>
 	<properties>
