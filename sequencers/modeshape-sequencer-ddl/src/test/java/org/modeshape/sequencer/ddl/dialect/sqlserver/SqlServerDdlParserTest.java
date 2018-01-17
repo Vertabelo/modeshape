@@ -46,6 +46,9 @@ import org.modeshape.sequencer.ddl.StandardDdlLexicon;
 import org.modeshape.sequencer.ddl.dialect.sqlite.SqliteDdlLexicon;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
+import java.io.InputStream;
+import java.util.Scanner;
+
 public class SqlServerDdlParserTest extends DdlParserTestHelper {
     @SuppressWarnings("hiding")
     private static final String SPACE = DdlConstants.SPACE;
@@ -677,8 +680,19 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
     	assertEquals("poll_view", viewNode.getName());
     	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
     }
-    
-    
+
+
+    @Test
+    public void parseFromFileTestExample() {
+        printTest("testParse");
+        InputStream inputStream = this.getClass().getResourceAsStream("/test-sql/mssql.sql");
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        String sql = s.hasNext() ? s.next() : "";
+        assertScoreAndParse(sql, null, 53);
+    }
+
+
+
     private static String replaceMultipleWhiteSpaces(String a) {
     	return a.replaceAll("\\s+", " ").trim();
     }
