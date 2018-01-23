@@ -694,6 +694,58 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
     }
 
 
+    @Test
+    public void shouldParseCreateMaterializedView() {
+        printTest("shouldParseCreateViewAndReturnOriginalQueryExpression");
+        String viewQuery =  "SELECT \n" +
+                "pua.user_profile_id, " +
+                "au.user_profile_id IS NOT NULL as is_anonymous, \n" +
+                "FROM poll_user_answer pua \n"+
+                "LEFT JOIN anonymous_user au ON au.user_profile_id = pua.user_profile_id";
+
+        String content = "CREATE MATERIALIZED VIEW poll_view as " + viewQuery;
+        assertScoreAndParse(content, null, 1);
+
+        AstNode viewNode = rootNode.getChildren().get(0);
+        String returnedQuery = viewNode.getProperty(CREATE_VIEW_QUERY_EXPRESSION).toString();
+
+        assertEquals("poll_view", viewNode.getName());
+        assertTrue((Boolean)viewNode.getProperty(PostgresDdlLexicon.MATERIALIZED));
+        assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
+    }
+
+    @Test
+    public void shouldParseCreateViewWithWith() {
+        printTest("shouldParseCreateViewAndReturnOriginalQueryExpression");
+        String viewQuery = "WITH regional_sales AS (\n" +
+                "        SELECT region, SUM(amount) AS total_sales\n" +
+                "        FROM orders\n" +
+                "        GROUP BY region\n" +
+                "     ), top_regions AS (\n" +
+                "        SELECT region\n" +
+                "        FROM regional_sales\n" +
+                "        WHERE total_sales > (SELECT SUM(total_sales)/10 FROM regional_sales)\n" +
+                "     )\n" +
+                "SELECT region,\n" +
+                "       product,\n" +
+                "       SUM(quantity) AS product_units,\n" +
+                "       SUM(amount) AS product_sales\n" +
+                "FROM orders\n" +
+                "WHERE region IN (SELECT region FROM top_regions)\n" +
+                "GROUP BY region, product";
+
+        String content = "CREATE VIEW test as " + viewQuery;
+        assertScoreAndParse(content, null, 1);
+
+        AstNode viewNode = rootNode.getChildren().get(0);
+        String returnedQuery = viewNode.getProperty(CREATE_VIEW_QUERY_EXPRESSION).toString();
+
+        assertEquals("test", viewNode.getName());
+        assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
+    }
+
+
+
 
     @Test
     public void parseFromFileTestExample() {
@@ -705,7 +757,7 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
     }
 
     private static String replaceMultipleWhiteSpaces(String a) {
-    	return a.replaceAll("\\s+", " ").trim();
+    	return a.replaceAll("\\s*", "").trim();
     }
 
 }

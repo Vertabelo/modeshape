@@ -764,14 +764,9 @@ public class PostgresDdlParser extends StandardDdlParser
 
         markStartOfStatement(tokens);
         // <view definition> ::=
-        // CREATE [ MATERIALIZED ] VIEW <table name> [ <left paren> <view column list><right paren> ]
-        // AS <query expression>
-        // [ WITH [ <levels clause> ] CHECK OPTION ]
-        // <levels clause> ::=
-        // CASCADED | LOCAL
-
-        // NOTE: the query expression along with the CHECK OPTION clause require no SQL statement terminator.
-        // So the CHECK OPTION clause will NOT
+        // CREATE [ OR REPLACE ] [ TEMP | TEMPORARY ] VIEW name [ ( column_name [, ...] ) ]
+        // [ WITH ( view_option_name [= view_option_value] [, ... ] ) ]
+        // AS query
 
         String stmtType = "CREATE";
         tokens.consume("CREATE");
@@ -788,6 +783,10 @@ public class PostgresDdlParser extends StandardDdlParser
             stmtType = stmtType + SPACE + "MATERIALIZED";
         }
 
+        // pomijamy obsługę
+        tokens.canConsume("TEMP");
+        tokens.canConsume("TEMPORARY");
+
         tokens.consume("VIEW");
         stmtType = stmtType + SPACE + "VIEW";
 
@@ -800,16 +799,10 @@ public class PostgresDdlParser extends StandardDdlParser
         // CONSUME COLUMNS
         parseColumnNameList(tokens, createViewNode, TYPE_COLUMN_REFERENCE);
 
-        tokens.consume("AS");
-
-        String queryExpression = parseUntilCustomTokenOrTerminator(tokens, "WITH");
-
-        createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
-
         // WITH CHECK OPTION
         if (tokens.canConsume("WITH")) {
             String withCheckOption = "CASCADED";
-            
+
             if (tokens.matches("LOCAL")) {
                 withCheckOption = "LOCAL";
                 tokens.consume("LOCAL");
@@ -821,6 +814,17 @@ public class PostgresDdlParser extends StandardDdlParser
             tokens.consume("CHECK", "OPTION");
             createViewNode.setProperty(PostgresDdlLexicon.WITH_CHECK_OPTION, withCheckOption);
         }
+
+        tokens.consume("AS");
+
+        boolean didUseTermintar = doUseTerminator();
+        setDoUseTerminator(true);
+        String queryExpression = parseUntilTerminator(tokens);
+        setDoUseTerminator(didUseTermintar);
+
+        createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
+
+
 
         markEndOfStatement(tokens, createViewNode);
 
