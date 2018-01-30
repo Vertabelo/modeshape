@@ -67,6 +67,17 @@ public class MySqlDdlParserTest extends DdlParserTestHelper {
         rootNode = parser.nodeFactory().node("ddlRootNode");
         scorer = new DdlParserScorer();
     }
+    
+    @Test
+    public void shouldParseCreateTableWithColumnTypeSerial(){
+        printTest("shouldParseCreateTableWithColumnTypeSerial()");
+        
+        String content = "CREATE TABLE \"User\" (\n" +
+                            "\t\"id\" serial NOT NULL,\n" +
+                            "\tCONSTRAINT User_pk PRIMARY KEY (\"id\")\n" +
+                            ")";
+        assertScoreAndParse(content, null, 1);
+    }
 
     @Test
     public void shouldParseCreateTable() {

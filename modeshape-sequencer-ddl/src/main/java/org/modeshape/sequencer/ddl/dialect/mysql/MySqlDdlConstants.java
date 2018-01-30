@@ -64,7 +64,9 @@ public interface MySqlDdlConstants extends DdlConstants {
         "THEN", "TINYBLOB", "TINYINT", "TINYTEXT", ",  TO", "TRAILING", "TRIGGER TRUE", "UNDO", "UNION", "UNIQUE",
         "UNLOCK", "UNSIGNED", ",  UPDATE", "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", ",  UTC_TIMESTAMP",
         "VALUES", "VARBINARY", ", VARCHAR", "VARCHARACTER", "VARYING WHEN", "WHERE", "WHILE", "WITH", "WRITE",
-        "XOR", "YEAR_MONTH", "ZEROFILL" };
+        "XOR", "YEAR_MONTH", "ZEROFILL",
+        // dodane ręcznie:
+        "SERIAL"};
 
 
 
@@ -283,6 +285,7 @@ public interface MySqlDdlConstants extends DdlConstants {
     static final String[] DTYPE_LONGTEXT 		= {"LONGTEXT"};
     static final String[] DTYPE_ENUM 			= {"ENUM"};
     static final String[] DTYPE_SET 			= {"SET"};
+    static final String[] DTYPE_SERIAL			= {"SERIAL"};
 
     static final String[] DTYPE_DATETIME 		= {"DATETIME"};
     static final String[] DTYPE_YEAR 			= {"YEAR"};
@@ -295,13 +298,13 @@ public interface MySqlDdlConstants extends DdlConstants {
                         DTYPE_BIGINT, DTYPE_BOOL, DTYPE_BOOLEAN, DTYPE_FIXED, DTYPE_DOUBLE, DTYPE_MEDIUMINT, DTYPE_TINYINT,
                         DTYPE_NATIONAL_VARCHAR, DTYPE_BINARY, DTYPE_VARBINARY, DTYPE_TINYBLOB, DTYPE_TINYTEXT, DTYPE_TEXT,
                         DTYPE_MEDIUMBLOB, DTYPE_MEDIUMTEXT, DTYPE_LONGBLOB, DTYPE_LONGTEXT, DTYPE_ENUM, DTYPE_SET,
-                        DTYPE_DATETIME, DTYPE_YEAR, DTYPE_BLOB, DTYPE_JSON
+                        DTYPE_DATETIME, DTYPE_YEAR, DTYPE_BLOB, DTYPE_JSON, DTYPE_SERIAL
                 });
 
         static final List<String> CUSTOM_DATATYPE_START_WORDS = 
                 Arrays.asList(new String[] {
                         "TINYINT", "MEDIUMINT", "BIGINT", "FIXED", "BOOL", "BOOLEAN", "BINARY", "VARBINARY", "TINYBLOB",
-                        "TINYTEXT", "MEDIUMBLOB", "MEDIUMTEXT", "LONGBLOB", "LONGTEXT", "TEXT", "ENUM", "SET", "DATETIME", "YEAR", "BLOB", "JSON"
+                        "TINYTEXT", "MEDIUMBLOB", "MEDIUMTEXT", "LONGBLOB", "LONGTEXT", "TEXT", "ENUM", "SET", "DATETIME", "YEAR", "BLOB", "JSON", "SERIAL"
                 });
         /* 
          * ===========================================================================================================================

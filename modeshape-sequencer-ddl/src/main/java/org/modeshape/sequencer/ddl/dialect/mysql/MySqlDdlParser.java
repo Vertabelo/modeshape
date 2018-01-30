@@ -939,7 +939,7 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
         }
         
     }
-
+    
     @Override
     protected void parseColumnDefinition( DdlTokenStream tokens,
             AstNode tableNode,
@@ -1762,6 +1762,20 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
         }
 
         @Override
+        public DataType parse(DdlTokenStream tokens) throws ParsingException {
+            DataType dataType = super.parse(tokens);
+            if(dataType != null){
+                return dataType;
+            }
+            if(tokens.matches("SERIAL")){
+                dataType = new DataType();
+                dataType.setName(tokens.consume());
+                return dataType;
+            }
+            return null;
+        }
+
+        @Override
         protected DataType parseApproxNumericType( DdlTokenStream tokens ) throws ParsingException {
             DataType dataType = null;
             String typeName = null;
@@ -2001,6 +2015,10 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
                 dataType.setName(typeName);
                 
                 parsePrecisionScale(tokens, dataType);
+            } else if (tokens.matches("SERIAL")) {
+                dataType = new DataType();
+                typeName = consume(tokens, dataType, false);
+                dataType.setName(typeName);
             }
             tokens.canConsume("UNSIGNED");
             tokens.canConsume("ZEROFILL");
