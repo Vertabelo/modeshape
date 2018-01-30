@@ -1291,6 +1291,8 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                 parseTableConstraint(localTokens, tableNode, false);
             } else if (isColumnDefinitionStart(localTokens)) {
                 parseColumnDefinition(localTokens, tableNode, false);
+            }else if (isAnonymousColumnDefinitionStart(localTokens)){
+                parseAnonymousColumnDefinitionStart(localTokens, tableNode);
             } else {
                 if (localTokens.hasNext()) {
                     unusedTokensSB.append(SPACE).append(localTokens.consume());
@@ -1305,6 +1307,18 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             addProblem(problem, tableNode);
         }
 
+    }
+
+    private boolean isAnonymousColumnDefinitionStart(DdlTokenStream localTokens) {
+        return localTokens.matches("TIMESTAMP");
+    }
+
+    private void parseAnonymousColumnDefinitionStart(DdlTokenStream tokens, AstNode tableNode) {
+        String anonymousColumn = tokens.consume();
+        if(!anonymousColumn.equalsIgnoreCase("timestamp")){
+            throw new IllegalStateException();
+        }
+        tableNode.setProperty(TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT, true);
     }
 
 

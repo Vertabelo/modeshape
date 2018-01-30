@@ -91,6 +91,7 @@ public class StandardDdlLexicon {
     public static final String TYPE_CREATE_CHARACTER_SET_STATEMENT = PREFIX + ":createCharacterSetStatement";
     public static final String TYPE_CREATE_COLLATION_STATEMENT = PREFIX + ":createCollationStatement";
     public static final String TYPE_CREATE_TRANSLATION_STATEMENT = PREFIX + ":createTranslationStatement";
+    public static final String TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT = PREFIX + ":createTablesTimestampStatement";
 
     public static final String TYPE_ALTER_TABLE_STATEMENT = PREFIX + ":alterTableStatement";
     public static final String TYPE_ALTER_DOMAIN_STATEMENT = PREFIX + ":alterDomainStatement";

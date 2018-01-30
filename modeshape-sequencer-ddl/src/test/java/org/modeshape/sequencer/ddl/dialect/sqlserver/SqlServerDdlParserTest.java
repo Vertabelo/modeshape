@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT;
@@ -92,7 +93,48 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
     // name varchar(40) NOT NULL CHECK (name <> ”)
     //               
     // );
-
+    
+    @Test
+    public void shouldParseCreateTableWithTimestamp_1(){
+        printTest("shouldParseCreateTableWithTimestampInMiddle()");
+        String content = "CREATE TABLE ExampleTable (PriKey int PRIMARY KEY, timestamp timestamp, title varchar(40));";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        Object property = childNode.getProperty(TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT);
+        assertTrue(property == null || ((Boolean)property) == false);
+    }
+    
+    @Test
+    public void shouldParseCreateTableWithTimestamp_2() {
+        printTest("shouldParseCreateTableWithTimestamp()");
+        String content = "CREATE TABLE ExampleTable (PriKey int PRIMARY KEY, timestamp);";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        assertEquals(true, childNode.getProperty(TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT));
+    }
+    
+    @Test
+    public void shouldParseCreateTableWithTimestamp_3(){ 
+        printTest("shouldParseColumnWithName_timestamp()");
+        String content = "CREATE TABLE ExampleTable (PriKey int PRIMARY KEY, timestamp, title varchar(40));";
+        assertScoreAndParse(content, null, 1); 
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        assertEquals(true, childNode.getProperty(TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT));
+    }
+    
+    @Test
+    public void shouldParseCreateTableWithTimestamp_4(){ 
+        printTest("shouldParseColumnWithName_timestamp()");
+        String content = "CREATE TABLE ExampleTable (timestamp, PriKey int PRIMARY KEY, title varchar(40));"; 
+        assertScoreAndParse(content, null, 1); 
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+        assertEquals(true, childNode.getProperty(TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT));
+    }
+    
     @Test
     public void shouldParseCreateTable_2() {
         printTest("shouldParseCreateTable_2()");
