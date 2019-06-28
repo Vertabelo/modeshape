@@ -150,7 +150,6 @@ public interface RedshiftDdlConstants extends DdlConstants {
 	    	StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT, 
 	    	StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT,
 	    	StandardDdlLexicon.TYPE_GRANT_ON_TABLE_STATEMENT,
-	    	RedshiftDdlLexicon.TYPE_GRANT_ON_SEQUENCE_STATEMENT,
 	    	RedshiftDdlLexicon.TYPE_GRANT_ON_SCHEMA_STATEMENT
 	  	};
 	    

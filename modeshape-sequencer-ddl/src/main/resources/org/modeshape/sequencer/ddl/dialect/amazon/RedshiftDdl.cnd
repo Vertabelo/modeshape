@@ -1,0 +1,140 @@
+/*
+ * ModeShape (http://www.modeshape.org)
+ * See the COPYRIGHT.txt file distributed with this work for information
+ * regarding copyright ownership.  Some portions may be licensed
+ * to Red Hat, Inc. under one or more contributor license agreements.
+ * See the AUTHORS.txt file in the distribution for a full listing of 
+ * individual contributors. 
+ *
+ * ModeShape is free software. Unless otherwise indicated, all code in ModeShape
+ * is licensed to you under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * ModeShape is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+ 
+ //------------------------------------------------------------------------------
+// N A M E S P A C E S
+//------------------------------------------------------------------------------
+<jcr='http://www.jcp.org/jcr/1.0'>
+<nt='http://www.jcp.org/jcr/nt/1.0'>
+<mix='http://www.jcp.org/jcr/mix/1.0'>
+<ddl='http://www.modeshape.org/ddl/1.0'>
+<redshiftddl='http://vertabelo.com/ddl/redshift/1.0'>
+
+// =============================================================================
+// OPERANDS
+// =============================================================================
+[redshiftddl:commentOperand]      > ddl:operand mixin abstract
+[redshiftddl:databaseOperand]       > ddl:operand mixin abstract
+[redshiftddl:foreignDataOperand]    > ddl:operand mixin abstract
+[redshiftddl:groupOperand]          > ddl:operand mixin abstract
+[redshiftddl:functionOperand]       > ddl:operand mixin abstract
+[redshiftddl:languageOperand]       > ddl:operand mixin abstract
+[redshiftddl:libraryOperand]       > ddl:operand mixin abstract
+[redshiftddl:procedureOperand]       > ddl:operand mixin abstract
+[redshiftddl:roleOperand]           > ddl:operand mixin abstract
+[redshiftddl:userOperand]           > ddl:operand mixin abstract
+[redshiftddl:parameterOperand]      > ddl:operand mixin abstract
+
+[redshiftddl:functionParameter]     > redshiftddl:parameterOperand mixin
+  - ddl:datatypeName (STRING) mandatory
+  - ddl:datatypeLength (LONG)
+  - ddl:datatypePrecision (LONG)
+  - ddl:datatypeScale (LONG)
+  - ddl:nullable (STRING)
+  - ddl:defaultOption (STRING)
+  - redshiftddl:mode (STRING)
+
+[redshiftddl:role]                  > redshiftddl:roleOperand mixin
+
+[redshiftddl:renamedColumn]         > ddl:renamable mixin
+
+// =============================================================================
+// ALTER STATEMENTS
+// =============================================================================
+[redshiftddl:alterDatabaseStatement]            > ddl:alterable, ddl:statement, redshiftddl:databaseOperand mixin
+[redshiftddl:alterGroupStatement]               > ddl:alterable, ddl:statement, redshiftddl:groupOperand mixin
+[redshiftddl:alterLibraryStatement]            > ddl:alterable, ddl:statement, redshiftddl:libraryOperand mixin
+[redshiftddl:alterProcedureStatement]            > ddl:alterable, ddl:statement, redshiftddl:procedureOperand mixin
+[redshiftddl:alterSchemaStatement]              > ddl:alterable, ddl:statement,         ddl:schemaOperand mixin
+[redshiftddl:alterUserStatement]                > ddl:alterable, ddl:statement, redshiftddl:userOperand mixin
+[redshiftddl:alterViewStatement]                > ddl:alterable, ddl:statement,         ddl:viewOperand mixin
+
+[redshiftddl:alterTableStatement] > ddl:alterTableStatement mixin
+  - redshiftddl:newTableName (STRING)
+  - redshiftddl:schemaName (STRING)
+  + redshiftddl:renameColumn (redshiftddl:renamedColumn) = redshiftddl:renamedColumn sns
+
+  
+// =============================================================================
+// CREATE STATEMENTS
+// =============================================================================
+
+[redshiftddl:createDatabaseStatement]           > ddl:creatable, ddl:statement, redshiftddl:databaseOperand mixin
+[redshiftddl:createForeignDataWrapperStatement] > ddl:creatable, ddl:statement, redshiftddl:foreignDataOperand mixin
+[redshiftddl:createFunctionStatement]           > ddl:creatable, ddl:statement, redshiftddl:functionOperand mixin
+[redshiftddl:createGroupStatement]              > ddl:creatable, ddl:statement, redshiftddl:groupOperand mixin
+[redshiftddl:createLibraryStatement]           > ddl:creatable, ddl:statement, redshiftddl:libraryOperand mixin
+[redshiftddl:createProcedureStatement]           > ddl:creatable, ddl:statement, redshiftddl:procedureOperand mixin
+[redshiftddl:createUserStatement]               > ddl:creatable, ddl:statement, redshiftddl:userOperand mixin
+
+
+
+// =============================================================================
+// DROP STATEMENTS
+// =============================================================================
+
+[redshiftddl:dropDatabaseStatement]             > ddl:droppable, ddl:statement, redshiftddl:databaseOperand mixin
+[redshiftddl:dropFunctionStatement]             > ddl:droppable, ddl:statement, redshiftddl:functionOperand mixin
+[redshiftddl:dropGroupStatement]                > ddl:droppable, ddl:statement, redshiftddl:groupOperand mixin
+[redshiftddl:dropLibraryStatement]             > ddl:droppable, ddl:statement, redshiftddl:libraryOperand mixin
+[redshiftddl:dropProcedureStatement]             > ddl:droppable, ddl:statement, redshiftddl:procedureOperand mixin
+[redshiftddl:dropUserStatement]                 > ddl:droppable, ddl:statement, redshiftddl:userOperand mixin
+
+
+// =============================================================================
+// MISC STATEMENTS
+// =============================================================================
+
+[redshiftddl:abortStatement]            > ddl:statement mixin
+[redshiftddl:analyzeStatement]          > ddl:statement mixin
+[redshiftddl:commentOnStatement]        > ddl:statement, redshiftddl:commentOperand mixin
+  - redshiftddl:targetObjectType (STRING) mandatory
+  - redshiftddl:targetObjectName (STRING)
+  - redshiftddl:comment (STRING) mandatory
+[redshiftddl:copyStatement]             > ddl:statement mixin
+[redshiftddl:deallocateStatement]       > ddl:statement mixin
+[redshiftddl:declareStatement]          > ddl:statement mixin
+[redshiftddl:explainStatement]          > ddl:statement mixin
+[redshiftddl:fetchStatement]            > ddl:statement mixin
+[redshiftddl:lockTableStatement]        > ddl:statement mixin
+[redshiftddl:prepareStatement]          > ddl:statement mixin
+[redshiftddl:rollbackStatement]         > ddl:statement mixin
+[redshiftddl:selectIntoStatement]       > ddl:statement mixin
+[redshiftddl:showStatement]             > ddl:statement mixin
+[redshiftddl:truncateStatement]         > ddl:statement mixin
+[redshiftddl:unlistenStatement]         > ddl:statement mixin
+[redshiftddl:vacuumStatement]           > ddl:statement mixin
+[redshiftddl:commitStatement]           > ddl:statement mixin
+
+// =============================================================================
+// GRANT STATEMENTS
+// =============================================================================
+[redshiftddl:grantOnTableStatement]            > ddl:grantStatement, ddl:tableOperand mixin
+[redshiftddl:grantOnDatabaseStatement]         > ddl:grantStatement, redshiftddl:databaseOperand mixin
+[redshiftddl:grantOnFunctionStatement]         > ddl:grantStatement, redshiftddl:functionOperand mixin
+  + redshiftddl:parameter (redshiftddl:functionParameter) = redshiftddl:functionParameter sns
+[redshiftddl:grantOnLanguageStatement]         > ddl:grantStatement, redshiftddl:languageOperand mixin
+[redshiftddl:grantOnSchemaStatement]           > ddl:grantStatement, ddl:schemaOperand mixin
+[redshiftddl:grantRolesStatement]              > ddl:grantStatement mixin
+  + redshiftddl:grantRole (redshiftddl:role) = redshiftddl:role sns

@@ -178,6 +178,7 @@ public class DdlSequencer extends Sequencer {
         registerNodeTypes("dialect/derby/DerbyDdl.cnd", nodeTypeManager, true);
         registerNodeTypes("dialect/oracle/OracleDdl.cnd", nodeTypeManager, true);
         registerNodeTypes("dialect/postgres/PostgresDdl.cnd", nodeTypeManager, true);
+        registerNodeTypes("dialect/amazon/RedshiftDdl.cnd", nodeTypeManager, true);
         registerNodeTypes("dialect/teiid/TeiidDdl.cnd", nodeTypeManager, true);
         registerNodeTypes("dialect/sqlserver/SqlServerDdl.cnd", nodeTypeManager, true);
     }

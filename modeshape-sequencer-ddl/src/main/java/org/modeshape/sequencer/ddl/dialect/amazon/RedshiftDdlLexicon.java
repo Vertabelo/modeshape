@@ -41,10 +41,8 @@ public class RedshiftDdlLexicon extends StandardDdlLexicon {
     public static final String TYPE_CREATE_FOREIGN_DATA_WRAPPER_STATEMENT = Namespace.PREFIX + ":createForeignDataWrapperStatement";
     public static final String TYPE_CREATE_FUNCTION_STATEMENT 			= Namespace.PREFIX + ":createFunctionStatement";
     public static final String TYPE_CREATE_GROUP_STATEMENT 				= Namespace.PREFIX + ":createGroupStatement";
-    public static final String TYPE_CREATE_INDEX_STATEMENT 				= Namespace.PREFIX + ":createIndexStatement";
     public static final String TYPE_CREATE_LIBRARY_STATEMENT            = Namespace.PREFIX + ":createLibraryStatement";
     public static final String TYPE_CREATE_PROCEDURE_STATEMENT          = Namespace.PREFIX + ":createProcedureStatement";
-    public static final String TYPE_CREATE_TRIGGER_STATEMENT 				= Namespace.PREFIX + ":createTriggerStatement";
     public static final String TYPE_CREATE_USER_STATEMENT 				= Namespace.PREFIX + ":createUserStatement";
 
 
@@ -64,7 +62,7 @@ public class RedshiftDdlLexicon extends StandardDdlLexicon {
     public static final String TYPE_ALTER_VIEW_STATEMENT 					= Namespace.PREFIX + ":alterViewStatement";
 
     // This is required to attach additional properties
-    public static final String TYPE_ALTER_TABLE_STATEMENT_POSTGRES 		= Namespace.PREFIX + ":alterTableStatement";
+    public static final String TYPE_ALTER_TABLE_STATEMENT 		= Namespace.PREFIX + ":alterTableStatement";
     
     
     public static final String TYPE_ABORT_STATEMENT 					= Namespace.PREFIX + ":abortStatement";
@@ -85,14 +83,12 @@ public class RedshiftDdlLexicon extends StandardDdlLexicon {
     public static final String TYPE_VACUUM_STATEMENT 					= Namespace.PREFIX + ":vacuumStatement";
     public static final String TYPE_COMMIT_STATEMENT 					= Namespace.PREFIX + ":commitStatement";
 
-    public static final String TYPE_GRANT_ON_SEQUENCE_STATEMENT       = Namespace.PREFIX + ":grantOnSequenceStatement";
     public static final String TYPE_GRANT_ON_DATABASE_STATEMENT       = Namespace.PREFIX + ":grantOnDatabaseStatement";
     public static final String TYPE_GRANT_ON_FOREIGN_DATA_WRAPPER_STATEMENT  = Namespace.PREFIX + ":grantOnForeignDataWrapperStatement";
     public static final String TYPE_GRANT_ON_FOREIGN_SERVER_STATEMENT = Namespace.PREFIX + ":grantOnForeignServerStatement";
     public static final String TYPE_GRANT_ON_FUNCTION_STATEMENT       = Namespace.PREFIX + ":grantOnFunctionStatement";
     public static final String TYPE_GRANT_ON_LANGUAGE_STATEMENT       = Namespace.PREFIX + ":grantOnLanguageStatement";
     public static final String TYPE_GRANT_ON_SCHEMA_STATEMENT         = Namespace.PREFIX + ":grantOnSchemaStatement";
-    public static final String TYPE_GRANT_ON_TABLESPACE_STATEMENT     = Namespace.PREFIX + ":grantOnTablespaceStatement";
     public static final String TYPE_GRANT_ROLES_STATEMENT             = Namespace.PREFIX + ":grantRolesStatement";
     
     public static final String TYPE_REVOKE_ON_SCHEMA_STATEMENT = PREFIX + ":revokeOnSchemaStatement";
@@ -103,9 +99,7 @@ public class RedshiftDdlLexicon extends StandardDdlLexicon {
     public static final String TYPE_FUNCTION_PARAMETER                     = Namespace.PREFIX + ":functionParameter";
     public static final String FUNCTION_PARAMETER_MODE                = Namespace.PREFIX + ":mode";
     public static final String ROLE                                   = Namespace.PREFIX + ":role";
-    public static final String TYPE_INDEX_ORDERABLE                   = Namespace.PREFIX + ":indexOrderable";
-    public static final String TYPE_INDEX_STORAGE_PARAMETER           = Namespace.PREFIX + ":indexStorageParameter";
-    
+
     // PROPERTY NAMES
     public static final String TARGET_OBJECT_TYPE = Namespace.PREFIX + ":targetObjectType";
     public static final String TARGET_OBJECT_NAME = Namespace.PREFIX + ":targetObjectName";
