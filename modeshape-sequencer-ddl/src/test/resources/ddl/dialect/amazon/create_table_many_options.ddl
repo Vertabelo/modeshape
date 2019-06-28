@@ -1,0 +1,6 @@
+CREATE TABLE test.cow (
+    a int  IDENTITY(1,1) ENCODE DELTA NOT NULL,
+    b int  NOT NULL,
+    c varchar(20)  NULL,
+    PRIMARY KEY (a,b)
+) BACKUP YES DISTSTYLE KEY DISTKEY (a) COMPOUND SORTKEY (b,c);

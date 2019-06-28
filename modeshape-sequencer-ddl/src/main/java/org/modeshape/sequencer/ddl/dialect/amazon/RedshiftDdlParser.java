@@ -771,6 +771,14 @@ public class RedshiftDdlParser extends StandardDdlParser
         } else if(tokens.canConsume("INTERLEAVED", "SORTKEY")) {
             String columnNames = parseContentBetweenParens(tokens);
             parentNode.setProperty(INTERLEAVED_SORTKEY, columnNames);
+        } else if (tokens.canConsume("BACKUP")) {
+            String backup = parseName(tokens);
+            if ("YES".equals(backup.toUpperCase())) {
+                parentNode.setProperty(BACKUP, true);
+            }
+            if ("NO".equals(backup.toUpperCase())) {
+                parentNode.setProperty(BACKUP, false);
+            }
         }
     }
 
@@ -782,7 +790,8 @@ public class RedshiftDdlParser extends StandardDdlParser
 
         if (tokens.matches("DISTSTYLE") || tokens.matches("DISTKEY")
                 || tokens.matches("COMPOUND", "SORTKEY")
-                || tokens.matches("INTERLEAVED", "SORTKEY")) {
+                || tokens.matches("INTERLEAVED", "SORTKEY")
+                || tokens.matches("BACKUP")) {
             result = true;
         }
 

@@ -153,6 +153,18 @@ public class RedshiftDdlParserTest extends DdlParserTestHelper {
     }
 
     @Test
+    public void shouldParseRedshiftCreate_9() {
+        printTest("Create a Table with Many values");
+        final String filename = "create_table_many_options.ddl";
+        String content = getFileContent(filename);
+        assertScoreAndParse(content, filename, 1);
+        AstNode tableNode = rootNode.getChildren().get(0);
+        assertEquals(11, tableNode.getPropertyNames().size());
+        assertEquals("KEY", tableNode.getProperty(DISTSTYLE));
+        assertEquals("b , c", tableNode.getProperty(COMPOUND_SORTKEY));
+    }
+
+    @Test
     public void shouldParseRedshiftCreateView_1() {
         printTest("Create a view EVENT");
         final String filename = "create_view.ddl";
