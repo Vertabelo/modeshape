@@ -165,6 +165,15 @@ public class RedshiftDdlParserTest extends DdlParserTestHelper {
     }
 
     @Test
+    public void shouldParseRedshiftCreate_10() {
+        printTest("Create a Table with Alter Reference");
+        final String filename = "alter_table_add_reference.ddl";
+        String content = getFileContent(filename);
+        assertScoreAndParse(content, filename, 3);
+
+    }
+
+    @Test
     public void shouldParseRedshiftCreateView_1() {
         printTest("Create a view EVENT");
         final String filename = "create_view.ddl";
