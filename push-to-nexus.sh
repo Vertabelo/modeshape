@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-SERVER="https://nexus.lan.e-point.pl/service/local/artifact/maven/content"
+SERVER="https://nexus.lan.e-point.pl/repository/epoint/org/modeshape/modeshape-sequencer-ddl"
 URL="$SERVER"
 
 REPO="epoint"
@@ -17,32 +17,26 @@ USER="$user:$password"
 
 group=org.modeshape
 artifact=modeshape-sequencer-ddl
-version=3.7.1.Final-ep22
+version=3.7.1.Final-ep23
 classifier=
 ext=jar
-jarFilename=modeshape-sequencer-ddl/target/modeshape-sequencer-ddl-$version.$ext
-sourceJarFilename=modeshape-sequencer-ddl/target/modeshape-sequencer-ddl-$version-sources.$ext
+jarFilename=modeshape-sequencer-ddl-$version.$ext
+sourceJarFilename=modeshape-sequencer-ddl-$version-sources.$ext
 
-
-curl --write-out "\nStatus: %{http_code}\n" \
-    --request POST \
-    --user $USER \
-    -F "r=$REPO" \
-    -F "g=$group" \
-    -F "a=$artifact" \
-    -F "v=$version" \
-    -F "p=$ext" \
-    -F "file=@$jarFilename" \
-    "$URL"
+pushd modeshape-sequencer-ddl/target
 
 curl --write-out "\nStatus: %{http_code}\n" \
-    --request POST \
-    --user $USER \
-    -F "r=$REPO" \
-    -F "g=$group" \
-    -F "a=$artifact" \
-    -F "v=$version" \
-    -F "c=source" \
-    -F "p=$ext" \
-    -F "file=@$sourceJarFilename" \
-    "$URL"
+    --request PUT \
+    -v  \
+    -u $USER \
+    --upload-file $jarFilename \
+    "$URL/$version/$jarFilename"
+
+curl --write-out "\nStatus: %{http_code}\n" \
+    --request PUT \
+    -v \
+    -u $USER \
+    --upload-file $sourceJarFilename \
+    "$URL/$version/$sourceJarFilename"
+
+popd
