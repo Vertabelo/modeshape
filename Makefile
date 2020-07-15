@@ -29,6 +29,6 @@ push:
 	./push-to-nexus.sh
 
 
-.PHONY: build update-jars update-pom-xml-version
+.PHONY: build clean copy-jars update-pom-xml push 
 
 
