@@ -17,7 +17,7 @@ USER="$user:$password"
 
 group=org.modeshape
 artifact=modeshape-sequencer-ddl
-version=3.7.1.Final-ep23
+version=`cat VERSION`
 classifier=
 ext=jar
 jarFilename=modeshape-sequencer-ddl-$version.$ext
