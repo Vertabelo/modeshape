@@ -495,4 +495,10 @@ public class DdlTokenStream extends TokenStream {
             }
         }
     }
+
+    @Override
+    public boolean hasNext() {
+        DdlDeadline.checkTimeout();
+        return super.hasNext();
+    }
 }
