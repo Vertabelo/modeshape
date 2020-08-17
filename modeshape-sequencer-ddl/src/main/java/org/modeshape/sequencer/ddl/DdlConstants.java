@@ -43,6 +43,8 @@ public interface DdlConstants {
     public static final String SEMICOLON = ";";
     public static final String L_PAREN = "(";
     public static final String R_PAREN = ")";
+    public static final String L_ANGLE_PAREN = "<";
+    public static final String R_ANGLE_PAREN = ">";
     public static final String L_SQUOTE = "’";
 
     /*

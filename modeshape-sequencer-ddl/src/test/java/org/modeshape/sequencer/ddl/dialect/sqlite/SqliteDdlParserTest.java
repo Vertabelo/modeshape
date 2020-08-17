@@ -31,7 +31,6 @@ import static org.modeshape.sequencer.ddl.dialect.sqlite.SqliteDdlLexicon.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.modeshape.common.FixFor;
 import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
 import org.modeshape.sequencer.ddl.node.AstNode;

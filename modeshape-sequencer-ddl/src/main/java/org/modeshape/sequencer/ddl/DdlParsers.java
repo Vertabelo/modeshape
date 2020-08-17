@@ -38,6 +38,7 @@ import org.modeshape.common.text.Position;
 import org.modeshape.common.util.CheckArg;
 import org.modeshape.jcr.api.JcrConstants;
 import org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlParser;
+import org.modeshape.sequencer.ddl.dialect.bigquery.BigQueryDdlParser;
 import org.modeshape.sequencer.ddl.dialect.derby.DerbyDdlParser;
 import org.modeshape.sequencer.ddl.dialect.mysql.MySqlDdlParser;
 import org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlParser;
@@ -104,6 +105,7 @@ public class DdlParsers {
         parsers.add(new MySqlDdlParser());
         parsers.add(new SqliteDdlParser());
         parsers.add(new RedshiftDdlParser());
+        parsers.add(new BigQueryDdlParser());
         BUILTIN_PARSERS = Collections.unmodifiableList(parsers);
     }
 

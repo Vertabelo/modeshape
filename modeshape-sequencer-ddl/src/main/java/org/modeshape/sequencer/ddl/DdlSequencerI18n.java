@@ -37,6 +37,7 @@ public final class DdlSequencerI18n {
     public static I18n unusedTokensDiscovered;
     public static I18n unusedTokensParsingColumnsAndConstraints;
     public static I18n unusedTokensParsingColumnDefinition;
+    public static I18n unusedTokensParsingTableOptionList;
     public static I18n alterTableOptionNotFound;
     public static I18n unusedTokensParsingCreateIndex;
     public static I18n missingReturnTypeForFunction;

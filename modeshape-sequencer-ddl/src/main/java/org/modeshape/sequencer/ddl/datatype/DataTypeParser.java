@@ -38,7 +38,6 @@ import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserProblem;
 import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
-import org.modeshape.sequencer.ddl.DdlConstants.Problems;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 /**
