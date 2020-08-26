@@ -348,9 +348,15 @@ public class BigQueryDdlParser extends StandardDdlParser {
         boolean hasOrReplace = tokens.canConsume("OR", "REPLACE");
         tokens.consume("VIEW");
         boolean hasNotExists = tokens.canConsume("IF", "NOT", "EXISTS");
-        List<String> name = parseComposedName(tokens);
+        List<String> viewName = parseComposedName(tokens);
 
-        AstNode viewNode = nodeFactory().node(name.get(name.size() - 1), parentNode, TYPE_CREATE_VIEW_STATEMENT);
+        AstNode viewNode = nodeFactory().node(viewName.get(viewName.size() - 1), parentNode, TYPE_CREATE_VIEW_STATEMENT);
+        if (viewName.size() == 2) {
+            viewNode.setProperty(DATASET_NAME, viewName.get(0));
+        } else if (viewName.size() == 3) {
+            viewNode.setProperty(DATASET_NAME, viewName.get(1));
+            viewNode.setProperty(PROJECT_NAME, viewName.get(0));
+        }
         viewNode.setProperty(MATERIALIZED, isMaterializedView);
         viewNode.setProperty(OR_REPLACE_CLAUSE, hasOrReplace);
         viewNode.setProperty(IF_NOT_EXISTS_CLAUSE, hasNotExists);
