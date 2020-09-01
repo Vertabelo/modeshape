@@ -111,6 +111,7 @@ public class RedshiftDdlLexicon extends StandardDdlLexicon {
     public static final String COMPOUND_SORTKEY = Namespace.PREFIX + ":compoundSortKey";
     public static final String INTERLEAVED_SORTKEY = Namespace.PREFIX + ":interleavedSortKey";
     public static final String BACKUP = Namespace.PREFIX + ":backup";
+    public static final String WITH_NO_SCHEMA_BINDING = PREFIX + ":withNoSchemaBinding";
 
     // column property
     public static final String IDENTITY = Namespace.PREFIX + ":identity";

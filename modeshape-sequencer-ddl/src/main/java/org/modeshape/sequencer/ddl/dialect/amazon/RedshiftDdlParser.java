@@ -864,8 +864,13 @@ public class RedshiftDdlParser extends StandardDdlParser
         String queryExpression = parseUntilTerminator(tokens);
         setDoUseTerminator(didUseTermintar);
 
-        createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
+        int withNoSchemaBindingIndex = queryExpression.toUpperCase().indexOf("WITH NO SCHEMA BINDING");
+        if(withNoSchemaBindingIndex >= 0) {
+            queryExpression = queryExpression.substring(0, withNoSchemaBindingIndex);
+            createViewNode.setProperty(WITH_NO_SCHEMA_BINDING, true);
+        }
 
+        createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
 
 
         markEndOfStatement(tokens, createViewNode);
