@@ -86,13 +86,14 @@ public class SqlServerDdlLexicon extends StandardDdlLexicon {
     public static final String VIEW_WITH_CHECK_OPTION   = PREFIX + ":withCheckOption";
     
     // columns properties
-    public static final String COLUMN_FILESTREAM    = PREFIX + ":filestream";
-    public static final String COLUMN_SPARSE        = PREFIX + ":sparse";
-    public static final String COLUMN_IDENTITY      = PREFIX + ":identity";
-    public static final String COLUMN_IDENTITY_SEED      = PREFIX + ":identity_seed";
-    public static final String COLUMN_IDENTITY_INCREMENT      = PREFIX + ":identity_increment";
-    public static final String COLUMN_ROWGUIDCOL    = PREFIX + ":rowguidcol";
-    
+    public static final String COLUMN_FILESTREAM                = PREFIX + ":filestream";
+    public static final String COLUMN_SPARSE                    = PREFIX + ":sparse";
+    public static final String COLUMN_IDENTITY                  = PREFIX + ":identity";
+    public static final String COLUMN_IDENTITY_SEED             = PREFIX + ":identity_seed";
+    public static final String COLUMN_IDENTITY_INCREMENT        = PREFIX + ":identity_increment";
+    public static final String COLUMN_ROWGUIDCOL                = PREFIX + ":rowguidcol";
+    public static final String COLUMN_DEFAULT_CONSTRAINT_NAME   = PREFIX + ":default_constraint_name";
+
     // execute properties
     public static final String BODY                 = PREFIX + ":body";
     public static final String SERVER_NAME          = PREFIX + ":serverName";

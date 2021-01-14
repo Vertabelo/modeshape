@@ -26,15 +26,8 @@ package org.modeshape.sequencer.ddl.dialect.sqlserver;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_ANONYMOUS_TIMESTAMP_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_REFERENCE;
-import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_SEQUENCE_STATEMENT;
-import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.TYPE_CREATE_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.*;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -723,6 +716,26 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
     	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
     }
 
+
+    @Test
+    public void shouldParseCreateTableWithColumnWidthDefaultConstraintName() {
+        printTest("shouldParseCreateViewAndReturnOriginalQueryExpression");
+        String table = "CREATE TABLE Table_1 (\n" +
+                "   column_1 int  NOT NULL CONSTRAINT test DEFAULT testval\n" +
+                ");";
+
+        assertScoreAndParse(table, null, 1);
+
+        AstNode createTable = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(createTable, TYPE_CREATE_TABLE_STATEMENT));
+
+        assertEquals(1, createTable.getChildCount());
+        AstNode column = createTable.getChild(0);
+        Assert.assertEquals("column_1", column.getName());
+        Assert.assertEquals("int", column.getProperty(DATATYPE_NAME));
+        Assert.assertEquals("test", column.getProperty(COLUMN_DEFAULT_CONSTRAINT_NAME));
+        Assert.assertEquals("testval", column.getProperty(DEFAULT_VALUE));
+    }
 
     @Test
     public void parseFromFileTestExample() {

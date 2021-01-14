@@ -49,6 +49,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.AS_FILETABLE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.BODY;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.CLUSTERED;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_DEFAULT_CONSTRAINT_NAME;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_FILESTREAM;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_IDENTITY;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.COLUMN_ROWGUIDCOL;
@@ -1299,7 +1300,8 @@ public class SqlServerDdlParser extends StandardDdlParser
 
         if (parsePossible) {
             tokens.consume("CONSTRAINT");
-            parseName(tokens);
+            String defaultConstraintName = parseName(tokens);
+            columnNode.setProperty(COLUMN_DEFAULT_CONSTRAINT_NAME, defaultConstraintName);
         }
         return super.parseDefaultClause(tokens, columnNode);
     }
