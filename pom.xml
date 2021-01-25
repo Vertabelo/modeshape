@@ -44,7 +44,7 @@
         <!--
           Global dependency version information
           -->
-        <modeshape.java.version>1.6</modeshape.java.version>
+        <modeshape.java.version>1.8</modeshape.java.version>
 
         <joda.time.version>1.6.2</joda.time.version>
         <junit.version>4.10</junit.version>

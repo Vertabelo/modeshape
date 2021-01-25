@@ -39,6 +39,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTI
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_REFERENCE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.*;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.Namespace.PREFIX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -469,15 +470,71 @@ public class OracleDdlParser extends StandardDdlParser
         assert tableNode != null;
 
         // [ ON COMMIT { PRESERVE ROWS | DELETE ROWS | DROP } ]
+
         while (areNextTokensCreateTableOptions(tokens)) {
-            parseNextCreateTableOption(tokens, tableNode);
+            String tableAttribute = tokens.consume().toUpperCase();
+            boolean processed = false;
+            if (parsePhysicalAttributes(tokens, tableNode, tableAttribute)) {
+                processed = true;
+            }
+
+
+            /*
+            { COMPRESS [ FOR { ALL | DIRECT_LOAD } OPERATIONS ]
+            | NOCOMPRESS
+            }*/
+            if ("COMPRESS".equals(tableAttribute)) {
+                if (tokens.canConsume("FOR", "ALL", "OPERATIONS")) {
+                    tableNode.setProperty(TABLE_COMPRESSION, "COMPRESS FOR ALL OPERATIONS");
+                } else  if (tokens.canConsume("FOR", "DIRECT", "LOAD", "OPERATIONS")) {
+                    tableNode.setProperty(TABLE_COMPRESSION, "COMPRESS FOR DIRECT LOAD OPERATIONS");
+                } else {
+                    tableNode.setProperty(TABLE_COMPRESSION, "COMPRESS");
+                }
+                processed = true;
+            } else if ("NOCOMPRESS".equals(tableAttribute)) {
+                tableNode.setProperty(TABLE_COMPRESSION, "NOCOMPRESS");
+                processed = true;
+            }
+
+            if ("TABLESPACE".equals(tableAttribute)) {
+                String tablesSpace = tokens.consume();
+                tableNode.setProperty(TABLE_TABLESPACE, tablesSpace);
+                processed = true;
+            }
+
+            if ("CACHE".equals(tableAttribute) || "NOCACHE".equals(tableAttribute)) {
+                tableNode.setProperty(TABLE_CACHE, tableAttribute);
+                processed = true;
+            }
+            /*
+                | ORGANIZATION
+                  { HEAP [ segment_attributes_clause ] [ table_compression ]
+                  | INDEX [ segment_attributes_clause ] index_org_table_clause
+                  | EXTERNAL external_table_clause
+                  }
+
+                  pominałem opcje szczegółowe, bo są one zawarte w ramach compress i physical attrbiutes
+             */
+            if ("ORGANIZATION".equals(tableAttribute)) {
+                String organizationType = tokens.consume();
+                tableNode.setProperty(TABLE_ORGANIZATION, organizationType);
+                processed = true;
+            }
+            /*
+                { NOROWDEPENDENCIES | ROWDEPENDENCIES }
+             */
+            if ("NOROWDEPENDENCIES".equals(tableAttribute) || "ROWDEPENDENCIES".equals(tableAttribute)) {
+                tableNode.setProperty(TABLE_ROWDEPENDENCIES, tableAttribute);
+                processed = true;
+            }
+
+
+            if (!processed) {
+                parseNextCreateTableOption(tokens, tableNode);
+            }
+
         }
-        
-        // things specific for Oracle
-        
-        // TODO physical properties
-        
-        // TODO table_properties
     }
     
     
@@ -653,7 +710,7 @@ public class OracleDdlParser extends StandardDdlParser
 
         // parameter_declaration = parameter_name [ IN | { { OUT | { IN OUT }} [ NOCOPY ] } ] datatype [ { := | DEFAULT }
         // expression ]
-        // Assume we start with open parenthesis '(', then we parse comma separated list of function parameters
+        // Assume we start with open parenthesis '(', then we parse comma seFgparated list of function parameters
         // which have the form: [ parameter-Name ] DataType
         // So, try getting datatype, if datatype == NULL, then parseName() & parse datatype, then repeat as long as next token is
         // ","
@@ -945,6 +1002,8 @@ public class OracleDdlParser extends StandardDdlParser
         return parseStatement(tokens, STMT_REVOKE, parentNode, TYPE_REVOKE_STATEMENT);
     }
 
+
+
     @Override
     protected AstNode parseAlterTableStatement( DdlTokenStream tokens,
                                                 AstNode parentNode ) throws ParsingException {
@@ -1175,6 +1234,44 @@ public class OracleDdlParser extends StandardDdlParser
         }
 
         return super.parseAlterStatement(tokens, parentNode);
+    }
+
+    protected void parseConstraintAttributes( DdlTokenStream tokens,
+                                              AstNode constraintNode ) throws ParsingException {
+        super.parseConstraintAttributes(tokens, constraintNode);
+        boolean parseAgain = true;
+        while (parseAgain) {
+            parseAgain = false;
+            if (tokens.canConsume("USING","INDEX")) {
+                String indexName = tokens.consume();
+                constraintNode.setProperty(REFERENCE_USING_INDEX, indexName);
+                parseAgain = true;
+            }
+            if (tokens.canConsume("NO", "RELY")) {
+                constraintNode.setProperty(REFERENCE_RELY, "NO RELY");
+                parseAgain = true;
+            } else if (tokens.canConsume("RELY")) {
+                constraintNode.setProperty(REFERENCE_RELY, "NO RELY");
+                parseAgain = true;
+            }
+
+            if (tokens.canConsume("ENABLE")) {
+                constraintNode.setProperty(REFERENCE_ENABLE, "ENABLE");
+                parseAgain = true;
+            } else if (tokens.canConsume("DISABLE")) {
+                constraintNode.setProperty(REFERENCE_ENABLE, "DISABLE");
+                parseAgain = true;
+            }
+
+            if (tokens.canConsume("VALIDATE")) {
+                constraintNode.setProperty(REFERENCE_VALIDATE, "VALIDATE");
+                parseAgain = true;
+            } else if (tokens.canConsume("NOVALIDATE")) {
+                constraintNode.setProperty(REFERENCE_VALIDATE, "NOVALIDATE");
+                parseAgain = true;
+            }
+
+        }
     }
 
     /**
@@ -1581,9 +1678,9 @@ public class OracleDdlParser extends StandardDdlParser
             final List<String> indexAttributes = new ArrayList<String>();
 
             while (tokens.hasNext() && !isTerminator(tokens)) {
-                String token = tokens.consume();
+                String indexAttribute = tokens.consume().toUpperCase();
 
-                if ("UNUSABLE".equals(token.toUpperCase())) {
+                if ("UNUSABLE".equals(indexAttribute)) {
                     unusable = true;
                     break; // must be last token found before terminator
                 }
@@ -1591,18 +1688,71 @@ public class OracleDdlParser extends StandardDdlParser
                 // if number add it to previous
                 boolean processed = false;
 
-                if (token.matches("\\b\\d+\\b")) {
+                if ("TABLESPACE".equals(indexAttribute)) {
+                    String name = parseName(tokens);
+                    indexNode.setProperty(INDEX_TABLESPACE, name);
+                    processed = true;
+                }
+
+                if (parsePhysicalAttributes(tokens, indexNode, indexAttribute)) {
+                    processed = true;
+                }
+
+                if ("LOGGING".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_LOGGING, Boolean.TRUE);
+                    processed = true;
+                } else if("NOLOGGING".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_LOGGING, Boolean.FALSE);
+                    processed = true;
+                }
+                if ("COMPRESS".equals(indexAttribute)) {
+                    String value = tokens.consume();
+                    indexNode.setProperty(INDEX_COMPRESS, value);
+                    processed = true;
+                }
+                if ("NOCOMPRESS".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_COMPRESS, indexAttribute);
+                    processed = true;
+                }
+                if ("ONLINE".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_ONLINE, Boolean.TRUE);
+                    processed = true;
+                }
+                if ("REVERSE".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_REVERSE, Boolean.TRUE);
+                    processed = true;
+                }
+                if ("PARALLEL".equals(indexAttribute)) {
+                    String value = tokens.consume();
+                    indexNode.setProperty(INDEX_PARALLEL, value);
+                    processed = true;
+                }
+                if ("NOPARALLEL".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_PARALLEL, indexAttribute);
+                    processed = true;
+                }
+                if ("SORT".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_SORT, Boolean.TRUE);
+                    processed = true;
+                } else if ("NOSORT".equals(indexAttribute)) {
+                    indexNode.setProperty(INDEX_SORT, Boolean.FALSE);
+                    processed = true;
+                }
+
+
+
+                if (!processed && indexAttribute.matches("\\b\\d+\\b")) {
                     if (!indexAttributes.isEmpty()) {
                         final int index = (indexAttributes.size() - 1);
                         final String value = indexAttributes.get(index);
-                        final String newValue = (value + SPACE + token);
+                        final String newValue = (value + SPACE + indexAttribute);
                         indexAttributes.set(index, newValue);
                         processed = true;
                     }
                 }
 
                 if (!processed) {
-                    indexAttributes.add(token);
+                    indexAttributes.add(indexAttribute);
                 }
             }
 
@@ -1615,6 +1765,123 @@ public class OracleDdlParser extends StandardDdlParser
 
         markEndOfStatement(tokens, indexNode);
         return indexNode;
+    }
+
+    private static final String[] PHYSICAL_ATTRIBUTES = new String[] {
+        "STORAGE",
+        "PCTFREE",
+        "PCTUSED",
+        "INITRANS"
+    };
+
+    private boolean parsePhysicalAttributes(DdlTokenStream tokens, AstNode processedNode, String currentToken) {
+        boolean processed = false;
+        if ("STORAGE".equals(currentToken)) {
+            processedNode.setProperty(STORAGE_CLAUSE, Boolean.TRUE);
+            parseStorage(tokens, processedNode);
+            processed = true;
+        }
+        if ("PCTFREE".equals(currentToken)) {
+            String value = tokens.consume();
+            processedNode.setProperty(PHYSICAL_PCTFREE, value);
+            processed = true;
+        }
+        if ("PCTUSED".equals(currentToken)) {
+            String value = tokens.consume();
+            processedNode.setProperty(PHYSICAL_PCTUSED, value);
+            processed = true;
+        }
+        if ("INITRANS".equals(currentToken)) {
+            String value = tokens.consume();
+            processedNode.setProperty(PHYSICAL_INITRANS, value);
+            processed = true;
+        }
+        return processed;
+    }
+
+    private void parseStorage(DdlTokenStream tokens, AstNode node) {
+        /*
+        STORAGE
+           ({
+
+            } ...)
+         */
+        if (tokens.canConsume(L_PAREN)) {
+            while(!tokens.matches(R_PAREN)) {
+                String storageOption = tokens.consume();
+                // INITIAL size_clause
+                if ("INITIAL".equals(storageOption)) {
+                    String sizeClause = tokens.consume();
+                    node.setProperty(STORAGE_INITIAL, sizeClause);
+                }
+                // | NEXT size_clause
+                if ("NEXT".equals(storageOption)) {
+                    String sizeClause = tokens.consume();
+                    node.setProperty(STORAGE_NEXT, sizeClause);
+                }
+                // | MINEXTENTS integer
+                if ("MINEXTENTS".equals(storageOption)) {
+                    String value = tokens.consume();
+                    node.setProperty(STORAGE_MINEXTENTS, value);
+                }
+                // | MAXEXTENTS { integer | UNLIMITED }
+                if ("MAXEXTENTS".equals(storageOption)) {
+                    String value = tokens.consume();
+                    if ("UNLIMITED".equals(value.toUpperCase())) {
+                        node.setProperty(STORAGE_MAXEXTENTS_UNLIMITED, Boolean.TRUE);
+                    } else {
+                        node.setProperty(STORAGE_MAXEXTENTS, value);
+                    }
+                }
+                // | MAXSIZE { UNLIMITED | size_clause }
+                if ("MAXSIZE".equals(storageOption)) {
+                    String value = tokens.consume();
+                    if ("UNLIMITED".equals(value.toUpperCase())) {
+                        node.setProperty(STORAGE_MAXSIZE_UNLIMITED, Boolean.TRUE);
+                    } else {
+                        node.setProperty(STORAGE_MAXSIZE, value);
+                    }
+                }
+                // | PCTINCREASE integer
+                if ("PCTINCREASE".equals(storageOption)) {
+                    String value = tokens.consume();
+                    node.setProperty(STORAGE_PCINCREASE, value);
+                }
+                // | FREELISTS integer
+                if ("FREELISTS".equals(storageOption)) {
+                    String value = tokens.consume();
+                    node.setProperty(STORAGE_FREELISTS, value);
+                }
+                // | FREELIST GROUPS integer
+                if ("FREELIST".equals(storageOption)) {
+                    tokens.consume("GROUPS");
+                    String sizeClause = tokens.consume();
+                    node.setProperty(STORAGE_FREELIST_GROUPS, sizeClause);
+                }
+                //                        | OPTIMAL [ size_clause
+                //                                  | NULL
+                //                                  ]
+                if ("OPTIMAL".equals(storageOption)) {
+                    String sizeClauseOrNull = tokens.consume();
+                    if ("NULL".equals(sizeClauseOrNull.toUpperCase())) {
+                        node.setProperty(STORAGE_OPTIMAL, "NULL");
+                    } else {
+                        node.setProperty(STORAGE_OPTIMAL, "");
+                        node.setProperty(STORAGE_OPTIMAL_SIZE, sizeClauseOrNull);
+                    }
+
+                }
+                // | BUFFER_POOL { KEEP | RECYCLE | DEFAULT }
+                if ("BUFFER_POOL".equals(storageOption)) {
+                    String sizeClause = tokens.consume();
+                    node.setProperty(STORAGE_BUFFER_POOL, sizeClause);
+                }
+                if ("ENCRYPT".equals(storageOption)) {
+                    node.setProperty(STORAGE_ENCRYPT, Boolean.TRUE);
+                }
+            }
+            tokens.consume(R_PAREN);
+        }
     }
 
     private void parseTableReferenceList( final DdlTokenStream tokens,
@@ -1942,6 +2209,50 @@ public class OracleDdlParser extends StandardDdlParser
             problem.setUnusedSource(unusedTokensSB.toString());
             addProblem(problem, tableNode);
         }
+    }
+
+    @Override
+    protected boolean parseColumnProperties(DdlTokenStream tokens, AstNode columnNode) {
+        boolean parsedSomething = false;
+        if (tokens.canConsume("SORT")) {
+            parsedSomething = true;
+            columnNode.setProperty(COLUMN_SORT, Boolean.TRUE);
+        }
+
+        if (tokens.canConsume("ENCRYPT")) {
+            parsedSomething = true;
+            columnNode.setProperty(COLUMN_ENCRYPT, Boolean.TRUE);
+
+
+            while (true) {
+                boolean processed = false;
+                if (tokens.canConsume("USING")) {
+                    String algorithmEncryption = tokens.consume();
+                    columnNode.setProperty(COLUMN_USING_ENCRYPT_ALGORITHM, algorithmEncryption);
+                    processed = true;
+                }
+                if (tokens.canConsume("IDENTIFIED", "BY")) {
+                    String password = tokens.consume();
+                    columnNode.setProperty(COLUMN_IDENTIFIED_BY_PASSWORD, password);
+                    processed = true;
+                }
+                if (tokens.canConsume("NO", "SALT")) {
+                    columnNode.setProperty(COLUMN_SALT, Boolean.FALSE);
+                    processed = true;
+                }
+                if (tokens.canConsume("SALT")) {
+                    columnNode.setProperty(COLUMN_SALT, Boolean.TRUE);
+                    processed = true;
+                }
+
+                if (!processed) {
+                    break;
+                }
+            }
+
+        }
+
+        return parsedSomething;
     }
 
     /**

@@ -1352,10 +1352,11 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             boolean parsedDefaultClause = parseDefaultClause(tokens, columnNode);
             boolean parsedCollate = parseCollateClause(tokens, columnNode);
             boolean parsedConstraint = parseColumnConstraint(tokens, columnNode, isAlterTable);
-            
+            boolean parsedProperties = parseColumnProperties(tokens, columnNode);
             if (!parsedDefaultClause 
                     && !parsedCollate
-                    && !parsedConstraint) {
+                    && !parsedConstraint
+                    && !parsedProperties) {
                 // THIS IS AN ERROR. NOTHING FOUND.
                 // NEED TO absorb tokens
                 unusedTokensSB.append(SPACE).append(tokens.consume());
@@ -1678,6 +1679,17 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         }
 
         return result;
+    }
+
+    /**
+     * Additional columns properties parser
+     *
+     * @param tokens
+     * @param columnNode
+     * @return
+     */
+    protected boolean parseColumnProperties(DdlTokenStream tokens, AstNode columnNode) {
+        return false;
     }
 
     /**

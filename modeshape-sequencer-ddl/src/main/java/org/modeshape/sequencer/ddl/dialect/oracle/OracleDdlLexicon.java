@@ -161,17 +161,75 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String TABLE_NAME         = PREFIX + ":tableName";
     public static final String IN_OUT_NO_COPY     = PREFIX + ":inOutNoCopy";
     public static final String AUTHID_VALUE       = PREFIX + ":authIdValue";
-    public static final String INDEX_TYPE         = PREFIX + ":indexType";
+
     public static final String UNUSABLE_INDEX     = PREFIX + ":unusable";
     public static final String CLUSTER_NAME       = PREFIX + ":clustereName";
     public static final String TABLE_ALIAS        = PREFIX + ":tableAlias";
     public static final String OTHER_INDEX_REFS   = PREFIX + ":otherRefs";
-    public static final String INDEX_ATTRIBUTES   = PREFIX + ":indexAttributes";
+
     public static final String INDEX_ORDER        = PREFIX + ":order";
     public static final String WHERE_CLAUSE       = PREFIX + ":whereClause";
     public static final String OR_REPLACE         = PREFIX + ":orReplace";
     public static final String FORCE              = PREFIX + ":force";
     public static final String NO_FORCE           = PREFIX + ":noForce";
+
+
+    // table properties
+    public static final String TABLE_COMPRESSION                = PREFIX + ":tableCompression";
+    public static final String TABLE_TABLESPACE                 = PREFIX + ":tablespace";
+    public static final String TABLE_CACHE                      = PREFIX + ":cache";
+    public static final String TABLE_ORGANIZATION               = PREFIX + ":organization";
+    public static final String TABLE_ROWDEPENDENCIES            = PREFIX + ":rowdependencies";
+
+    // column properties
+    public static final String COLUMN_SALT                      = PREFIX + ":salt";
+    public static final String COLUMN_IDENTIFIED_BY_PASSWORD    = PREFIX + ":identifiedByPassword";
+    public static final String COLUMN_SORT                      = PREFIX + ":sort";
+    public static final String COLUMN_ENCRYPT                   = PREFIX + ":encrypt";
+    public static final String COLUMN_USING_ENCRYPT_ALGORITHM   = PREFIX + ":usingEncryptAlgorithm";
+
+    // alter table ?
+    // reference properties
+    public static final String REFERENCE_ENABLE                 = PREFIX + ":enable";
+    public static final String REFERENCE_ADDITIONAL_SQL         = PREFIX + ":additionalSql";
+    public static final String REFERENCE_USING_INDEX            = PREFIX + ":usingIndex";
+    public static final String REFERENCE_VALIDATE               = PREFIX + ":validate";
+    public static final String REFERENCE_RELY                   = PREFIX + ":rely";
+
+
+    // index properties
+    public static final String INDEX_TYPE = PREFIX + ":indexType";
+    public static final String INDEX_VISIBLE = PREFIX + ":visible";
+    public static final String INDEX_ATTRIBUTES   = PREFIX + ":indexAttributes";
+    // index attributies
+    public static final String INDEX_TABLESPACE = PREFIX + ":tablespace";
+    public static final String INDEX_ONLINE = PREFIX + ":online";
+    public static final String INDEX_LOGGING = PREFIX + ":logging";
+    public static final String INDEX_SORT = PREFIX + ":sort";
+    public static final String INDEX_COMPRESS = PREFIX + ":compress";
+    public static final String INDEX_PARALLEL = PREFIX + ":parallel";
+    public static final String INDEX_REVERSE = PREFIX + ":reverse";
+
+    // physical properties
+    public static final String PHYSICAL_INITRANS = PREFIX + ":initrans";
+    public static final String PHYSICAL_PCTFREE = PREFIX + ":pctfree";
+    public static final String PHYSICAL_PCTUSED = PREFIX + ":pctused";
+    // storage properties
+    public static final String STORAGE_CLAUSE = PREFIX + ":storageClause";
+    public static final String STORAGE_ENCRYPT = PREFIX + ":storageEncrypt";
+    public static final String STORAGE_BUFFER_POOL = PREFIX + ":storageBufferPool";
+    public static final String STORAGE_MAXSIZE_UNLIMITED = PREFIX + ":storageMaxsizeUnlimited";
+    public static final String STORAGE_MAXSIZE = PREFIX + ":storageMaxsize";
+    public static final String STORAGE_OPTIMAL = PREFIX + ":storageOptimal";
+    public static final String STORAGE_OPTIMAL_SIZE = PREFIX + ":storageOptimalSize";
+    public static final String STORAGE_FREELIST_GROUPS = PREFIX + ":storageFreelistGroups";
+    public static final String STORAGE_FREELISTS = PREFIX + ":storageFreelists";
+    public static final String STORAGE_MAXEXTENTS_UNLIMITED = PREFIX + ":storageMaxextentsUnlimited";
+    public static final String STORAGE_PCINCREASE = PREFIX + ":storagePctincrease";
+    public static final String STORAGE_MAXEXTENTS = PREFIX + ":storageMaxextents";
+    public static final String STORAGE_MINEXTENTS = PREFIX + ":storageMinextents";
+    public static final String STORAGE_NEXT = PREFIX + ":storageNext";
+    public static final String STORAGE_INITIAL = PREFIX + ":storageInitial";
     
     // sequence properties
     public static final String SEQ_INCREMENT_BY   = PREFIX + "incrementBy";
