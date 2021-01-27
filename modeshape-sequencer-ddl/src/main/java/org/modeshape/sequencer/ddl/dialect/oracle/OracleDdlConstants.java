@@ -29,6 +29,7 @@ import java.util.List;
 import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
 
+
 /**
  * Oracle-specific constants including key words and statement start phrases.
  * 
@@ -300,5 +301,12 @@ public interface OracleDdlConstants extends DdlConstants {
 	    String BITMAP_JOIN = "BITMAP";
 	    String CLUSTER = "CLUSTER";
 	    String TABLE = "TABLE";
+	}
+
+	interface TableCompressTypes {
+		String COMPRESS_FOR_ALL_OPERATIONS = "COMPRESS FOR ALL OPERATIONS";
+		String COMPRESS_FOR_DIRECT_LOAD_OPERATIONS = "COMPRESS FOR DIRECT LOAD OPERATIONS";
+		String COMPRESS = "COMPRESS";
+		String NOCOMPRESS = "NOCOMPRESS";
 	}
 }

@@ -817,10 +817,10 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         assertEquals("employee", createTable.getName());
         assertEquals(4, createTable.getChildCount());
         AstNode empIdColumn = createTable.childrenWithName("empID").get(0);
-        assertEquals(Boolean.TRUE, empIdColumn.getProperty(COLUMN_ENCRYPT));
-        assertEquals(Boolean.FALSE, empIdColumn.getProperty(COLUMN_SALT));
+        assertEquals("ENCRYPT", empIdColumn.getProperty(COLUMN_ENCRYPT));
+        assertEquals("NO SALT", empIdColumn.getProperty(COLUMN_SALT));
         AstNode salaryColumn = createTable.childrenWithName("salary").get(0);
-        assertEquals(Boolean.TRUE, salaryColumn.getProperty(COLUMN_ENCRYPT));
+        assertEquals("ENCRYPT", salaryColumn.getProperty(COLUMN_ENCRYPT));
         assertEquals("'3DES168'", salaryColumn.getProperty(COLUMN_USING_ENCRYPT_ALGORITHM));
 
     }

@@ -485,15 +485,15 @@ public class OracleDdlParser extends StandardDdlParser
             }*/
             if ("COMPRESS".equals(tableAttribute)) {
                 if (tokens.canConsume("FOR", "ALL", "OPERATIONS")) {
-                    tableNode.setProperty(TABLE_COMPRESSION, "COMPRESS FOR ALL OPERATIONS");
+                    tableNode.setProperty(TABLE_COMPRESSION, TableCompressTypes.COMPRESS_FOR_ALL_OPERATIONS);
                 } else  if (tokens.canConsume("FOR", "DIRECT", "LOAD", "OPERATIONS")) {
-                    tableNode.setProperty(TABLE_COMPRESSION, "COMPRESS FOR DIRECT LOAD OPERATIONS");
+                    tableNode.setProperty(TABLE_COMPRESSION, TableCompressTypes.COMPRESS_FOR_DIRECT_LOAD_OPERATIONS);
                 } else {
-                    tableNode.setProperty(TABLE_COMPRESSION, "COMPRESS");
+                    tableNode.setProperty(TABLE_COMPRESSION, TableCompressTypes.COMPRESS);
                 }
                 processed = true;
             } else if ("NOCOMPRESS".equals(tableAttribute)) {
-                tableNode.setProperty(TABLE_COMPRESSION, "NOCOMPRESS");
+                tableNode.setProperty(TABLE_COMPRESSION, TableCompressTypes.NOCOMPRESS);
                 processed = true;
             }
 
@@ -1251,7 +1251,7 @@ public class OracleDdlParser extends StandardDdlParser
                 constraintNode.setProperty(REFERENCE_RELY, "NO RELY");
                 parseAgain = true;
             } else if (tokens.canConsume("RELY")) {
-                constraintNode.setProperty(REFERENCE_RELY, "NO RELY");
+                constraintNode.setProperty(REFERENCE_RELY, "RELY");
                 parseAgain = true;
             }
 
@@ -2216,12 +2216,12 @@ public class OracleDdlParser extends StandardDdlParser
         boolean parsedSomething = false;
         if (tokens.canConsume("SORT")) {
             parsedSomething = true;
-            columnNode.setProperty(COLUMN_SORT, Boolean.TRUE);
+            columnNode.setProperty(COLUMN_SORT, "SORT");
         }
 
         if (tokens.canConsume("ENCRYPT")) {
             parsedSomething = true;
-            columnNode.setProperty(COLUMN_ENCRYPT, Boolean.TRUE);
+            columnNode.setProperty(COLUMN_ENCRYPT, "ENCRYPT");
 
 
             while (true) {
@@ -2237,11 +2237,11 @@ public class OracleDdlParser extends StandardDdlParser
                     processed = true;
                 }
                 if (tokens.canConsume("NO", "SALT")) {
-                    columnNode.setProperty(COLUMN_SALT, Boolean.FALSE);
+                    columnNode.setProperty(COLUMN_SALT, "NO SALT");
                     processed = true;
                 }
                 if (tokens.canConsume("SALT")) {
-                    columnNode.setProperty(COLUMN_SALT, Boolean.TRUE);
+                    columnNode.setProperty(COLUMN_SALT, "SALT");
                     processed = true;
                 }
 
