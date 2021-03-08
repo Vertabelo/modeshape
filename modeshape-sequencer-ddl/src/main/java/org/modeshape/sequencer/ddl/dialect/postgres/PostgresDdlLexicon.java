@@ -160,6 +160,7 @@ public class PostgresDdlLexicon  extends StandardDdlLexicon {
     public static final String COMMENT = Namespace.PREFIX + ":comment";
 
     public static final String UNIQUE_INDEX = Namespace.PREFIX + ":unique";
+    public static final String INDEX_TABLESPACE = Namespace.PREFIX + ":indexTablespace";
     public static final String CONCURRENTLY = Namespace.PREFIX + ":concurrently";
     public static final String USING = Namespace.PREFIX + ":using";
     public static final String TABLE_NAME = Namespace.PREFIX + ":tableName";

@@ -536,6 +536,10 @@ public class PostgresDdlParser extends StandardDdlParser
             AstNode attrNode = nodeFactory().node("CONSTRAINT_ATTRIBUTE", constraintNode, TYPE_CONSTRAINT_ATTRIBUTE);
             attrNode.setProperty(PROPERTY_VALUE, "NOT VALID");
         }
+        if (tokens.canConsume("USING", "INDEX", "TABLESPACE")) {
+            AstNode attrNode = nodeFactory().node(INDEX_TABLESPACE, constraintNode, TYPE_CONSTRAINT_ATTRIBUTE);
+            attrNode.setProperty(PROPERTY_VALUE, parseName(tokens));
+        }
     }
     
     private void parseSingleCommaTerminatedColumnDefinition( DdlTokenStream tokens,
