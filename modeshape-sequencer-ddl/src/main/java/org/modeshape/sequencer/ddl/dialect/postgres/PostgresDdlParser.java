@@ -50,6 +50,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DROP_BEHAVIOR;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.GRANTEE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.GRANT_PRIVILEGE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NEW_NAME;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.OR_REPLACE_CLAUSE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINITION;
@@ -72,7 +73,6 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTI
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.WITH_GRANT_OPTION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.OR_REPLACE_CLAUSE;
 
 import org.modeshape.sequencer.ddl.StandardDdlParser;
 import org.modeshape.sequencer.ddl.datatype.DataType;
@@ -771,6 +771,7 @@ public class PostgresDdlParser extends StandardDdlParser
         // CREATE [ OR REPLACE ] [ TEMP | TEMPORARY ] VIEW name [ ( column_name [, ...] ) ]
         // [ WITH ( view_option_name [= view_option_value] [, ... ] ) ]
         // AS query
+        // [ WITH [ CASCADED | LOCAL ] CHECK OPTION ]
 
         String stmtType = "CREATE";
         tokens.consume("CREATE");
@@ -826,9 +827,19 @@ public class PostgresDdlParser extends StandardDdlParser
         String queryExpression = parseUntilTerminator(tokens);
         setDoUseTerminator(didUseTermintar);
 
+        //  [ WITH [ CASCADED | LOCAL ] CHECK OPTION ] is consumed in queryExpression
+        if (queryExpression.toUpperCase().endsWith("WITH CHECK OPTION")) {
+            queryExpression = queryExpression.substring(0, queryExpression.length() - "WITH CHECK OPTION".length());
+            createViewNode.setProperty(PostgresDdlLexicon.WITH_CHECK_OPTION, "CASCADED");
+        } else if (queryExpression.toUpperCase().endsWith("WITH CASCADED CHECK OPTION")) {
+            queryExpression = queryExpression.substring(0, queryExpression.length() - "WITH CASCADED CHECK OPTION".length());
+            createViewNode.setProperty(PostgresDdlLexicon.WITH_CHECK_OPTION, "CASCADED");
+        } else if (queryExpression.toUpperCase().endsWith("WITH LOCAL CHECK OPTION")) {
+            queryExpression = queryExpression.substring(0, queryExpression.length() - "WITH LOCAL CHECK OPTION".length());
+            createViewNode.setProperty(PostgresDdlLexicon.WITH_CHECK_OPTION, "LOCAL");
+        }
+
         createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
-
-
 
         markEndOfStatement(tokens, createViewNode);
 
