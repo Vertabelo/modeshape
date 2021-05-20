@@ -28,6 +28,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import java.util.List;
@@ -1035,7 +1036,26 @@ public class StandardDdlParserTest extends DdlParserTestHelper {
     	assertEquals("poll_view", viewNode.getName());
     	assertEquals(replaceMultipleWhiteSpaces(viewQuery), replaceMultipleWhiteSpaces(returnedQuery));
     }
-    
+
+
+    @Test
+    public void shouldParseChar10() {
+        String createTableQuery = "CREATE TABLE entity_3 (\n" +
+                "    attribute_1 Char(10)  NOT NULL,\n" +
+                "    attribute_2 int  NOT NULL\n" +
+                ");";
+
+        // Do it again, but this time without scoring first ...
+        setRootNode(parser.nodeFactory().node("ddlRootNode"));
+        parser.setRootNode(getRootNode());
+        parser.parse(createTableQuery, getRootNode(), null);
+
+        assertEquals(1, rootNode.getChildCount());
+        AstNode createTable = rootNode.getChildren().get(0);
+        assertEquals(2, createTable.getChildCount());
+        assertEquals(7, createTable.getPropertyNames().size());
+    }
+
     
     private static String replaceMultipleWhiteSpaces(String a) {
     	return a.replaceAll("\\s+", " ").trim();

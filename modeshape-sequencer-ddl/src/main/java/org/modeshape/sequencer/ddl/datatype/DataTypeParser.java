@@ -332,33 +332,41 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_VARCHAR);
             if (tokens.matches(L_PAREN)) {
-                long length = parseBracketedLong(tokens, dataType);
-                dataType.setLength(length);
+                tryParseAndSetLength(tokens, dataType, typeName);
             }
         } else if (tokens.matches(DataTypes.DTYPE_CHAR_VARYING)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_CHAR_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_CHAR_VARYING);
-            long length = parseBracketedLong(tokens, dataType);
-            dataType.setLength(length);
+            tryParseAndSetLength(tokens, dataType, typeName);
         } else if (tokens.matches(DataTypes.DTYPE_CHARACTER_VARYING)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_CHARACTER_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_CHARACTER_VARYING);
-            long length = parseBracketedLong(tokens, dataType);
-            dataType.setLength(length);
+            tryParseAndSetLength(tokens, dataType, typeName);
         } else if (tokens.matches(DataTypes.DTYPE_CHAR) || tokens.matches(DataTypes.DTYPE_CHARACTER)) {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false); // "CHARACTER", "CHAR",
             dataType.setName(typeName);
             if (tokens.matches(L_PAREN)) {
-                long length = parseBracketedLong(tokens, dataType);
-                dataType.setLength(length);
+                tryParseAndSetLength(tokens, dataType, typeName);
             }
         }
 
         return dataType;
     }
+
+    protected void tryParseAndSetLength(DdlTokenStream tokens, DataType dataType, String typeName) {
+        try {
+            long length = parseBracketedLong(tokens, dataType);
+            dataType.setLength(length);
+        } catch (NumberFormatException e) {
+            String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
+            DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
+            addProblem(problem);
+        }
+    }
+
 
     /**
      * Parses SQL-92 National Character string data types. <national character string type> ::= NATIONAL CHARACTER [ <left paren>
@@ -378,46 +386,40 @@ public class DataTypeParser implements DdlConstants {
             typeName = getStatementTypeName(DataTypes.DTYPE_NCHAR_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NCHAR_VARYING);
-            long length = parseBracketedLong(tokens, dataType);
-            dataType.setLength(length);
-            
+            tryParseAndSetLength(tokens, dataType, typeName);
+
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR_VARYING)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR_VARYING);
-            long length = parseBracketedLong(tokens, dataType);
-            dataType.setLength(length);
-            
+            tryParseAndSetLength(tokens, dataType, typeName);
+
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER_VARYING);
-            long length = parseBracketedLong(tokens, dataType);
-            dataType.setLength(length);
-            
+            tryParseAndSetLength(tokens, dataType, typeName);
+
         } else if (tokens.matches(DataTypes.DTYPE_NCHAR)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NCHAR);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NCHAR);
             if (tokens.matches(L_PAREN)) {
-                long length = parseBracketedLong(tokens, dataType);
-                dataType.setLength(length);
+                tryParseAndSetLength(tokens, dataType, typeName);
             }
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHAR)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHAR);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHAR);
             if (tokens.matches(L_PAREN)) {
-                long length = parseBracketedLong(tokens, dataType);
-                dataType.setLength(length);
+                tryParseAndSetLength(tokens, dataType, typeName);
             }
         } else if (tokens.matches(DataTypes.DTYPE_NATIONAL_CHARACTER)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_NATIONAL_CHARACTER);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_NATIONAL_CHARACTER);
             if (tokens.matches(L_PAREN)) {
-                long length = parseBracketedLong(tokens, dataType);
-                dataType.setLength(length);
+                tryParseAndSetLength(tokens, dataType, typeName);
             }
         }
 
@@ -440,16 +442,14 @@ public class DataTypeParser implements DdlConstants {
             typeName = getStatementTypeName(DataTypes.DTYPE_BIT_VARYING);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_BIT_VARYING);
-            long length = parseBracketedLong(tokens, dataType);
-            dataType.setLength(length);
-            
+            tryParseAndSetLength(tokens, dataType, typeName);
+
         } else if (tokens.matches(DataTypes.DTYPE_BIT)) {
             typeName = getStatementTypeName(DataTypes.DTYPE_BIT);
             dataType = new DataType(typeName);
             consume(tokens, dataType, false, DataTypes.DTYPE_BIT);
             if (tokens.matches(L_PAREN)) {
-                long length = parseBracketedLong(tokens, dataType);
-                dataType.setLength(length);
+                tryParseAndSetLength(tokens, dataType, typeName);
             }
         }
 

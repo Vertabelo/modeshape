@@ -2412,8 +2412,7 @@ public class PostgresDdlParser extends StandardDdlParser
                 consume(tokens, dataType, false,
                         DataTypes.DTYPE_CHARACTER_VARYING);
                 if (tokens.matches(L_PAREN)) {
-                    long length = parseBracketedLong(tokens, dataType);
-                    dataType.setLength(length);
+                    tryParseAndSetLength(tokens, dataType, typeName);
                 }
             } else {
                 dataType = super.parseCharStringType(tokens);
@@ -2439,8 +2438,7 @@ public class PostgresDdlParser extends StandardDdlParser
                 typeName = tokens.consume();
                 result = new DataType(typeName);
                 if (tokens.matches('(')) {
-                    int precision = (int)parseBracketedLong(tokens, result);
-                    result.setPrecision(precision);
+                    tryParseAndSetLength(tokens, result, typeName);
                 }
                 
             } else if (tokens.matches(PostgresDataTypes.DTYPE_BIGSERIAL) || tokens.matches(PostgresDataTypes.DTYPE_SERIAL)

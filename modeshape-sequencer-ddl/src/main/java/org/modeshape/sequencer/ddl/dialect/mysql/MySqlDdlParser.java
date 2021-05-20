@@ -1878,16 +1878,14 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
                 String typeName = tokens.consume();
                 dataType = new DataType(typeName);
                 if (tokens.matches(L_PAREN)) {
-                    long length = parseBracketedLong(tokens, dataType);
-                    dataType.setLength(length);
+                    tryParseAndSetLength(tokens, dataType, typeName);
                 }
             } else if (tokens.matches(DTYPE_NATIONAL_VARCHAR)) {
                 String typeName = getStatementTypeName(DTYPE_NATIONAL_VARCHAR);
                 dataType = new DataType(typeName);
                 tokens.consume(DTYPE_NATIONAL_VARCHAR);
                 if (tokens.matches(L_PAREN)) {
-                    long length = parseBracketedLong(tokens, dataType);
-                    dataType.setLength(length);
+                    tryParseAndSetLength(tokens, dataType, typeName);
                 }
             } else if (tokens.matches(DTYPE_MEDIUMTEXT) || tokens.matches(DTYPE_TEXT) || tokens.matches(DTYPE_LONGTEXT)
                        || tokens.matches(DTYPE_TINYTEXT)) {
@@ -2005,8 +2003,7 @@ public class MySqlDdlParser extends StandardDdlParser implements MySqlDdlConstan
                 dataType.setName(typeName);
                 
                 if (tokens.matches(L_PAREN)) {
-                    long length = parseBracketedLong(tokens, dataType);
-                    dataType.setLength(length);
+                    tryParseAndSetLength(tokens, dataType, typeName);
                 }
                 
             } else if (tokens.matchesAnyOf("NUMERIC", "DECIMAL", "DEC")) {

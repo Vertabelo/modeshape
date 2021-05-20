@@ -23,7 +23,10 @@
  */
 package org.modeshape.sequencer.ddl.dialect.postgres;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_SCHEMA_STATEMENT;
@@ -754,6 +757,24 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         Scanner s = new Scanner(inputStream).useDelimiter("\\A");
         String sql = s.hasNext() ? s.next() : "";
         assertScoreAndParse(sql, null, 1);
+    }
+
+    @Test
+    public void shouldParseChar10() {
+        String createTableQuery = "CREATE TABLE entity_3 (\n" +
+                "    attribute_1 Char(10)  NOT NULL,\n" +
+                "    attribute_2 int  NOT NULL\n" +
+                ");";
+
+        // Do it again, but this time without scoring first ...
+        setRootNode(parser.nodeFactory().node("ddlRootNode"));
+        parser.setRootNode(getRootNode());
+        parser.parse(createTableQuery, getRootNode(), null);
+
+        assertEquals(1, rootNode.getChildCount());
+        AstNode createTable = rootNode.getChildren().get(0);
+        assertEquals(2, createTable.getChildCount());
+        assertEquals(7, createTable.getPropertyNames().size());
     }
 
     private static String replaceMultipleWhiteSpaces(String a) {
