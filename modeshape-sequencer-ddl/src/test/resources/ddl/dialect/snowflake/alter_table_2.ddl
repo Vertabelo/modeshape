@@ -1,0 +1,4 @@
+CREATE OR REPLACE TABLE t1(a1 number, a2 varchar, a3 date);
+CREATE OR REPLACE TABLE t2(b1 varchar);
+
+ALTER TABLE t1 SWAP WITH t2;
