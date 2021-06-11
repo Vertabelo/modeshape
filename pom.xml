@@ -9,7 +9,7 @@
     <name>ModeShape Sequencers</name>
     <description>ModeShape built-in sequencers </description>
     <url>http://www.modeshape.org</url>
-    <version>3.7.1.Final-ep29</version>
+    <version>3.7.1.Final-ep30-dev2</version>
 
 
     <modules>
