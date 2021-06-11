@@ -510,12 +510,12 @@ public class SnowflakeDdlParser extends StandardDdlParser
             // --ALTER TABLE name
             // -- RENAME TO new_name
             String newTableName = parseName(tokens);
-            alterTableNode.setProperty(NEW_NAME, newTableName);
+            alterTableNode.setProperty(SnowflakeDdlLexicon.RENAME_TO, newTableName);
 
         } else if (tokens.canConsume("SWAP", "WITH")) {
             // ALTER TABLE myschema.distributors SET SCHEMA your schema;
             String schemaName = parseName(tokens);
-            alterTableNode.setProperty(SCHEMA_NAME, schemaName);
+            alterTableNode.setProperty(SnowflakeDdlLexicon.SWAP_WITH, schemaName);
         } else {
             System.out.println("  WARNING:  Option not found for ALTER TABLE. Check your DDL for incomplete statement.");
         }
@@ -2212,6 +2212,8 @@ public class SnowflakeDdlParser extends StandardDdlParser
             } else if(tokens.canConsume("COMMENT", "=")) {
                 String comment = tokens.consume();
                 sequenceNode.setProperty(COMMENT, comment);
+            } else {
+                lastMatched = false;
             }
         }
         

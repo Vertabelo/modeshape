@@ -98,30 +98,30 @@ public class SnowflakeDdlLexicon extends StandardDdlLexicon {
 
 
 
-    public static final String TYPE_ABORT_STATEMENT 					= Namespace.PREFIX + ":abortStatement";
+    public static final String TYPE_ABORT_STATEMENT 				= Namespace.PREFIX + ":abortStatement";
     public static final String TYPE_ANALYZE_STATEMENT 				= Namespace.PREFIX + ":analyzeStatement";
     public static final String TYPE_CLUSTER_STATEMENT 				= Namespace.PREFIX + ":clusterStatement";
-    public static final String TYPE_COMMENT_ON_STATEMENT 				= Namespace.PREFIX + ":commentOnStatement";
+    public static final String TYPE_COMMENT_ON_STATEMENT 			= Namespace.PREFIX + ":commentOnStatement";
     public static final String TYPE_COPY_STATEMENT 					= Namespace.PREFIX + ":copyStatement";
-    public static final String TYPE_DEALLOCATE_STATEMENT				= Namespace.PREFIX + ":deallocateStatement";
+    public static final String TYPE_DEALLOCATE_STATEMENT			= Namespace.PREFIX + ":deallocateStatement";
     public static final String TYPE_DECLARE_STATEMENT 				= Namespace.PREFIX + ":declareStatement";
     public static final String TYPE_EXPLAIN_STATEMENT 				= Namespace.PREFIX + ":explainStatement";
-    public static final String TYPE_FETCH_STATEMENT 					= Namespace.PREFIX + ":fetchStatement";
-    public static final String TYPE_LISTEN_STATEMENT 					= Namespace.PREFIX + ":listenStatement";
+    public static final String TYPE_FETCH_STATEMENT 				= Namespace.PREFIX + ":fetchStatement";
+    public static final String TYPE_LISTEN_STATEMENT 				= Namespace.PREFIX + ":listenStatement";
     public static final String TYPE_LOAD_STATEMENT 					= Namespace.PREFIX + ":loadStatement";
-    public static final String TYPE_LOCK_TABLE_STATEMENT 				= Namespace.PREFIX + ":lockStatement";
+    public static final String TYPE_LOCK_TABLE_STATEMENT 			= Namespace.PREFIX + ":lockStatement";
     public static final String TYPE_MOVE_STATEMENT 					= Namespace.PREFIX + ":moveStatement";
-    public static final String TYPE_NOTIFY_STATEMENT 					= Namespace.PREFIX + ":notifyStatement";
+    public static final String TYPE_NOTIFY_STATEMENT 				= Namespace.PREFIX + ":notifyStatement";
     public static final String TYPE_PREPARE_STATEMENT 				= Namespace.PREFIX + ":prepareStatement";
-    public static final String TYPE_REASSIGN_OWNED_STATEMENT 			= Namespace.PREFIX + ":reassignOwnedStatement";
-    public static final String TYPE_RELEASE_SAVEPOINT_STATEMENT 		= Namespace.PREFIX + ":releaseSavepointStatement";
+    public static final String TYPE_REASSIGN_OWNED_STATEMENT 		= Namespace.PREFIX + ":reassignOwnedStatement";
+    public static final String TYPE_RELEASE_SAVEPOINT_STATEMENT 	= Namespace.PREFIX + ":releaseSavepointStatement";
     public static final String TYPE_ROLLBACK_STATEMENT 				= Namespace.PREFIX + ":rollbackStatement";
     public static final String TYPE_SELECT_INTO_STATEMENT 			= Namespace.PREFIX + ":selectIntoStatement";
     public static final String TYPE_SHOW_STATEMENT 					= Namespace.PREFIX + ":showStatement";
     public static final String TYPE_TRUNCATE_STATEMENT 				= Namespace.PREFIX + ":truncateStatement";
     public static final String TYPE_UNLISTEN_STATEMENT 				= Namespace.PREFIX + ":unlistenStatement";
-    public static final String TYPE_VACUUM_STATEMENT 					= Namespace.PREFIX + ":vacuumStatement";
-    public static final String TYPE_COMMIT_STATEMENT 					= Namespace.PREFIX + ":commitStatement";
+    public static final String TYPE_VACUUM_STATEMENT 				= Namespace.PREFIX + ":vacuumStatement";
+    public static final String TYPE_COMMIT_STATEMENT 				= Namespace.PREFIX + ":commitStatement";
 
     public static final String TYPE_GRANT_ON_SEQUENCE_STATEMENT       = Namespace.PREFIX + ":grantOnSequenceStatement";
     public static final String TYPE_GRANT_ON_DATABASE_STATEMENT       = Namespace.PREFIX + ":grantOnDatabaseStatement";
@@ -135,50 +135,52 @@ public class SnowflakeDdlLexicon extends StandardDdlLexicon {
 
     public static final String TYPE_REVOKE_ON_SCHEMA_STATEMENT = PREFIX + ":revokeOnSchemaStatement";
 
-    public static final String TYPE_RENAME_COLUMN 					= Namespace.PREFIX + ":renamedColumn";
+    public static final String TYPE_RENAME_COLUMN 					  = Namespace.PREFIX + ":renamedColumn";
 
-    public static final String SCHEMA_NAME 							= Namespace.PREFIX + ":schemaName";
-    public static final String TYPE_FUNCTION_PARAMETER                     = Namespace.PREFIX + ":functionParameter";
+    public static final String SCHEMA_NAME 							  = Namespace.PREFIX + ":schemaName";
+    public static final String TYPE_FUNCTION_PARAMETER                = Namespace.PREFIX + ":functionParameter";
     public static final String FUNCTION_PARAMETER_MODE                = Namespace.PREFIX + ":mode";
     public static final String ROLE                                   = Namespace.PREFIX + ":role";
 
     // PROPERTY NAMES
     public static final String TARGET_OBJECT_TYPE = Namespace.PREFIX + ":targetObjectType";
     public static final String TARGET_OBJECT_NAME = Namespace.PREFIX + ":targetObjectName";
-    public static final String COMMENT = Namespace.PREFIX + ":comment";
+    public static final String COMMENT            = Namespace.PREFIX + ":comment";
 
     // table
-    public static final String TRANSIENT_TABLE = Namespace.PREFIX + ":transient";
-    public static final String STAGE_FILE_FORMAT = Namespace.PREFIX + ":stageFileFormat";
-    public static final String STAGE_COPY_OPTIONS = Namespace.PREFIX + ":stageCopyOptions";
-    public static final String DATA_RETENTION = Namespace.PREFIX + ":dataRetention";
-    public static final String MAX_DATA_EXTENSION = Namespace.PREFIX + ":maxDataExtension";
-    public static final String CHANGE_TRACKING = Namespace.PREFIX + ":changeTracking";
+    public static final String TRANSIENT_TABLE       = Namespace.PREFIX + ":transient";
+    public static final String STAGE_FILE_FORMAT     = Namespace.PREFIX + ":stageFileFormat";
+    public static final String STAGE_COPY_OPTIONS    = Namespace.PREFIX + ":stageCopyOptions";
+    public static final String DATA_RETENTION        = Namespace.PREFIX + ":dataRetention";
+    public static final String MAX_DATA_EXTENSION    = Namespace.PREFIX + ":maxDataExtension";
+    public static final String CHANGE_TRACKING       = Namespace.PREFIX + ":changeTracking";
     public static final String DEFAULT_DDL_COLLATION = Namespace.PREFIX + ":defaultDdlCollation";
-    public static final String CLUSTER_BY = Namespace.PREFIX + ":clusterBy";
+    public static final String CLUSTER_BY            = Namespace.PREFIX + ":clusterBy";
+    public static final String RENAME_TO             = Namespace.PREFIX + ":renameTo";
+    public static final String SWAP_WITH             = Namespace.PREFIX + ":swapWith";
 
     // extenal table
-    public static final String INTEGRATION = Namespace.PREFIX + ":integration";
-    public static final String PARTITION_BY = Namespace.PREFIX + ":partitionBy";
-    public static final String LOCATION = Namespace.PREFIX + ":location";
+    public static final String INTEGRATION       = Namespace.PREFIX + ":integration";
+    public static final String PARTITION_BY      = Namespace.PREFIX + ":partitionBy";
+    public static final String LOCATION          = Namespace.PREFIX + ":location";
     public static final String REFRESH_ON_CREATE = Namespace.PREFIX + ":refreshOnCreate";
-    public static final String AUTO_REFRESH = Namespace.PREFIX + ":autoRefresh";
-    public static final String PATTERN = Namespace.PREFIX + ":pattern";
-    public static final String FILE_FORMAT = Namespace.PREFIX + ":fileFormat";
-    public static final String AWS_SNS_TOPIC = Namespace.PREFIX + ":awsSnsTopic";
+    public static final String AUTO_REFRESH      = Namespace.PREFIX + ":autoRefresh";
+    public static final String PATTERN           = Namespace.PREFIX + ":pattern";
+    public static final String FILE_FORMAT       = Namespace.PREFIX + ":fileFormat";
+    public static final String AWS_SNS_TOPIC     = Namespace.PREFIX + ":awsSnsTopic";
 
     // view
-    public static final String SECURE = Namespace.PREFIX + ":secure";
+    public static final String SECURE    = Namespace.PREFIX + ":secure";
     public static final String RECURSIVE = Namespace.PREFIX + ":recursive";
 
     public static final String UNIQUE_INDEX = Namespace.PREFIX + ":unique";
     public static final String CONCURRENTLY = Namespace.PREFIX + ":concurrently";
-    public static final String USING = Namespace.PREFIX + ":using";
-    public static final String TABLE_NAME = Namespace.PREFIX + ":tableName";
-    public static final String OTHER_REFS = Namespace.PREFIX + ":otherRefs";
-    public static final String TABLESPACE = Namespace.PREFIX + ":tablespace";
-    public static final String INDEX_ORDER = Namespace.PREFIX + ":order";
-    public static final String UNLOGGED = Namespace.PREFIX + ":unlogged";
+    public static final String USING        = Namespace.PREFIX + ":using";
+    public static final String TABLE_NAME   = Namespace.PREFIX + ":tableName";
+    public static final String OTHER_REFS   = Namespace.PREFIX + ":otherRefs";
+    public static final String TABLESPACE   = Namespace.PREFIX + ":tablespace";
+    public static final String INDEX_ORDER  = Namespace.PREFIX + ":order";
+    public static final String UNLOGGED     = Namespace.PREFIX + ":unlogged";
     public static final String MATERIALIZED = Namespace.PREFIX + ":materialized";
 
     // sequence properties
@@ -193,12 +195,12 @@ public class SnowflakeDdlLexicon extends StandardDdlLexicon {
     public static final String SEQ_OWNED_BY       = Namespace.PREFIX + ":ownedBy";
 
     // column
-    public static final String STORAGE = Namespace.PREFIX + ":storage";
-    public static final String DROP_DEFAULT = Namespace.PREFIX + ":dropDefault";
-    public static final String SET_DEFAULT = Namespace.PREFIX + ":setDefault";
-    public static final String SET_NOT_NULL = Namespace.PREFIX + ":setNotNull";
-    public static final String DROP_NOT_NULL = Namespace.PREFIX + ":dropNotNull";
-    public static final String USING_EXPRESSION = Namespace.PREFIX + ":usingExpression";
+    public static final String STORAGE               = Namespace.PREFIX + ":storage";
+    public static final String DROP_DEFAULT          = Namespace.PREFIX + ":dropDefault";
+    public static final String SET_DEFAULT           = Namespace.PREFIX + ":setDefault";
+    public static final String SET_NOT_NULL          = Namespace.PREFIX + ":setNotNull";
+    public static final String DROP_NOT_NULL         = Namespace.PREFIX + ":dropNotNull";
+    public static final String USING_EXPRESSION      = Namespace.PREFIX + ":usingExpression";
     public static final String STATISTICS_TABLESPACE = Namespace.PREFIX + ":statisticsTablespace";
-    public static final String STATISTICS_VALUE = Namespace.PREFIX + ":statisticsValue";
+    public static final String STATISTICS_VALUE      = Namespace.PREFIX + ":statisticsValue";
 }
