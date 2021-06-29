@@ -478,34 +478,37 @@ public class DataTypeParser implements DdlConstants {
             dataType = new DataType();
             typeName = consume(tokens, dataType, false);
             dataType.setName(typeName);
-            
-            if (tokens.matches(L_PAREN)) {
-                consume(tokens, dataType, false, L_PAREN);
-                
+            parsePrecisionAndScale(tokens, dataType, typeName);
+        }
+
+        return dataType;
+    }
+
+    protected void  parsePrecisionAndScale(DdlTokenStream tokens, DataType dataType, String typeName) {
+        if (tokens.matches(L_PAREN)) {
+            consume(tokens, dataType, false, L_PAREN);
+
+            try {
+                int precision = (int)parseLong(tokens, dataType);
+                dataType.setPrecision(precision);
+            } catch (NumberFormatException e) {
+                String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
+                DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
+                addProblem(problem);
+            }
+
+            if (canConsume(tokens, dataType, false, COMMA)) {
                 try {
-                    int precision = (int)parseLong(tokens, dataType);
-                    dataType.setPrecision(precision);
+                    int scale = (int)parseLong(tokens, dataType);
+                    dataType.setScale(scale);
                 } catch (NumberFormatException e) {
                     String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
                     DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
                     addProblem(problem);
                 }
-                
-                if (canConsume(tokens, dataType, false, COMMA)) {
-                    try {
-                        int scale = (int)parseLong(tokens, dataType);
-                        dataType.setScale(scale);
-                    } catch (NumberFormatException e) {
-                        String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(typeName);
-                        DdlParserProblem problem = new DdlParserProblem(Problems.ERROR, Position.EMPTY_CONTENT_POSITION, msg);
-                        addProblem(problem);
-                    }
-                }
-                consume(tokens, dataType, false, R_PAREN);
             }
+            consume(tokens, dataType, false, R_PAREN);
         }
-
-        return dataType;
     }
 
     /**

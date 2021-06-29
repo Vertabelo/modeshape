@@ -2246,6 +2246,17 @@ public class SnowflakeDdlParser extends StandardDdlParser
 
     class SnowflakeDataTypeParser extends DataTypeParser {
 
+
+        public SnowflakeDataTypeParser() {
+            super();
+
+            basicExactNumericTypes.add(SnowflakeDataTypes.DTYPE_NUMBER);
+
+            basicCharStringTypes.add(SnowflakeDataTypes.DTYPE_STRING);
+            basicCharStringTypes.add(SnowflakeDataTypes.DTYPE_TEXT);
+
+        }
+
         /**
          * {@inheritDoc}
          * 
@@ -2288,6 +2299,13 @@ public class SnowflakeDdlParser extends StandardDdlParser
                 dataType = new DataType(typeName);
                 consume(tokens, dataType, false,
                         DataTypes.DTYPE_CHARACTER_VARYING);
+                if (tokens.matches(L_PAREN)) {
+                    tryParseAndSetLength(tokens, dataType, typeName);
+                }
+            } else if (tokens.matches(SnowflakeDataTypes.DTYPE_STRING) || tokens.matches(SnowflakeDataTypes.DTYPE_TEXT)) {
+                dataType = new DataType();
+                typeName = consume(tokens, dataType, false);
+                dataType.setName(typeName);
                 if (tokens.matches(L_PAREN)) {
                     tryParseAndSetLength(tokens, dataType, typeName);
                 }
@@ -2366,8 +2384,19 @@ public class SnowflakeDdlParser extends StandardDdlParser
          */
         @Override
         protected DataType parseExactNumericType( DdlTokenStream tokens ) throws ParsingException {
-            return super.parseExactNumericType(tokens);
+            DataType dataType = null;
+            String typeName = null;
+            if (tokens.matches(SnowflakeDataTypes.DTYPE_NUMBER)) {
+                dataType = new DataType();
+                typeName = consume(tokens, dataType, false);
+                dataType.setName(typeName);
+                parsePrecisionAndScale(tokens, dataType, typeName);
+            } else {
+                return super.parseExactNumericType(tokens);
+            }
+            return dataType;
         }
+
 
     }
 

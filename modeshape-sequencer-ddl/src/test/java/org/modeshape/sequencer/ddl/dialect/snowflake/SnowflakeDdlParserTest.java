@@ -33,9 +33,11 @@ import org.modeshape.sequencer.ddl.node.AstNode;
 
 import static org.junit.Assert.assertEquals;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_NAME;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DEFAULT_VALUE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NULLABLE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.COMPOUND_SORTKEY;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.DISTKEY;
@@ -194,6 +196,23 @@ public class SnowflakeDdlParserTest extends DdlParserTestHelper {
         AstNode alterTable = rootNode.getChildren().get(1);
         assertMixinType(createTable, TYPE_CREATE_TABLE_STATEMENT);
         assertMixinType(alterTable, TYPE_ALTER_TABLE_STATEMENT);
+    }
+
+    @Test
+    public void shouldParseCreateTable() {
+        printTest("Alter create table");
+        final String filename = "create_table_EDWM_3865.ddl";
+        String content = getFileContent(filename);
+        assertScoreAndParse(content, filename, 1);
+        AstNode createTable = rootNode.getChildren().get(0);
+        assertMixinType(createTable, TYPE_CREATE_TABLE_STATEMENT);
+        AstNode id = createTable.getChildren().get(0);
+        AstNode number = createTable.getChildren().get(1);
+        assertProperty(number, DATATYPE_NAME, "number");
+        AstNode string = createTable.getChildren().get(2);
+        assertProperty(string, DATATYPE_NAME, "string");
+        AstNode text = createTable.getChildren().get(3);
+        assertProperty(text, DATATYPE_NAME, "text");
     }
 
 }
