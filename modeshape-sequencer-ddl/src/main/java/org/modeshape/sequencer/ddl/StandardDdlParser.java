@@ -1343,7 +1343,13 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
         AstNode columnNode = nodeFactory().node(columnName, tableNode, TYPE_COLUMN_DEFINITION);
 
-        getDatatypeParser().setPropertiesOnNode(columnNode, datatype);
+        if (datatype != null) {
+            getDatatypeParser().setPropertiesOnNode(columnNode, datatype);
+        } else {
+            String msg = DdlSequencerI18n.errorParsingDataTypeParameter.text(tableNode.getName());
+            DdlParserProblem problem = new DdlParserProblem(DdlConstants.Problems.WARNING, Position.EMPTY_CONTENT_POSITION, msg);
+            problems.add(problem);
+        }
 
         // Now clauses and constraints can be defined in any order, so we need to keep parsing until we get to a comma
         StringBuffer unusedTokensSB = new StringBuffer();

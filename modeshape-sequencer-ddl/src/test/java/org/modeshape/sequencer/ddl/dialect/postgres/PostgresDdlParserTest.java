@@ -777,6 +777,15 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertEquals(7, createTable.getPropertyNames().size());
     }
 
+    @Test
+    public void shouldParseScriptEdwn3868() {
+        printTest("testParse");
+        InputStream inputStream = this.getClass().getResourceAsStream("/ddl/dialect/postgres/postgres_EDWM_3868.ddl");
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        String sql = s.hasNext() ? s.next() : "";
+        assertScoreAndParse(sql, null, 17);
+    }
+
     private static String replaceMultipleWhiteSpaces(String a) {
     	return a.replaceAll("\\s*", "").trim();
     }
