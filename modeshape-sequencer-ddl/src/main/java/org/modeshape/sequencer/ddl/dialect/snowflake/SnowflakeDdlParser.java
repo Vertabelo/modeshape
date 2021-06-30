@@ -36,6 +36,7 @@ import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.ALL_PRIVILEGES;
@@ -2249,12 +2250,6 @@ public class SnowflakeDdlParser extends StandardDdlParser
 
         public SnowflakeDataTypeParser() {
             super();
-
-            basicExactNumericTypes.add(SnowflakeDataTypes.DTYPE_NUMBER);
-
-            basicCharStringTypes.add(SnowflakeDataTypes.DTYPE_STRING);
-            basicCharStringTypes.add(SnowflakeDataTypes.DTYPE_TEXT);
-
         }
 
         /**
@@ -2397,7 +2392,56 @@ public class SnowflakeDdlParser extends StandardDdlParser
             return dataType;
         }
 
+        @Override
+        protected boolean isDatatype(DdlTokenStream tokens, int type) {
+            boolean result = super.isDatatype(tokens, type);
+            if (result) {
+                return true;
+            }
+            switch (type) {
+                case DataTypes.DTYPE_CODE_CHAR_STRING: {
+                    for (String[] stmts : list(SnowflakeDataTypes.DTYPE_STRING, SnowflakeDataTypes.DTYPE_TEXT)) {
+                        if (tokens.matches(stmts)) {
+                            return true;
+                        }
+                    }
+                }
+                break;
+                case DataTypes.DTYPE_CODE_EXACT_NUMERIC: {
+                    for (String[] stmts : list(SnowflakeDataTypes.DTYPE_NUMBER)) {
+                        if (tokens.matches(stmts)) {
+                            return true;
+                        }
+                    }
+                }
+                break;
+            }
 
+            return false;
+        }
+
+        @Override
+        public boolean isDatatype(DdlTokenStream tokens) {
+            boolean result = super.isDatatype(tokens);
+            if (result) {
+                return true;
+            }
+            for (String[] stmts : list(SnowflakeDataTypes.DTYPE_STRING, SnowflakeDataTypes.DTYPE_TEXT, SnowflakeDataTypes.DTYPE_NUMBER)) {
+                if (tokens.matches(stmts)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    }
+
+    List<String[]> list(String[] ...args) {
+        List<String[]> result = new ArrayList<>();
+        for (String[] a : args) {
+            result.add(a);
+        }
+        return result;
     }
 
 }
