@@ -16,10 +16,7 @@ clean:
 	rm -fr */target/
 
 copy-jars:
-	mkdir -p ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl
-	mkdir -p ~/.maven/repository/modeshape/src/
-	cp ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/3.7.1.Final-ep*/modeshape-sequencer-ddl-3.7.1.Final-ep*.jar ~/.maven/repository/modeshape/jars/
-	cp ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/3.7.1.Final-ep*/modeshape-sequencer-ddl-3.7.1.Final-ep*-sources.jar ~/.maven/repository/modeshape/src/
+	cp -r ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/$(MODSHAPE_VERSION) /home/amoscicki/work/vertabelo-repos/maven/org/modeshape/modeshape-sequencer-ddl/
 
 
 update-pom-xml:
