@@ -17,10 +17,11 @@ clean:
 
 copy-jars:
 	cp -r ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/$(MODSHAPE_VERSION) /home/amoscicki/work/vertabelo-repos/maven/org/modeshape/modeshape-sequencer-ddl/
+	cp -r ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/$(MODSHAPE_VERSION) /home/gmalyska/work/vertabelo-repos/maven/org/modeshape/modeshape-sequencer-ddl/
 
 
 update-pom-xml:
-	sed -i 's|<version>\(3.7.1.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
+	sed -i 's|<version>\(3.7.2.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
 
 push:
 	./push-to-nexus.sh

@@ -27,14 +27,14 @@ pushd modeshape-sequencer-ddl/target
 
 curl --write-out "\nStatus: %{http_code}\n" \
     --request PUT \
-    -v  \
+    -v  --http0.9 \
     -u $USER \
     --upload-file $jarFilename \
     "$URL/$version/$jarFilename"
 
 curl --write-out "\nStatus: %{http_code}\n" \
     --request PUT \
-    -v \
+    -v --http0.9 \
     -u $USER \
     --upload-file $sourceJarFilename \
     "$URL/$version/$sourceJarFilename"
