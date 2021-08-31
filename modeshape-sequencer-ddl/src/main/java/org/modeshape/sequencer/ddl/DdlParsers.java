@@ -43,6 +43,7 @@ import org.modeshape.sequencer.ddl.dialect.derby.DerbyDdlParser;
 import org.modeshape.sequencer.ddl.dialect.mysql.MySqlDdlParser;
 import org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlParser;
 import org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlParser;
+import org.modeshape.sequencer.ddl.dialect.postgres10plus.Postgres10PlusDdlParser;
 import org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlParser;
 import org.modeshape.sequencer.ddl.dialect.sqlite.SqliteDdlParser;
 import org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlParser;
@@ -101,6 +102,7 @@ public class DdlParsers {
         parsers.add(new OracleDdlParser());
         parsers.add(new DerbyDdlParser()); // FIXME to remove
         parsers.add(new PostgresDdlParser());
+        parsers.add(new Postgres10PlusDdlParser());
         parsers.add(new TeiidDdlParser()); // FIXME to remove
         parsers.add(new SqlServerDdlParser());
         parsers.add(new MySqlDdlParser());

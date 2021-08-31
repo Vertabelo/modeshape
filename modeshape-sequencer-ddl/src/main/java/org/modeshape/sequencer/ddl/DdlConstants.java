@@ -84,6 +84,7 @@ public interface DdlConstants {
     public static final String SET = "SET";
     public static final String TABLE = "TABLE";
     public static final String UNIQUE = "UNIQUE";
+    public static final String IDENTITY = "IDENTITY";
     public static final String VIEW = "VIEW";
     public static final String NOT = "NOT";
     public static final String NULL = "NULL";
