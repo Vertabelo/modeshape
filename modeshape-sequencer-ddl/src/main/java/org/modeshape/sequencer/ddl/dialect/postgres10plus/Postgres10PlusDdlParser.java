@@ -2183,11 +2183,7 @@ public class Postgres10PlusDdlParser extends StandardDdlParser
     }
 
     @Override
-    protected boolean parseColumnConstraint( DdlTokenStream tokens,
-                                             AstNode columnNode,
-                                             boolean isAlterTable ) throws ParsingException {
-        String mixinType = isAlterTable ? TYPE_ADD_TABLE_CONSTRAINT_DEFINITION : TYPE_TABLE_CONSTRAINT;
-
+    protected boolean parseColumnProperties(DdlTokenStream tokens, AstNode columnNode) {
         if(tokens.canConsume("GENERATED")) {
             // GENERATED { ALWAYS | BY DEFAULT } AS IDENTITY [ ( sequence_options ) ] |
             if(tokens.matches("ALWAYS")) {
@@ -2204,19 +2200,14 @@ public class Postgres10PlusDdlParser extends StandardDdlParser
                 String columnIdentityOptions = parseContentBetweenParens(tokens);
                 columnNode.setProperty(COLUMN_IDENTITY_OPTIONS, columnIdentityOptions);
             }
-
-            AstNode constraintNode = nodeFactory().node("IC_1", columnNode.getParent(), mixinType);
-            constraintNode.setProperty(CONSTRAINT_TYPE, IDENTITY);
-
-            parseConstraintAttributes(tokens, constraintNode);
             return true;
         } else {
-            return super.parseColumnConstraint(tokens, columnNode, isAlterTable);
+            return super.parseColumnProperties(tokens, columnNode);
         }
     }
 
-    private AstNode parseCreateRuleStatement( DdlTokenStream tokens,
-                                              AstNode parentNode ) throws ParsingException {
+    private AstNode parseCreateRuleStatement(DdlTokenStream tokens,
+                                             AstNode parentNode ) throws ParsingException {
         assert tokens != null;
         assert parentNode != null;
 
