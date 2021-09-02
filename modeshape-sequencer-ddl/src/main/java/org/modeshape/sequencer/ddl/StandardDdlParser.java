@@ -1356,10 +1356,12 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
         while (tokens.hasNext() && !tokens.matches(COMMA)) {
             boolean parsedDefaultClause = parseDefaultClause(tokens, columnNode);
+            boolean parsedAsClause = parseAsClause(tokens, columnNode);
             boolean parsedCollate = parseCollateClause(tokens, columnNode);
             boolean parsedConstraint = parseColumnConstraint(tokens, columnNode, isAlterTable);
             boolean parsedProperties = parseColumnProperties(tokens, columnNode);
-            if (!parsedDefaultClause 
+            if (!parsedDefaultClause
+                    && !parsedAsClause
                     && !parsedCollate
                     && !parsedConstraint
                     && !parsedProperties) {
@@ -1561,6 +1563,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
             String constraintName = parseName(tokens);
             AstNode constraintNode = nodeFactory().node(constraintName, columnNode.getParent(), mixinType);
 
+            addExternalTableColumnConstraintProperty(columnNode, constraintName);
             if (tokens.matches("UNIQUE")) {
                 // CONSTRAINT P_KEY_2a UNIQUE (PERMISSIONUID)
                 tokens.consume("UNIQUE"); // UNIQUE
@@ -1687,6 +1690,9 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         return result;
     }
 
+    protected void addExternalTableColumnConstraintProperty(AstNode columnNode, String constraintName) {
+    }
+
     /**
      * Additional columns properties parser
      *
@@ -1695,6 +1701,10 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
      * @return
      */
     protected boolean parseColumnProperties(DdlTokenStream tokens, AstNode columnNode) {
+        return false;
+    }
+
+    protected boolean parseAsClause(DdlTokenStream tokens, AstNode columnNode) {
         return false;
     }
 

@@ -168,6 +168,8 @@ public class SnowflakeDdlLexicon extends StandardDdlLexicon {
     public static final String PATTERN           = Namespace.PREFIX + ":pattern";
     public static final String FILE_FORMAT       = Namespace.PREFIX + ":fileFormat";
     public static final String AWS_SNS_TOPIC     = Namespace.PREFIX + ":awsSnsTopic";
+    public static final String AS_CLAUSE     = Namespace.PREFIX + ":asClause";
+    public static final String CONSTRAINT_NAME     = Namespace.PREFIX + ":constraintName";
 
     // view
     public static final String SECURE    = Namespace.PREFIX + ":secure";

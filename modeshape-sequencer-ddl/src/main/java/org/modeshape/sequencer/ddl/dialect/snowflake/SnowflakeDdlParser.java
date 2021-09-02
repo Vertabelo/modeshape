@@ -24,7 +24,9 @@
 package org.modeshape.sequencer.ddl.dialect.snowflake;
 
 import org.modeshape.common.text.ParsingException;
+import org.modeshape.common.text.Position;
 import org.modeshape.common.text.TokenStream;
+import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserProblem;
 import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
@@ -83,6 +85,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTI
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.WITH_GRANT_OPTION;
+import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.AS_CLAUSE;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.COMMENT;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.FUNCTION_PARAMETER_MODE;
@@ -674,7 +677,6 @@ public class SnowflakeDdlParser extends StandardDdlParser
         String tableName = parseName(tokens);
         AstNode externalTableNode = nodeFactory().node(tableName, parentNode, TYPE_CREATE_EXTERNAL_TABLE_STATEMENT);
 
-        // Tu może będzie wymagana zmiany przy robienie exteranl tables
         parseColumnsAndConstraints(tokens, externalTableNode);
 
         parseCreateExternalTableOptions(tokens, externalTableNode);
@@ -684,9 +686,24 @@ public class SnowflakeDdlParser extends StandardDdlParser
         return externalTableNode;
     }
 
+    @Override
+    protected void addExternalTableColumnConstraintProperty(AstNode columnNode, String constraintName) {
+        if(constraintName != null) {
+            columnNode.setProperty(SnowflakeDdlLexicon.CONSTRAINT_NAME, constraintName);
+        }
+    }
 
-    protected void parseCreateExternalTableOptions( DdlTokenStream tokens,
-                                            AstNode tableNode ) throws ParsingException {
+    @Override
+    protected boolean parseAsClause(DdlTokenStream tokens, AstNode columnNode) {
+        if(tokens.canConsume("AS") && tokens.matches("(")) {
+            columnNode.setProperty(AS_CLAUSE, parseContentBetweenParens(tokens));
+            return true;
+        }
+        return false;
+    }
+
+    protected void parseCreateExternalTableOptions(DdlTokenStream tokens,
+                                                   AstNode tableNode ) throws ParsingException {
         assert tokens != null;
         assert tableNode != null;
 

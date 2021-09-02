@@ -20,7 +20,7 @@ copy-jars:
 
 
 update-pom-xml:
-	sed -i 's|<version>\(3.7.4.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
+	sed -i 's|<version>\(3.7.7.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
 
 push:
 	./push-to-nexus.sh

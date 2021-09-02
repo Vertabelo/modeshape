@@ -32,6 +32,7 @@ import org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlParser;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import static org.junit.Assert.assertEquals;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CONSTRAINT_TYPE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_NAME;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DEFAULT_VALUE;
@@ -125,6 +126,23 @@ public class SnowflakeDdlParserTest extends DdlParserTestHelper {
         assertEquals("TYPE = PARQUET", tableNode.getProperty(SnowflakeDdlLexicon.FILE_FORMAT));
         assertEquals("@exttable_part_stage/logs/", tableNode.getProperty(SnowflakeDdlLexicon.LOCATION));
         assertEquals("date_part", tableNode.getProperty(SnowflakeDdlLexicon.PARTITION_BY));
+    }
+
+    @Test
+    public void shouldParseCreateExternalTable_3() {
+        printTest("Create external table 3");
+        final String filename = "create_external_table_3.ddl";
+        String content = getFileContent(filename);
+        assertScoreAndParse(content, filename, 1);
+        AstNode tableNode = rootNode.getChildren().get(0);
+
+        AstNode firstCol = tableNode.getChildren().get(0);
+        assertEquals("value : \"b\".\"c\" :: varchar", firstCol.getProperty(SnowflakeDdlLexicon.AS_CLAUSE));
+        assertEquals("constr", firstCol.getProperty(SnowflakeDdlLexicon.CONSTRAINT_NAME));
+        AstNode secondCol = tableNode.getChildren().get(2);
+        assertEquals("value : c1 :: varchar", secondCol.getProperty(SnowflakeDdlLexicon.AS_CLAUSE));
+        AstNode thirdCol = tableNode.getChildren().get(3);
+        assertEquals("lalala", thirdCol.getProperty(SnowflakeDdlLexicon.CONSTRAINT_NAME));
     }
 
     @Test
