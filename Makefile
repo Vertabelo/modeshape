@@ -15,15 +15,14 @@ build:
 clean:
 	rm -fr */target/
 
-copy-jars:
-	cp -r ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/$(MODSHAPE_VERSION) ~/work/vertabelo-repos/maven/org/modeshape/modeshape-sequencer-ddl/
-
 
 update-pom-xml:
-	sed -i 's|<version>\(3.7.7.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
+	sed -i 's|<version>\(3.7.1.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
 
 push:
-	./push-to-nexus.sh
+	cp -r ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/$(MODSHAPE_VERSION) ~/work/vertabelo-repos/maven/org/modeshape/modeshape-sequencer-ddl/
+	cp -r ~/.m2/repository/org/modeshape/modeshape-sequencers/$(MODSHAPE_VERSION) ~/work/vertabelo-repos/maven/org/modeshape/modeshape-sequencers/
+	
 
 
 .PHONY: build clean copy-jars update-pom-xml push 
