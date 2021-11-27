@@ -23,6 +23,25 @@
  */
 package org.modeshape.sequencer.ddl.dialect.sqlserver;
 
+import org.modeshape.common.text.ParsingException;
+import org.modeshape.common.text.Position;
+import org.modeshape.common.text.TokenStream;
+import org.modeshape.sequencer.ddl.DdlParserProblem;
+import org.modeshape.sequencer.ddl.DdlSequencerI18n;
+import org.modeshape.sequencer.ddl.DdlTokenStream;
+import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
+import org.modeshape.sequencer.ddl.StandardDdlLexicon;
+import org.modeshape.sequencer.ddl.StandardDdlParser;
+import org.modeshape.sequencer.ddl.datatype.DataType;
+import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
+import org.modeshape.sequencer.ddl.node.AstNode;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
+
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CHECK_SEARCH_CONDITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CONSTRAINT_TYPE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
@@ -57,8 +76,8 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.FILESTREAM_ON_CLAUSE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INCLUDE_COLUMNS;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_CLUSTERED;
-import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_NONCLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_COLUMNSTORE;
+import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.INDEX_NONCLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NONCLUSTERED;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.NOT_FOR_REPLICATION;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.ON_CLAUSE;
@@ -87,24 +106,6 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.VIEW_WITH_CHECK_OPTION;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.WHERE_CLAUSE;
 import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.WITH_OPTIONS;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.modeshape.common.text.ParsingException;
-import org.modeshape.common.text.Position;
-import org.modeshape.common.text.TokenStream;
-import org.modeshape.sequencer.ddl.DdlParserProblem;
-import org.modeshape.sequencer.ddl.DdlSequencerI18n;
-import org.modeshape.sequencer.ddl.DdlTokenStream;
-import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
-import org.modeshape.sequencer.ddl.StandardDdlLexicon;
-import org.modeshape.sequencer.ddl.StandardDdlParser;
-import org.modeshape.sequencer.ddl.datatype.DataType;
-import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
-import org.modeshape.sequencer.ddl.node.AstNode;
 
 /**
  * SqlServer-specific DDL Parser. Includes custom data types as well as custom DDL statements.
@@ -624,6 +625,33 @@ public class SqlServerDdlParser extends StandardDdlParser
                         || tokens.matches(DdlTokenStream.ANY_VALUE, "[", dTypeStartWord) 
                         || tokens.matches("[", DdlTokenStream.ANY_VALUE, "]", dTypeStartWord)
                         || tokens.matches("[", DdlTokenStream.ANY_VALUE, "]", "[", dTypeStartWord));
+
+                if(result) {
+                    break;
+                }
+
+                // scenarios for [token token token token token ...]
+                int tries = 10;
+                List<String> matchingTokensValues = new ArrayList<>();
+//                matchingTokensValues.add("[");
+                matchingTokensValues.add(DdlTokenStream.ANY_VALUE);
+                while(--tries > 0) {
+                    matchingTokensValues.add(DdlTokenStream.ANY_VALUE);
+
+//                    matchingTokensValues.add("]");
+                    result = tokens.matches(Stream.concat(
+                            Stream.concat(Stream.of("["), matchingTokensValues.stream()),
+                            Stream.of("]", dTypeStartWord)).toArray(String[]::new))
+                    || tokens.matches(Stream.concat(
+                            Stream.concat(Stream.of("["), matchingTokensValues.stream()),
+                            Stream.of("]", "[", dTypeStartWord, "]")).toArray(String[]::new));
+//                    result = tokens.matches(matchingTokensValues)
+//                            || tokens.matches(Stream.concat(matchingTokensValues.stream(), Stream.of("[", dTypeStartWord, "]")).toArray(String[]::new));
+                    if(result) {
+                        break;
+                    }
+//                    matchingTokensValues.remove("]");
+                }
                 
                 if (result) {
                     break;
@@ -932,6 +960,7 @@ public class SqlServerDdlParser extends StandardDdlParser
                 // the name may contain spaces (at least in SQL Server 2012)
                 while(!tokens.matches(']')) {
                     sb.append(consumeIdentifier(tokens));
+                    sb.append(" ");
                 }
 
                 tokens.consume(']'); // ] bracket
@@ -957,7 +986,7 @@ public class SqlServerDdlParser extends StandardDdlParser
             }
         }
 
-        return sb.toString();
+        return sb.toString().trim().replaceAll("\\s*\\.\\s*", ".");
     }
     
     protected void parsePkOrUniqueColumnNameList( DdlTokenStream tokens,
