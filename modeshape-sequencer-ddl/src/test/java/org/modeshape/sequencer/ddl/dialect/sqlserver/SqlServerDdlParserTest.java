@@ -376,6 +376,23 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
     }
 
     @Test
+    public void shouldParseCreateTable_15() {
+        // spacje w nazwach constraintow, test [nazwa ze spacja]
+        printTest("shouldParseCreateTable_15");
+        String content = "CREATE TABLE [TEMPORARY_STORAGE jarkowy_id] (\n" +
+                "    [ID jarkowy_id] int  NOT NULL,\n" +
+                "    [INSERT_DATE jarkowy_id] timestamp  NOT NULL,\n" +
+                "    [BINARY_DATA jarkowy_id] image  NULL,\n" +
+                "    [CONTENT_TYPE jarkowy_id] varchar(100)  NOT NULL,\n" +
+                "    [AUTHENTICATION_TOKEN jarkowy_id] varchar(255)  NOT NULL,\n" +
+                "    CONSTRAINT [TEMPORARY_STORAGE_pk jarkowy_id] PRIMARY KEY  ([ID jarkowy_id])\n" +
+                ");";
+        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
+    @Test
     public void shouldParseCreateTableWithColumnAtEnd() {
         // z modelu klienta
         printTest("shouldParseCreateTableWithColumnAtEnd");
@@ -552,6 +569,17 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
     public void shouldParseAlterTable_4() {
         printTest("shouldParseAlterTable_4()");
         String content = "ALTER TABLE [dbo].[tblApp] ADD CONSTRAINT [DF_tblApp_CreatedOn] DEFAULT (getdate()) FOR [CreatedOn]";
+        assertScoreAndParse(content, null, 1);
+        AstNode childNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(childNode, TYPE_ALTER_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void shouldParseAlterTable_5() {
+        printTest("shouldParseAlterTable_5()");
+        String content = "ALTER TABLE [location jarkowy_id] ADD CONSTRAINT [location_city jarkowy_id]\n" +
+                "\tFOREIGN KEY ([city_id jarkowy_id])\n" +
+                "\tREFERENCES [city jarkowy_id] ([id jarkowy_id]);";
         assertScoreAndParse(content, null, 1);
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_ALTER_TABLE_STATEMENT));

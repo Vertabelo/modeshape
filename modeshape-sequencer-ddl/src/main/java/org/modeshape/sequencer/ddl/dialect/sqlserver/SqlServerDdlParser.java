@@ -536,9 +536,11 @@ public class SqlServerDdlParser extends StandardDdlParser
         if (matcher.matches("[")) {
             matcher.add("[");
             if (matcher.matches(DdlTokenStream.ANY_VALUE)) {
-                matcher.add(DdlTokenStream.ANY_VALUE);
-                matchDots(matcher);
-                if (matcher.matches("]") == false) {
+                while(!matcher.matches("]")) {
+                    matcher.add(DdlTokenStream.ANY_VALUE);
+                    matchDots(matcher);
+                }
+                if(!matcher.matches("]")) {
                     return false;
                 }
                 matcher.add("]");
