@@ -1675,34 +1675,15 @@ public class RedshiftDdlParser extends StandardDdlParser
         markStartOfStatement(tokens);
 
         /*
-        --  TABLE object_name |
-        --  COLUMN table_name.column_name |
-        --  AGGREGATE agg_name (agg_type [, ...] ) |
-        --  CAST (sourcetype AS targettype) |
-        --  CONSTRAINT constraint_name ON table_name |
-        --  CONVERSION object_name |
-        --  DATABASE object_name |
-        --  DOMAIN object_name |
-        --  FUNCTION func_name ( [ [ argmode ] [ argname ] argtype [, ...] ] ) |
-        --  INDEX object_name |
-        --  LARGE OBJECT large_object_oid |
-        --  OPERATOR op (leftoperand_type, rightoperand_type) |
-        --  OPERATOR CLASS object_name USING index_method |
-        --  OPERATOR FAMILY object_name USING index_method |
-        --  [ PROCEDURAL ] LANGUAGE object_name |
-        --  ROLE object_name |
-        --  RULE rule_name ON table_name |
-        --  SCHEMA object_name |
-        --  SEQUENCE object_name |
-        --  TABLESPACE object_name |
-        --  TEXT SEARCH CONFIGURATION object_name |
-        --  TEXT SEARCH DICTIONARY object_name |
-        --  TEXT SEARCH PARSER object_name |
-        --  TEXT SEARCH TEMPLATE object_name |
-        --  TRIGGER trigger_name ON table_name |
-        --  TYPE object_name |
-        --  VIEW object_name
-        --} IS ’text’
+            COMMENT ON
+            {
+            TABLE object_name |
+            COLUMN object_name.column_name |
+            CONSTRAINT constraint_name ON table_name |
+            DATABASE object_name |
+            VIEW object_name
+            }
+            IS 'text'
          */
         tokens.consume("COMMENT", "ON"); // consumes 'COMMENT' 'ON'
 
@@ -1715,104 +1696,12 @@ public class RedshiftDdlParser extends StandardDdlParser
         } else if (tokens.matches("COLUMN")) {
             objectType = tokens.consume();
             objectName = parseName(tokens);
-        } else if (tokens.matches("AGGREGATE")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-            // (agg_type [, ...] )
-            consumeParenBoundedTokens(tokens, true);
-        } else if (tokens.matches("CAST")) {
-            objectType = tokens.consume();
-            consumeParenBoundedTokens(tokens, true);
         } else if (tokens.matches("CONSTRAINT")) {
             objectType = tokens.consume();
             objectName = parseName(tokens);
             tokens.consume("ON");
             tokens.consume(); // table_name
-        } else if (tokens.matches("CONVERSION")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
         } else if (tokens.matches("DATABASE")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("DOMAIN")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("FUNCTION")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-            consumeParenBoundedTokens(tokens, true);
-        } else if (tokens.matches("INDEX")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("LARGE", "OBJECT")) {
-            tokens.consume("LARGE", "OBJECT");
-            objectType = "LARGE OBJECT";
-            objectName = parseName(tokens);
-        } else if (tokens.matches("OPERATOR", "FAMILY")) {
-            tokens.consume("OPERATOR", "FAMILY");
-            objectType = "OPERATOR FAMILY";
-            objectName = parseName(tokens);
-            tokens.consume("USING");
-            tokens.consume(); // index_method
-        } else if (tokens.matches("OPERATOR", "CLASS")) {
-            tokens.consume("OPERATOR", "CLASS");
-            objectType = "OPERATOR CLASS";
-            objectName = parseName(tokens);
-            tokens.consume("USING");
-            tokens.consume(); // index_method
-        } else if (tokens.matches("OPERATOR")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-            consumeParenBoundedTokens(tokens, true);
-        } else if (tokens.matches("PROCEDURAL", "LANGUAGE")) {
-            tokens.consume("PROCEDURAL", "LANGUAGE");
-            objectType = "PROCEDURAL LANGUAGE";
-            objectName = parseName(tokens);
-        } else if (tokens.matches("LANGUAGE")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("EXTENSION")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("ROLE")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("RULE")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-            tokens.consume("ON");
-            tokens.consume(); // table_name
-        } else if (tokens.matches("SCHEMA")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("SEQUENCE")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("TABLESPACE")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-        } else if (tokens.matches("TEXT", "SEARCH", "CONFIGURATION")) {
-            tokens.consume("TEXT", "SEARCH", "CONFIGURATION");
-            objectType = "TEXT SEARCH CONFIGURATION";
-            objectName = parseName(tokens);
-        } else if (tokens.matches("TEXT", "SEARCH", "DICTIONARY")) {
-            tokens.consume("TEXT", "SEARCH", "DICTIONARY");
-            objectType = "TEXT SEARCH DICTIONARY";
-            objectName = parseName(tokens);
-        } else if (tokens.matches("TEXT", "SEARCH", "PARSER")) {
-            tokens.consume("TEXT", "SEARCH", "PARSER");
-            objectType = "TEXT SEARCH PARSER";
-            objectName = parseName(tokens);
-        } else if (tokens.matches("TEXT", "SEARCH", "TEMPLATE")) {
-            tokens.consume("TEXT", "SEARCH", "TEMPLATE");
-            objectType = "TEXT SEARCH TEMPLATE";
-            objectName = parseName(tokens);
-        } else if (tokens.matches("TRIGGER")) {
-            objectType = tokens.consume();
-            objectName = parseName(tokens);
-            tokens.consume("ON");
-            tokens.consume(); // table_name
-        } else if (tokens.matches("TYPE")) {
             objectType = tokens.consume();
             objectName = parseName(tokens);
         } else if (tokens.matches("VIEW")) {

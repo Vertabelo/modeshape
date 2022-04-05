@@ -36,6 +36,8 @@ import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DEFAULT_VALUE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NULLABLE;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.COMMENT;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.COMPOUND_SORTKEY;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.DISTKEY;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.DISTSTYLE;
@@ -43,6 +45,8 @@ import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDEN
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDENTITY_SEED;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDENTITY_STEP;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.INTERLEAVED_SORTKEY;
+import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.TARGET_OBJECT_TYPE;
+import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.TYPE_COMMENT_ON_STATEMENT;
 
 /**
  * Źródła testów:
@@ -185,4 +189,26 @@ public class RedshiftDdlParserTest extends DdlParserTestHelper {
         assertEquals("select eventname from event where eventname = 'LeAnn Rimes'", viewNode.getProperty(CREATE_VIEW_QUERY_EXPRESSION));
     }
 
+    @Test
+    public void shouldParseRedshiftCreateTableWithComment() {
+        printTest("Create table with comment");
+        final String filename = "comment_on_objects.ddl";
+        String content = getFileContent(filename);
+        assertScoreAndParse(content, filename, 5);
+        AstNode tableNode = rootNode.getChildren().get(0);
+        assertTrue("Should be a table", tableNode.hasMixin(TYPE_CREATE_TABLE_STATEMENT));
+        assertEquals("client", tableNode.getName());
+        AstNode tableComment = rootNode.getChildren().get(2);
+        assertTrue("Should be a comment on table", tableComment.hasMixin(TYPE_COMMENT_ON_STATEMENT));
+        assertEquals("'Test client'", tableComment.getProperty(COMMENT));
+        assertEquals("TABLE", tableComment.getProperty(TARGET_OBJECT_TYPE));
+        AstNode columnComment = rootNode.getChildren().get(3);
+        assertTrue("Comment on column", columnComment.hasMixin(TYPE_COMMENT_ON_STATEMENT));
+        assertEquals("'Test client.full_name'", columnComment.getProperty(COMMENT));
+        assertEquals("COLUMN", columnComment.getProperty(TARGET_OBJECT_TYPE));
+        AstNode constraintComment = rootNode.getChildren().get(4);
+        assertTrue("Comment on constraint", constraintComment.hasMixin(TYPE_COMMENT_ON_STATEMENT));
+        assertEquals("'Test client_email constraint'", constraintComment.getProperty(COMMENT));
+        assertEquals("CONSTRAINT", constraintComment.getProperty(TARGET_OBJECT_TYPE));
+    }
 }

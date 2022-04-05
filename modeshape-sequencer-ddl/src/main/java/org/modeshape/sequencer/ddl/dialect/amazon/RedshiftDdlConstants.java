@@ -42,7 +42,10 @@ public interface RedshiftDdlConstants extends DdlConstants {
 			"LZO", "LZOP", "MINUS", "MOSTLY13", "MOSTLY32", "MOSTLY8", "NEW", "NOTNULL", "NULLS", "OFF", "OFFLINE",
 			"OFFSET", "OID", "OLD", "PARALLEL", "PARTITION", "PERCENT", "PERMISSIONS", "PLACING", "RAW", "READRATIO",
 			"RECOVER", "RESPECT", "REJECTLOG", "RESORT", "RESTORE", "SIMILAR", "SNAPSHOT ", "SYSDATE", "SYSTEM", "TAG",
-			"TDES", "TEXT255", "TEXT32K", "TOP", "TRUNCATECOLUMNS", "VERBOSE", "WALLET", "WITHOUT"
+			"TDES", "TEXT255", "TEXT32K", "TOP", "TRUNCATECOLUMNS", "VERBOSE", "WALLET", "WITHOUT",
+			// COMMENT nie jest stricte rzecz biorąc słowem kluczowym
+			// ale żeby nie komplikować zbytnio obsługi "COMMENT ON" warto go tak tratkować
+			"COMMENT"
 	};
 	
 	public static final String[] IF_NOT_EXISTS = {"IF", "NOT", "EXISTS"};
