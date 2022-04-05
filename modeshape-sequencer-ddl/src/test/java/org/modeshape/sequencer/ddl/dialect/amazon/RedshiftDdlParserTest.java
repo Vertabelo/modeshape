@@ -45,6 +45,7 @@ import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDEN
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDENTITY_SEED;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDENTITY_STEP;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.INTERLEAVED_SORTKEY;
+import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.TABLE_NAME;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.TARGET_OBJECT_TYPE;
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.TYPE_COMMENT_ON_STATEMENT;
 
@@ -197,7 +198,7 @@ public class RedshiftDdlParserTest extends DdlParserTestHelper {
         assertScoreAndParse(content, filename, 5);
         AstNode tableNode = rootNode.getChildren().get(0);
         assertTrue("Should be a table", tableNode.hasMixin(TYPE_CREATE_TABLE_STATEMENT));
-        assertEquals("client", tableNode.getName());
+        assertEquals("test.client", tableNode.getName());
         AstNode tableComment = rootNode.getChildren().get(2);
         assertTrue("Should be a comment on table", tableComment.hasMixin(TYPE_COMMENT_ON_STATEMENT));
         assertEquals("'Test client'", tableComment.getProperty(COMMENT));
@@ -210,5 +211,6 @@ public class RedshiftDdlParserTest extends DdlParserTestHelper {
         assertTrue("Comment on constraint", constraintComment.hasMixin(TYPE_COMMENT_ON_STATEMENT));
         assertEquals("'Test client_email constraint'", constraintComment.getProperty(COMMENT));
         assertEquals("CONSTRAINT", constraintComment.getProperty(TARGET_OBJECT_TYPE));
+        assertEquals("test.client", constraintComment.getProperty(TABLE_NAME));
     }
 }

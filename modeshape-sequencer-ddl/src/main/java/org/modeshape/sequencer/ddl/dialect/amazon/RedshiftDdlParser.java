@@ -1689,6 +1689,7 @@ public class RedshiftDdlParser extends StandardDdlParser
 
         String objectType = null;
         String objectName = null;
+        String tableName = null;
 
         if (tokens.matches(TABLE)) {
             objectType = tokens.consume();
@@ -1700,7 +1701,7 @@ public class RedshiftDdlParser extends StandardDdlParser
             objectType = tokens.consume();
             objectName = parseName(tokens);
             tokens.consume("ON");
-            tokens.consume(); // table_name
+            tableName = parseName(tokens); // table_name
         } else if (tokens.matches("DATABASE")) {
             objectType = tokens.consume();
             objectName = parseName(tokens);
@@ -1730,6 +1731,9 @@ public class RedshiftDdlParser extends StandardDdlParser
         }
         commentNode.setProperty(RedshiftDdlLexicon.COMMENT, commentString);
         commentNode.setProperty(RedshiftDdlLexicon.TARGET_OBJECT_TYPE, objectType);
+        if (tableName != null) {
+            commentNode.setProperty(TABLE_NAME, tableName);
+        }
 
         markEndOfStatement(tokens, commentNode);
 
