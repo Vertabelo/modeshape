@@ -100,7 +100,6 @@ public class DataTypeParser implements DdlConstants {
         basicDateTimeTypes.add(DataTypes.DTYPE_TIMESTAMP);
 
         basicMiscTypes.add(DataTypes.DTYPE_INTERVAL);
-
     }
 
     public void addProblem( DdlParserProblem problem ) {

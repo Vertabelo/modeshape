@@ -25,8 +25,6 @@ package org.modeshape.sequencer.ddl;
 
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.Namespace.PREFIX;
 
-import org.modeshape.sequencer.ddl.node.AstNode;
-
 /**
  * Lexicon for DDL concepts.
  */

@@ -1,8 +1,4 @@
 
-
-
-
-
 Proces wypuszczania wersji.
 
 
@@ -30,7 +26,7 @@ git tag  3.7.1.Final-epXXX
 
 git push --tags
 
-7. Skopiuj artefakty do repozytium vertabelo-repos
+7. Skopiuj artefakty do repozytorium vertabelo-repos
 
 make push
 

@@ -41,6 +41,7 @@ import org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlParser;
 import org.modeshape.sequencer.ddl.dialect.bigquery.BigQueryDdlParser;
 import org.modeshape.sequencer.ddl.dialect.derby.DerbyDdlParser;
 import org.modeshape.sequencer.ddl.dialect.mysql.MySqlDdlParser;
+import org.modeshape.sequencer.ddl.dialect.mysql8.MySql8DdlParser;
 import org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlParser;
 import org.modeshape.sequencer.ddl.dialect.postgres.PostgresDdlParser;
 import org.modeshape.sequencer.ddl.dialect.postgres10plus.Postgres10PlusDdlParser;
@@ -97,7 +98,7 @@ public class DdlParsers {
     public static final List<DdlParser> BUILTIN_PARSERS;
 
     static {
-        List<DdlParser> parsers = new ArrayList<DdlParser>();
+        List<DdlParser> parsers = new ArrayList<>();
         parsers.add(new StandardDdlParser());
         parsers.add(new OracleDdlParser());
         parsers.add(new DerbyDdlParser()); // FIXME to remove
@@ -106,6 +107,7 @@ public class DdlParsers {
         parsers.add(new TeiidDdlParser()); // FIXME to remove
         parsers.add(new SqlServerDdlParser());
         parsers.add(new MySqlDdlParser());
+        parsers.add(new MySql8DdlParser());
         parsers.add(new SqliteDdlParser());
         parsers.add(new RedshiftDdlParser());
         parsers.add(new BigQueryDdlParser());
