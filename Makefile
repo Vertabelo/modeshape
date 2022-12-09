@@ -1,4 +1,4 @@
-
+SHELL=/bin/bash
 
 MVN=~/work/vertabelo-tools/apache-maven-3.2.3/bin/mvn
 
@@ -17,7 +17,7 @@ clean:
 
 
 update-pom-xml:
-	sed -i 's|<version>\(3.7.1.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
+	sed -i '' -e 's|<version>\(3.7.1.Final-ep.*\)</version>|<version>$(MODSHAPE_VERSION)</version>|g' *.xml */*.xml
 
 push:
 	cp -r ~/.m2/repository/org/modeshape/modeshape-sequencer-ddl/$(MODSHAPE_VERSION) ~/work/vertabelo-repos/maven/org/modeshape/modeshape-sequencer-ddl/
