@@ -5,7 +5,7 @@ MVN=~/work/vertabelo-tools/apache-maven-3.2.3/bin/mvn
 export MODSHAPE_VERSION=$(shell cat VERSION)
 
 export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=512m 
-export JAVA_HOME=$(HOME)/work/vertabelo-tools/jdk1.8.0_91/
+export JAVA_HOME=$(HOME)/work/vertabelo-tools/jdk-11.0.8+10/
 
 
 build:
