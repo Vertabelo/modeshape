@@ -23,8 +23,10 @@
  */
 package org.modeshape.sequencer.ddl.dialect.oracle;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
@@ -121,7 +123,7 @@ public interface OracleDdlConstants extends DdlConstants {
 		static final String[] STMT_CREATE_JAVA = {CREATE, "JAVA"};
 		static final String[] STMT_CREATE_LIBRARY = {CREATE, "LIBRARY"}; // PARSE UNTIL '/'
 		static final String[] STMT_CREATE_MATERIALIZED_VIEW = {CREATE, "MATERIALIZED", "VIEW"};
-		static final String[] STMT_CREATE_MATERIALIZED_VEIW_LOG = {CREATE, "MATERIALIZED", "VIEW", "LOG"};
+		static final String[] STMT_CREATE_MATERIALIZED_VIEW_LOG = {CREATE, "MATERIALIZED", "VIEW", "LOG"};
 		static final String[] STMT_CREATE_OPERATOR = {CREATE, "OPERATOR"};
 		static final String[] STMT_CREATE_OR_REPLACE_DIRECTORY = {CREATE, "OR", "REPLACE", "DIRECTORY"};    // PARSE UNTIL '/'
 		static final String[] STMT_CREATE_OR_REPLACE_FUNCTION = {CREATE, "OR", "REPLACE", "FUNCTION"};    // PARSE UNTIL '/'
@@ -154,15 +156,47 @@ public interface OracleDdlConstants extends DdlConstants {
 		static final String[] STMT_CREATE_USER = {CREATE, "USER"};
 		static final String[] STMT_CREATE_UNIQUE_INDEX = {CREATE, "UNIQUE", "INDEX"};
 		static final String[] STMT_CREATE_BITMAP_INDEX = {CREATE, "BITMAP", "INDEX"};
-                static final String[] STMT_CREATE_FORCE_VIEW = {CREATE, "FORCE", VIEW};
-                static final String[] STMT_CREATE_OR_REPLACE_FORCE_VIEW = {CREATE, "OR", "REPLACE", "FORCE", VIEW};
-                static final String[] STMT_CREATE_NO_FORCE_VIEW = {CREATE, "NO", "FORCE", VIEW};
-                static final String[] STMT_CREATE_OR_REPLACE_NO_FORCE_VIEW = {CREATE, "OR", "REPLACE", "NO", "FORCE", VIEW};
-	
-		public static final String[][] CREATE_PHRASES = {
+
+		/**
+		 * Uwaga: treść tej stałej jest generowana przez {@link OracleCreateViewStatementConstantsHelper}
+		 */
+		public static final String[][] CREATE_VIEW_PHRASES = {
+				{CREATE, VIEW},
+				{CREATE, "EDITIONING", VIEW},
+				{CREATE, "EDITIONABLE", "EDITIONING", VIEW},
+				{CREATE, "EDITIONABLE", VIEW},
+				{CREATE, "NONEDITIONABLE", VIEW},
+				{CREATE, "NO", "FORCE", VIEW},
+				{CREATE, "NO", "FORCE", "EDITIONING", VIEW},
+				{CREATE, "NO", "FORCE", "EDITIONABLE", "EDITIONING", VIEW},
+				{CREATE, "NO", "FORCE", "EDITIONABLE", VIEW},
+				{CREATE, "NO", "FORCE", "NONEDITIONABLE", VIEW},
+				{CREATE, "FORCE", VIEW},
+				{CREATE, "FORCE", "EDITIONING", VIEW},
+				{CREATE, "FORCE", "EDITIONABLE", "EDITIONING", VIEW},
+				{CREATE, "FORCE", "EDITIONABLE", VIEW},
+				{CREATE, "FORCE", "NONEDITIONABLE", VIEW},
+				{CREATE, "OR", "REPLACE", VIEW},
+				{CREATE, "OR", "REPLACE", "EDITIONING", VIEW},
+				{CREATE, "OR", "REPLACE", "EDITIONABLE", "EDITIONING", VIEW},
+				{CREATE, "OR", "REPLACE", "EDITIONABLE", VIEW},
+				{CREATE, "OR", "REPLACE", "NONEDITIONABLE", VIEW},
+				{CREATE, "OR", "REPLACE", "NO", "FORCE", VIEW},
+				{CREATE, "OR", "REPLACE", "NO", "FORCE", "EDITIONING", VIEW},
+				{CREATE, "OR", "REPLACE", "NO", "FORCE", "EDITIONABLE", "EDITIONING", VIEW},
+				{CREATE, "OR", "REPLACE", "NO", "FORCE", "EDITIONABLE", VIEW},
+				{CREATE, "OR", "REPLACE", "NO", "FORCE", "NONEDITIONABLE", VIEW},
+				{CREATE, "OR", "REPLACE", "FORCE", VIEW},
+				{CREATE, "OR", "REPLACE", "FORCE", "EDITIONING", VIEW},
+				{CREATE, "OR", "REPLACE", "FORCE", "EDITIONABLE", "EDITIONING", VIEW},
+				{CREATE, "OR", "REPLACE", "FORCE", "EDITIONABLE", VIEW},
+				{CREATE, "OR", "REPLACE", "FORCE", "NONEDITIONABLE", VIEW},
+		};
+
+		public static final String[][] CREATE_PHRASES = concatArrays(new String[][] {
 			STMT_CREATE_CLUSTER, STMT_CREATE_CONTEXT, STMT_CREATE_CONTROLFILE, STMT_CREATE_DATABASE, STMT_CREATE_DIMENSION, 
 			STMT_CREATE_DIRECTORY, STMT_CREATE_DISKGROUP, STMT_CREATE_FUNCTION, STMT_CREATE_INDEX, STMT_CREATE_INDEXTYPE, 
-			STMT_CREATE_JAVA, STMT_CREATE_MATERIALIZED_VIEW, STMT_CREATE_MATERIALIZED_VEIW_LOG, STMT_CREATE_OPERATOR, 
+			STMT_CREATE_JAVA, STMT_CREATE_MATERIALIZED_VIEW, STMT_CREATE_MATERIALIZED_VIEW_LOG, STMT_CREATE_OPERATOR,
 			STMT_CREATE_OR_REPLACE_DIRECTORY, STMT_CREATE_OR_REPLACE_FUNCTION, STMT_CREATE_LIBRARY,
             STMT_CREATE_OR_REPLACE_LIBRARY, STMT_CREATE_OR_REPLACE_OUTLINE, STMT_CREATE_OR_REPLACE_PROCEDURE,
 			STMT_CREATE_OR_REPLACE_PUBLIC_SYNONYM, STMT_CREATE_OR_REPLACE_SYNONYM, STMT_CREATE_OR_REPLACE_PACKAGE, STMT_CREATE_OR_REPLACE_TRIGGER,
@@ -170,11 +204,14 @@ public interface OracleDdlConstants extends DdlConstants {
 			STMT_CREATE_PROFILE, STMT_CREATE_PUBLIC_DATABASE, STMT_CREATE_PUBLIC_ROLLBACK, STMT_CREATE_PUBLIC_SYNONYM, STMT_CREATE_ROLE,
 			STMT_CREATE_ROLLBACK, STMT_CREATE_SEQUENCE, STMT_CREATE_SPFILE, STMT_CREATE_SYNONYM, STMT_CREATE_TABLESPACE, STMT_CREATE_TRIGGER, 
 			STMT_CREATE_TYPE, STMT_CREATE_USER, STMT_CREATE_UNIQUE_INDEX, STMT_CREATE_BITMAP_INDEX,
-			STMT_CREATE_TABLESPACE, STMT_CREATE_PROCEDURE,
-			STMT_CREATE_FORCE_VIEW, STMT_CREATE_OR_REPLACE_FORCE_VIEW, STMT_CREATE_NO_FORCE_VIEW,
-			STMT_CREATE_OR_REPLACE_NO_FORCE_VIEW
-		};
-		
+			STMT_CREATE_TABLESPACE, STMT_CREATE_PROCEDURE
+		}, CREATE_VIEW_PHRASES);
+
+		static String[][] concatArrays(String[][] array1, String[][] array2) {
+			return Stream.concat(Arrays.stream(array1), Arrays.stream(array2))
+						 .toArray(size -> (String[][]) Array.newInstance(array1.getClass().getComponentType(), size));
+		}
+
 	      static final String[][] SLASHED_STMT_PHRASES = {
 	          STMT_CREATE_FUNCTION, 
 	          STMT_CREATE_LIBRARY, 
@@ -284,17 +321,23 @@ public interface OracleDdlConstants extends DdlConstants {
 		static final String[] DTYPE_INTERVAL_DAY = {"INTERVAL", "DAY"}; //	INTERVAL DAY (day_precision) TO SECOND (fractional_seconds_precision)
 		static final String[] DTYPE_URITYPE = {"URITYPE"};
 		static final String[] DTYPE_URITYPE_QUOTED = {"\"URITYPE\""};
-	
+
+		static final String[] DTYPE_SDO_GEOMETRY = {"SDO_GEOMETRY"};
+		static final String[] DTYPE_SDO_TOPO_GEOMETRY = {"SDO_TOPO_GEOMETRY"};
+		static final String[] DTYPE_SDO_GEORASTER = {"SDO_GEORASTER"};
+
 	  	static final List<String[]> CUSTOM_DATATYPE_START_PHRASES = 
 	  		Arrays.asList(DTYPE_CHAR_ORACLE, DTYPE_VARCHAR2, DTYPE_NVARCHAR2, DTYPE_NUMBER, DTYPE_BINARY_FLOAT, DTYPE_BINARY_DOUBLE,
                             DTYPE_LONG, DTYPE_LONG_RAW, DTYPE_RAW, DTYPE_BLOB, DTYPE_CLOB, DTYPE_NCLOB, DTYPE_BFILE, DTYPE_INTERVAL_YEAR,
                             DTYPE_INTERVAL_DAY,
-                            DTYPE_URITYPE, DTYPE_URITYPE_QUOTED);
+                            DTYPE_URITYPE, DTYPE_URITYPE_QUOTED,
+						  DTYPE_SDO_GEOMETRY, DTYPE_SDO_TOPO_GEOMETRY, DTYPE_SDO_GEORASTER);
 		
 	  	static final List<String> CUSTOM_DATATYPE_START_WORDS = 
 	  		Arrays.asList("VARCHAR2", "NVARCHAR2", "NUMBER",
                             "BINARY_FLOAT", "BINARY_DOUBLE", "LONG", "RAW", "BLOB", "CLOB", "NCLOB", "BFILE", "INTERVAL",
-                            "URITYPE", "\"URITYPE\"");
+                            "URITYPE", "\"URITYPE\"",
+						  "SDO_GEOMETRY", "SDO_TOPO_GEOMETRY", "SDO_GEORASTER");
 	}
 
 	interface IndexTypes {

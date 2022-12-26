@@ -37,7 +37,6 @@ import org.modeshape.sequencer.ddl.DdlTokenStream.DdlTokenizer;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.*;
 import org.modeshape.sequencer.ddl.datatype.DataType;
 import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
-import org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlConstants;
 import org.modeshape.sequencer.ddl.node.AstNode;
 import org.modeshape.sequencer.ddl.node.AstNodeFactory;
 import java.math.BigInteger;

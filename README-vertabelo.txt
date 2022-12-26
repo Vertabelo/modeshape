@@ -2,7 +2,7 @@
 Proces wypuszczania wersji.
 
 
-1. Zwiększ ostatnia liczbę w numerze wersji w pliku VERSION. Zmień tylko XXX  3.7.1.Final-epXXX 
+1. Zwiększ ostatnią liczbę w numerze wersji w pliku VERSION. Zmień tylko XXX  3.7.1.Final-epXXX
 
 code VERSION
 
@@ -18,7 +18,7 @@ make clean build
 
 git commit -m ''  -a
 
-5. Postaw taga takiego jak numer wersji
+5. Postaw tag takiego jak numer wersji
 
 git tag  3.7.1.Final-epXXX
 

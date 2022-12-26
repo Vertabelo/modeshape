@@ -201,10 +201,6 @@ CREATE LIBRARY app_lib as '${ORACLE_HOME}/lib/app_lib.so'
    AGENT 'sales.hq.acme.com';
 /
    
-CREATE MATERIALIZED VIEW LOG ON employees
-   WITH PRIMARY KEY
-   INCLUDING NEW VALUES;
-
 CREATE MATERIALIZED VIEW all_customers
    PCTFREE 5 PCTUSED 60 
    TABLESPACE example 
@@ -215,10 +211,6 @@ CREATE MATERIALIZED VIEW all_customers
    AS SELECT * FROM sh.customers@remote 
          UNION
       SELECT * FROM sh.customers@local; 
-
-CREATE MATERIALIZED VIEW LOG ON product_information 
-   WITH ROWID, SEQUENCE (list_price, min_price, category_id) 
-   INCLUDING NEW VALUES;
 
 CREATE OPERATOR eq_op
    BINDING (VARCHAR2, VARCHAR2) 

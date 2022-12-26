@@ -60,7 +60,7 @@ public class OracleDdlSequencerTest extends AbstractDdlSequencerTest {
     @Test
     public void shouldSequenceOracleDdl() throws Exception {
         Node statementsNode = sequenceDdl("ddl/dialect/oracle/oracle_test_statements_2.ddl");
-        assertThat(statementsNode.getNodes().getSize(), is(50l));
+        assertThat(statementsNode.getNodes().getSize(), is(48L));
         verifyPrimaryType(statementsNode, NT_UNSTRUCTURED);
         verifyProperty(statementsNode, PARSER_ID, "ORACLE");
 

@@ -32,7 +32,6 @@ import org.modeshape.sequencer.ddl.dialect.mysql8.MySql8DdlParser;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;

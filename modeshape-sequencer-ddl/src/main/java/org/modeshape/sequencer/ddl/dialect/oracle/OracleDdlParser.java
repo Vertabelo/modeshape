@@ -23,26 +23,10 @@
  */
 package org.modeshape.sequencer.ddl.dialect.oracle;
 
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DROP_BEHAVIOR;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DROP_OPTION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NEW_NAME;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_REFERENCE;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_COLUMN_DEFINITION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_TABLE_CONSTRAINT_DEFINITION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_GRANT_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTION;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_REFERENCE;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
-import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.*;
-import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.Namespace.PREFIX;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.modeshape.common.text.ParsingException;
 import org.modeshape.common.text.Position;
@@ -57,6 +41,202 @@ import org.modeshape.sequencer.ddl.datatype.DataType;
 import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DROP_BEHAVIOR;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DROP_OPTION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NEW_NAME;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_REFERENCE;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_COLUMN_DEFINITION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_TABLE_CONSTRAINT_DEFINITION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_DROP_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_GRANT_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_STATEMENT_OPTION;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_TABLE_REFERENCE;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_UNKNOWN_STATEMENT;
+import static org.modeshape.sequencer.ddl.StandardDdlLexicon.VALUE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.AUTHID_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.BITMAP_INDEX;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.COLUMN_ENCRYPT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.COLUMN_IDENTIFIED_BY_PASSWORD;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.COLUMN_SALT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.COLUMN_SORT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.COLUMN_USING_ENCRYPT_ALGORITHM;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_COMPRESS;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_LOGGING;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_ONLINE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_PARALLEL;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_PARTITIONING;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_REVERSE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_SORT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_TABLESPACE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.IN_OUT_NO_COPY;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_BUILD;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_CACHE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_COLLATION;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_ON_PREBUILT_TABLE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_ON_QUERY_COMPUTATION;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_REFRESH_METHOD;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_REFRESH_ON;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.MATERIALIZED_VIEW_REFRESH_WITH;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.PHYSICAL_INITRANS;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.PHYSICAL_PCTFREE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.PHYSICAL_PCTUSED;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.REFERENCE_ENABLE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.REFERENCE_RELY;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.REFERENCE_USING_INDEX;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.REFERENCE_VALIDATE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_CACHE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_CYCLE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_INCREMENT_BY;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_KEEP;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_MAX_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_MIN_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_NO_CACHE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_NO_MAX_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_NO_MIN_VALUE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_ORDER;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_SCALE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_SHARD;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_SHARING;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.SEQ_START_WITH;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_BUFFER_POOL;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_CLAUSE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_ENCRYPT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_FREELISTS;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_FREELIST_GROUPS;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_INITIAL;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_MAXEXTENTS;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_MAXEXTENTS_UNLIMITED;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_MAXSIZE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_MAXSIZE_UNLIMITED;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_MINEXTENTS;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_NEXT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_OPTIMAL;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_OPTIMAL_SIZE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_PCTINCREASE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_CACHE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_COLLATION;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_COMPRESSION;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_ORGANIZATION;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_PARTITIONING;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_ROWDEPENDENCIES;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_SHARING;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_TABLESPACE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_CLUSTER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_DATABASE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_DIMENSION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_DISKGROUP_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_FUNCTION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_INDEXTYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_JAVA_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_MATERIALIZED_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_OPERATOR_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_OUTLINE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_PACKAGE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_PROCEDURE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_PROFILE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_RESOURCE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_ROLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_ROLLBACK_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_SEQUENCE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_SESSION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_SYSTEM_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_TABLESPACE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_TRIGGER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_TYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_USER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ALTER_VIEW_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ANALYZE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ASSOCIATE_STATISTICS_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_AUDIT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_BACKSLASH_TERMINATOR;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_COMMENT_ON_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_COMMIT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_BITMAP_JOIN_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_CLUSTER_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_CLUSTER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_CONTEXT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_CONTROLFILE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_DATABASE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_DIMENSION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_DIRECTORY_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_DISKGROUP_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_FUNCTION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_INDEXTYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_JAVA_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_LIBRARY_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_MATERIALIZED_VIEW_LOG_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_MATERIALIZED_VIEW_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_OPERATOR_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_OUTLINE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_PACKAGE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_PFILE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_PROCEDURE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_PROFILE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_ROLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_ROLLBACK_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_SEQUENCE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_SPFILE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_SYNONYM_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_TABLESPACE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_TABLE_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_TRIGGER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_TYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_USER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DISASSOCIATE_STATISTICS_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_CLUSTER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_CONTEXT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_DATABASE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_DIMENSION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_DIRECTORY_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_DISKGROUP_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_FUNCTION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_INDEXTYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_INDEX_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_JAVA_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_LIBRARY_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_MATERIALIZED_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_OPERATOR_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_OUTLINE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_PACKAGE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_PROCEDURE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_PROFILE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_ROLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_ROLLBACK_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_SEQUENCE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_SYNONYM_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_TABLESPACE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_TRIGGER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_TYPE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_DROP_USER_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_EXPLAIN_PLAN_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_FLASHBACK_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_FUNCTION_PARAMETER;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_LOCK_TABLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_MERGE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_NOAUDIT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_PURGE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_RENAME_COLUMN;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_RENAME_CONSTRAINT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_RENAME_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_REVOKE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_ROLLBACK_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_SAVEPOINT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_SET_CONSTRAINTS_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_SET_CONSTRAINT_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_SET_ROLE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_SET_TRANSACTION_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_TRUNCATE_STATEMENT;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.UNIQUE_INDEX;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.VIEW_EDITIONING;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.VIEW_FORCE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.VIEW_NO_FORCE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.VIEW_OR_REPLACE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.VIEW_SHARING;
+
 /**
  * Oracle-specific DDL Parser. Includes custom data types as well as custom DDL statements.
  */
@@ -68,7 +248,7 @@ public class OracleDdlParser extends StandardDdlParser
      */
     public static final String ID = "ORACLE";
 
-    static List<String[]> oracleDataTypeStrings = new ArrayList<String[]>();
+    static List<String[]> oracleDataTypeStrings = new ArrayList<>();
 
     public OracleDdlParser() {
         super();
@@ -362,11 +542,8 @@ public class OracleDdlParser extends StandardDdlParser
         if (tokens.matches(STMT_CREATE_INDEX) || tokens.matches(STMT_CREATE_UNIQUE_INDEX)
             || tokens.matches(STMT_CREATE_BITMAP_INDEX)) {
             return parseCreateIndex(tokens, parentNode);
-        } else if (tokens.matches(STMT_CREATE_VIEW) || tokens.matches(STMT_CREATE_OR_REPLACE_VIEW)
-                || tokens.matches(STMT_CREATE_FORCE_VIEW) || tokens.matches(STMT_CREATE_OR_REPLACE_FORCE_VIEW)
-                || tokens.matches(STMT_CREATE_NO_FORCE_VIEW) || tokens.matches(STMT_CREATE_OR_REPLACE_NO_FORCE_VIEW)) {
+        } else if (Arrays.stream(CREATE_VIEW_PHRASES).anyMatch(tokens::matches)) {
             return parseCreateViewStatement(tokens, parentNode);
-            
         } else if (tokens.matches(STMT_CREATE_CLUSTER)) {
             return parseCreateClusterStatement(tokens, parentNode);
         } else if (tokens.matches(STMT_CREATE_CONTEXT)) {
@@ -462,7 +639,27 @@ public class OracleDdlParser extends StandardDdlParser
         return super.parseCreateStatement(tokens, parentNode);
     }
 
-    
+    @Override
+    protected void parseColumnsAndConstraints(DdlTokenStream tokens, AstNode tableNode) throws ParsingException {
+        // Baza danych Oracle dopuszcza opcję "SHARING" dla tabeli PRZED definicją kolumn, a nie jak w przypadku innych
+        // opcji PO, więc musimy je pobrać przed analizą kolumn.
+        // Dokumentacja https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-TABLE.html - patrz
+        // "create_table::="
+
+        // SHARING = {METADATA | DATA | EXTENDED DATA | NONE}
+        if (tokens.canConsume("SHARING", "=", "METADATA")) {
+            tableNode.setProperty(TABLE_SHARING, "METADATA");
+        } else  if (tokens.canConsume("SHARING", "=", "DATA")) {
+            tableNode.setProperty(TABLE_SHARING, "DATA");
+        } else  if (tokens.canConsume("SHARING", "=", "EXTENDED", "DATA")) {
+            tableNode.setProperty(TABLE_SHARING, "EXTENDED DATA");
+        } else  if (tokens.canConsume("SHARING", "=", "NONE")) {
+            tableNode.setProperty(TABLE_SHARING, "NONE");
+        }
+
+        super.parseColumnsAndConstraints(tokens, tableNode);
+    }
+
     @Override
     protected void parseCreateTableOptions( DdlTokenStream tokens,
                                             AstNode tableNode ) throws ParsingException {
@@ -477,7 +674,6 @@ public class OracleDdlParser extends StandardDdlParser
             if (parsePhysicalAttributes(tokens, tableNode, tableAttribute)) {
                 processed = true;
             }
-
 
             /*
             { COMPRESS [ FOR { ALL | DIRECT_LOAD } OPERATIONS ]
@@ -514,7 +710,7 @@ public class OracleDdlParser extends StandardDdlParser
                   | EXTERNAL external_table_clause
                   }
 
-                  pominałem opcje szczegółowe, bo są one zawarte w ramach compress i physical attrbiutes
+                  pominąłem opcje szczegółowe, bo są one zawarte w ramach compress i physical attributes
              */
             if ("ORGANIZATION".equals(tableAttribute)) {
                 String organizationType = tokens.consume();
@@ -529,6 +725,21 @@ public class OracleDdlParser extends StandardDdlParser
                 processed = true;
             }
 
+            // DEFAULT COLLATION <zawartość pola>
+            if ("DEFAULT".equals(tableAttribute) && tokens.canConsume("COLLATION")) {
+                String collationValue = tokens.consume();
+                tableNode.setProperty(TABLE_COLLATION, collationValue);
+                processed = true;
+            }
+
+            // obsługujemy różne wersje "partition..." w naiwny sposób: pobierając wszystko do końca
+            if ("PARTITION".equals(tableAttribute) && tokens.canConsume("BY")) {
+                String partitionByExpression = parseUntilTerminator(tokens);
+                tableNode.setProperty(TABLE_PARTITIONING, "PARTITION " + partitionByExpression);
+            } else if ("PARTITIONSET".equals(tableAttribute) && tokens.canConsume("BY")) {
+                String partitionByExpression = parseUntilTerminator(tokens);
+                tableNode.setProperty(TABLE_PARTITIONING, "PARTITIONSET" + partitionByExpression);
+            }
 
             if (!processed) {
                 parseNextCreateTableOption(tokens, tableNode);
@@ -766,61 +977,149 @@ public class OracleDdlParser extends StandardDdlParser
     }
 
     /**
-     * Parses DDL CREATE MATERIALIZED VIEW statement This could either be a standard view or a VIEW LOG ON statement.
-     * 
-     * @param tokens the tokenized {@link DdlTokenStream} of the DDL input content; may not be null
-     * @param parentNode the parent {@link AstNode} node; may not be null
-     * @return the parsed CREATE MATERIALIZED VIEW statement node
-     * @throws ParsingException
+     * Parsuje wyrażenie "CREATE MATERIALIZED VIEW"
      */
-    protected AstNode parseMaterializedViewStatement( DdlTokenStream tokens,
-                                                      AstNode parentNode ) throws ParsingException {
+    protected AstNode parseMaterializedViewStatement(DdlTokenStream tokens, AstNode parentNode) throws ParsingException {
         assert tokens != null;
         assert parentNode != null;
 
         markStartOfStatement(tokens);
 
-        /* ----------------------------------------------------------------------
-            CREATE MATERIALIZED VIEW
-              [ schema. ]materialized_view
-              [ column_alias [, column_alias]... ]
-              [ OF [ schema. ]object_type ] .................... (MORE...)
-
-            EXAMPLES:
-            
-                CREATE MATERIALIZED VIEW LOG ON products
-                   WITH ROWID, SEQUENCE (prod_id)
-                   INCLUDING NEW VALUES;
-                
-                CREATE MATERIALIZED VIEW sales_mv
-                   BUILD IMMEDIATE
-                   REFRESH FAST ON COMMIT
-                   AS SELECT t.calendar_year, p.prod_id, 
-                      SUM(s.amount_sold) AS sum_sales
-                      FROM times t, products p, sales s
-                      WHERE t.time_id = s.time_id AND p.prod_id = s.prod_id
-                      GROUP BY t.calendar_year, p.prod_id;
-        ---------------------------------------------------------------------- */
-
-        boolean isLog = tokens.canConsume(STMT_CREATE_MATERIALIZED_VEIW_LOG);
-
         tokens.canConsume(STMT_CREATE_MATERIALIZED_VIEW);
 
         String name = parseName(tokens);
+        AstNode createViewNode = nodeFactory().node(name, parentNode, TYPE_CREATE_MATERIALIZED_VIEW_STATEMENT);
 
-        AstNode node = null;
+        boolean consumedMaterializedViewOption = true;
+        // pętla po możliwych opcjach występujących w różnej kolejności i przedzielanych nieobsługiwanymi fragmentami
+        while (consumedMaterializedViewOption) {
+            consumedMaterializedViewOption = false;
 
-        if (isLog) {
-            node = nodeFactory().node(name, parentNode, TYPE_CREATE_MATERIALIZED_VIEW_LOG_STATEMENT);
-        } else {
-            node = nodeFactory().node(name, parentNode, TYPE_CREATE_MATERIALIZED_VIEW_STATEMENT);
+            // DEFAULT COLLATION <zawartość pola>
+            if (tokens.canConsume("DEFAULT", "COLLATION")) {
+                String collationValue = tokens.consume();
+                createViewNode.setProperty(MATERIALIZED_VIEW_COLLATION, collationValue);
+                consumedMaterializedViewOption = true;
+            }
+
+            // ON PREBUILT TABLE {WITH REDUCED PRECISION | WITHOUT REDUCED PRECISION}
+            if (tokens.canConsume("ON", "PREBUILT", "TABLE", "WITH", "REDUCED", "PRECISION")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_ON_PREBUILT_TABLE, "WITH REDUCED PRECISION");
+                consumedMaterializedViewOption = true;
+            } else if (tokens.canConsume("ON", "PREBUILT", "TABLE", "WITHOUT", "REDUCED", "PRECISION")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_ON_PREBUILT_TABLE, "WITHOUT REDUCED PRECISION");
+                consumedMaterializedViewOption = true;
+            }
+
+            // {CACHE | NOCACHE}
+            if (tokens.canConsume("CACHE")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_CACHE, "CACHE");
+                consumedMaterializedViewOption = true;
+            } else if (tokens.canConsume("NOCACHE")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_CACHE, "NOCACHE");
+                consumedMaterializedViewOption = true;
+            }
+
+            // BUILD {IMMEDIATE | DEFERRED}
+            if (tokens.canConsume("BUILD", "IMMEDIATE")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_BUILD, "IMMEDIATE");
+                consumedMaterializedViewOption = true;
+            } else if (tokens.canConsume("BUILD", "DEFERRED")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_BUILD, "DEFERRED");
+                consumedMaterializedViewOption = true;
+            }
+
+            // REFRESH
+            if (tokens.canConsume("NEVER", "REFRESH")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_METHOD, "NEVER REFRESH");
+                consumedMaterializedViewOption = true;
+            } else if (tokens.canConsume("REFRESH")) {
+                consumedMaterializedViewOption = true;
+                boolean consumedRefreshOption = true;
+                // pętla po możliwych opcjach "REFRESH" występujących w różnej kolejności
+                while (consumedRefreshOption) {
+                    consumedRefreshOption = false;
+                    // { FAST | COMPLETE | FORCE}
+                    if (tokens.canConsume("FAST")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_METHOD, "REFRESH FAST");
+                        consumedRefreshOption = true;
+                    } else if (tokens.canConsume("COMPLETE")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_METHOD, "REFRESH COMPLETE");
+                        consumedRefreshOption = true;
+                    } else if (tokens.canConsume("FORCE")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_METHOD, "REFRESH FORCE");
+                        consumedRefreshOption = true;
+                    }
+
+                    // {ON DEMAND | ON COMMIT | ON STATEMENT}
+                    if (tokens.canConsume("ON", "DEMAND")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_ON, "ON DEMAND");
+                        consumedRefreshOption = true;
+                    } else if (tokens.canConsume("ON", "COMMIT")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_ON, "ON COMMIT");
+                        consumedRefreshOption = true;
+                    } else if (tokens.canConsume("ON", "STATEMENT")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_ON, "ON STATEMENT");
+                        consumedRefreshOption = true;
+                    }
+
+                    if (tokens.canConsume("START", "WITH")) {
+                        // wyrażenia daty po "START WITH" nie potrafimy zinterpretować, ale pobieramy kolejny token
+                        tokens.consume();
+                    }
+
+                    if (tokens.canConsume("NEXT")) {
+                        // wyrażenia daty po "NEXT" nie potrafimy zinterpretować, ale pobieramy kolejny token
+                        tokens.consume();
+                    }
+
+                    // {WITH PRIMARY KEY | WITH ROWID}
+                    if (tokens.canConsume("WITH", "PRIMARY", "KEY")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_WITH, "WITH PRIMARY KEY");
+                        consumedRefreshOption = true;
+                    } else if (tokens.canConsume("WITH", "ROWID")) {
+                        createViewNode.setProperty(MATERIALIZED_VIEW_REFRESH_WITH, "WITH ROWID");
+                        consumedRefreshOption = true;
+                    }
+
+                    if (tokens.canConsume("USING")) {
+                        // wyrażenia daty po "NEXT" nie potrafimy zinterpretować, ale pobieramy kolejny token
+                        tokens.consume();
+                    }
+                }
+            }
+
+            // {ENABLE | DISABLE} ON QUERY COMPUTATION
+            if (tokens.canConsume("ENABLE", "ON", "QUERY", "COMPUTATION")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_ON_QUERY_COMPUTATION, "ENABLE");
+                consumedMaterializedViewOption = true;
+            } else if (tokens.canConsume("DISABLE", "ON", "QUERY", "COMPUTATION")) {
+                createViewNode.setProperty(MATERIALIZED_VIEW_ON_QUERY_COMPUTATION, "DISABLE");
+                consumedMaterializedViewOption = true;
+            }
+
+            if (!tokens.matches("AS")) {
+                // pobieramy inny niespodziewany token, aż do "AS"
+                tokens.consume();
+                consumedMaterializedViewOption = true;
+            }
         }
 
-        parseUntilTerminator(tokens);
+        if (!tokens.matches("AS")) {
+            do {
+                tokens.consume();
+            } while (!tokens.matches("AS"));
+        }
 
-        markEndOfStatement(tokens, node);
+        tokens.consume("AS");
 
-        return node;
+        String queryExpression = parseUntilTerminator(tokens);
+
+        createViewNode.setProperty(CREATE_VIEW_QUERY_EXPRESSION, queryExpression);
+
+        markEndOfStatement(tokens, createViewNode);
+
+        return createViewNode;
     }
 
     @Override
@@ -1288,7 +1587,10 @@ public class OracleDdlParser extends StandardDdlParser
 
         markStartOfStatement(tokens);
         // CREATE [OR REPLACE]
-        // [[NO] FORCE] VIEW [schema.] view
+        // [[NO] FORCE]
+        // [ { EDITIONING | EDITIONABLE EDITIONING | NONEDITIONABLE } ]
+        // VIEW [schema.] view
+        // [ SHARING = {METADATA | DATA | EXTENDED DATA | NONE} ]
         // [ ( { alias [ inline_constraint... ]
         // | out_of_line_constraint
         // }
@@ -1305,7 +1607,6 @@ public class OracleDdlParser extends StandardDdlParser
         // NOTE: the query expression along with the CHECK OPTION clause require no SQL statement terminator.
         // So the CHECK OPTION clause will NOT
 
-        String stmtType = "CREATE";
         tokens.consume("CREATE");
 
         boolean isOrReplace = false;
@@ -1313,31 +1614,50 @@ public class OracleDdlParser extends StandardDdlParser
         boolean isForce = false;
         if (tokens.canConsume("OR", "REPLACE")) {
             isOrReplace = true;
-            stmtType = stmtType + SPACE + "OR REPLACE";
-        } 
+        }
         if (tokens.canConsume("NO", "FORCE")) {
             isNoForce = true;
-            stmtType = stmtType + SPACE + "NO FORCE";
         } else if (tokens.canConsume("FORCE")) {
             isForce = true;
-            stmtType = stmtType + SPACE + "FORCE";
+        }
+
+        // [ { EDITIONING | EDITIONABLE | EDITIONABLE EDITIONING | NONEDITIONABLE } ]
+        Optional<String> editioning = Optional.empty();
+        if (tokens.canConsume("EDITIONING")) {
+            // traktujemy "EDITIONING" jako "EDITIONABLE EDITIONING"
+            editioning = Optional.of("EDITIONABLE EDITIONING");
+        } else if (tokens.canConsume("EDITIONABLE", "EDITIONING")) {
+            editioning = Optional.of("EDITIONABLE EDITIONING");
+        } else if (tokens.canConsume("NONEDITIONABLE")) {
+            editioning = Optional.of("NONEDITIONABLE");
         }
 
         tokens.consume("VIEW");
-        stmtType = stmtType + SPACE + "VIEW";
 
         String name = parseName(tokens);
 
         AstNode createViewNode = nodeFactory().node(name, parentNode, TYPE_CREATE_VIEW_STATEMENT);
         
         if(isOrReplace) {
-            createViewNode.setProperty(OR_REPLACE, true);
+            createViewNode.setProperty(VIEW_OR_REPLACE, true);
         }
         if(isNoForce) {
-            createViewNode.setProperty(NO_FORCE, true);
+            createViewNode.setProperty(VIEW_NO_FORCE, true);
         }
         if(isForce) {
-            createViewNode.setProperty(FORCE, true);
+            createViewNode.setProperty(VIEW_FORCE, true);
+        }
+        editioning.ifPresent(editioningValue -> createViewNode.setProperty(VIEW_EDITIONING, editioningValue));
+
+        // SHARING = {METADATA | DATA | EXTENDED DATA | NONE}
+        if (tokens.canConsume("SHARING", "=", "METADATA")) {
+            createViewNode.setProperty(VIEW_SHARING, "METADATA");
+        } else if (tokens.canConsume("SHARING", "=", "DATA")) {
+            createViewNode.setProperty(VIEW_SHARING, "DATA");
+        } else if (tokens.canConsume("SHARING", "=", "EXTENDED", "DATA")) {
+            createViewNode.setProperty(VIEW_SHARING, "EXTENDED DATA");
+        } else if (tokens.canConsume("SHARING", "=", "NONE")) {
+            createViewNode.setProperty(VIEW_SHARING, "NONE");
         }
 
         // CONSUME COLUMNS
@@ -1739,7 +2059,14 @@ public class OracleDdlParser extends StandardDdlParser
                     processed = true;
                 }
 
-
+                // obsługujemy różne wersje "partition..." w naiwny sposób: pobierając wszystko do końca
+                if ("PARTITION".equals(indexAttribute) && tokens.canConsume("BY")) {
+                    String partitionByExpression = parseUntilTerminator(tokens);
+                    indexNode.setProperty(INDEX_PARTITIONING, "PARTITION " + partitionByExpression);
+                } else if ("PARTITIONSET".equals(indexAttribute) && tokens.canConsume("BY")) {
+                    String partitionByExpression = parseUntilTerminator(tokens);
+                    indexNode.setProperty(INDEX_PARTITIONING, "PARTITIONSET" + partitionByExpression);
+                }
 
                 if (!processed && indexAttribute.matches("\\b\\d+\\b")) {
                     if (!indexAttributes.isEmpty()) {
@@ -1762,6 +2089,8 @@ public class OracleDdlParser extends StandardDdlParser
 
             indexNode.setProperty(OracleDdlLexicon.UNUSABLE_INDEX, unusable);
         }
+
+        // TODO
 
         markEndOfStatement(tokens, indexNode);
         return indexNode;
@@ -1845,7 +2174,7 @@ public class OracleDdlParser extends StandardDdlParser
                 // | PCTINCREASE integer
                 if ("PCTINCREASE".equals(storageOption)) {
                     String value = tokens.consume();
-                    node.setProperty(STORAGE_PCINCREASE, value);
+                    node.setProperty(STORAGE_PCTINCREASE, value);
                 }
                 // | FREELISTS integer
                 if ("FREELISTS".equals(storageOption)) {
@@ -1902,6 +2231,7 @@ public class OracleDdlParser extends StandardDdlParser
         assert tokens.matches(STMT_CREATE_SEQUENCE);
         
         // CREATE SEQUENCE [ schema. ] sequence
+        // [ SHARING = { METADATA | DATA | NONE }
         // [ INCREMENT BY integer
         // | START WITH integer
         // | { MAXVALUE integer | NOMAXVALUE }
@@ -1909,6 +2239,9 @@ public class OracleDdlParser extends StandardDdlParser
         // | { CYCLE | NOCYCLE }
         // | { CACHE integer | NOCACHE }
         // | { ORDER | NOORDER }
+        // | { KEEP | NOKEEP }
+        // | { SCALE EXTEND | SCALE NOEXTEND | NOSCALE }
+        // | { SHARD EXTEND | SHARD NOEXTEND | NOSHARD }
         // ]...
         // ;
 
@@ -1962,6 +2295,34 @@ public class OracleDdlParser extends StandardDdlParser
             } else if(tokens.canConsume("ORDER")) {
                 sequenceNode.setProperty(SEQ_ORDER, true);
                 
+            } else if (tokens.canConsume("SHARING")) {
+                tokens.canConsume("=");
+                String sharingValue = parseName(tokens);
+                sequenceNode.setProperty(SEQ_SHARING, sharingValue);
+            } else if(tokens.canConsume("KEEP")) {
+                sequenceNode.setProperty(SEQ_KEEP, true);
+
+            } else if(tokens.canConsume("NOKEEP")) {
+                sequenceNode.setProperty(SEQ_KEEP, false);
+
+            } else if(tokens.canConsume("SCALE", "EXTEND")) {
+                sequenceNode.setProperty(SEQ_SCALE, "SCALE EXTEND");
+
+            } else if(tokens.canConsume("SCALE", "NOEXTEND")) {
+                sequenceNode.setProperty(SEQ_SCALE, "SCALE NOEXTEND");
+
+            } else if(tokens.canConsume("NOSCALE")) {
+                sequenceNode.setProperty(SEQ_SCALE, "NOSCALE");
+
+            } else if(tokens.canConsume("SHARD", "EXTEND")) {
+                sequenceNode.setProperty(SEQ_SHARD, "SHARD EXTEND");
+
+            } else if(tokens.canConsume("SHARD", "NOEXTEND")) {
+                sequenceNode.setProperty(SEQ_SHARD, "SHARD NOEXTEND");
+
+            } else if(tokens.canConsume("NOSHARD")) {
+                sequenceNode.setProperty(SEQ_SHARD, "NOSHARD");
+
             } else {
                 // unknown sequence parameter
                 lastMatched = false;
@@ -2448,10 +2809,15 @@ public class OracleDdlParser extends StandardDdlParser
                 // INTERVAL DAY (day_precision) TO SECOND (fractional_seconds_precision)
             } else if (tokens.matches(OracleDataTypes.DTYPE_URITYPE)) {
                 dataType = new DataType("URITYPE");
-                typeName = consume(tokens, dataType, true, OracleDataTypes.DTYPE_URITYPE);
+                consume(tokens, dataType, true, OracleDataTypes.DTYPE_URITYPE);
             } else if (tokens.matches(OracleDataTypes.DTYPE_URITYPE_QUOTED)) {
                 dataType = new DataType("URITYPE");
-                typeName = consume(tokens, dataType, true, OracleDataTypes.DTYPE_URITYPE_QUOTED);
+                consume(tokens, dataType, true, OracleDataTypes.DTYPE_URITYPE_QUOTED);
+            } else if (tokens.matches(OracleDataTypes.DTYPE_SDO_GEOMETRY)
+                    || tokens.matches(OracleDataTypes.DTYPE_SDO_TOPO_GEOMETRY)
+                    || tokens.matches(OracleDataTypes.DTYPE_SDO_GEORASTER)) {
+                typeName = tokens.consume();
+                dataType = new DataType(typeName);
             }
             if (dataType == null) {
                 dataType = super.parseCustomType(tokens);

@@ -55,7 +55,7 @@ import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAG
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_MINEXTENTS;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_NEXT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_OPTIMAL;
-import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_PCINCREASE;
+import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.STORAGE_PCTINCREASE;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.INDEX_TABLESPACE;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_ORGANIZATION;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TABLE_TABLESPACE;
@@ -347,16 +347,6 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
     }
 
     @Test
-    public void shouldParseCreateMaterializedViewLog() {
-        printTest("shouldParseCreateMaterializedViewLog()");
-        String content = "CREATE MATERIALIZED VIEW LOG ON products" + NEWLINE + "WITH ROWID, SEQUENCE (prod_id)" + NEWLINE
-                         + "INCLUDING NEW VALUES;";
-        assertScoreAndParse(content, null, 1);
-        AstNode childNode = rootNode.getChildren().get(0);
-        assertTrue(hasMixinType(childNode, TYPE_CREATE_MATERIALIZED_VIEW_LOG_STATEMENT));
-    }
-
-    @Test
     public void shouldParseOracleStatements_1() {
         printTest("shouldParseOracleStatements_1()");
         String content = getFileContent(DDL_FILE_PATH + "oracle_test_statements_1.ddl");
@@ -367,7 +357,7 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
     public void shouldParseOracleStatements_2() {
         printTest("shouldParseOracleStatements_2()");
         String content = getFileContent(DDL_FILE_PATH + "oracle_test_statements_2.ddl");
-        assertScoreAndParse(content, "oracle_test_statements_2", 50);
+        assertScoreAndParse(content, "oracle_test_statements_2", 48);
     }
 
     @Test
@@ -741,7 +731,7 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         assertEquals(Boolean.TRUE, createIndex.getProperty(STORAGE_CLAUSE));
         assertEquals("20k", createIndex.getProperty(STORAGE_INITIAL));
         assertEquals("20k", createIndex.getProperty(STORAGE_NEXT));
-        assertEquals("75", createIndex.getProperty(STORAGE_PCINCREASE));
+        assertEquals("75", createIndex.getProperty(STORAGE_PCTINCREASE));
         assertEquals("0", createIndex.getProperty(PHYSICAL_PCTFREE));
     }
 
@@ -791,7 +781,7 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         assertEquals(Boolean.TRUE, createIndex.getProperty(STORAGE_CLAUSE));
         assertEquals("10K", createIndex.getProperty(STORAGE_INITIAL));
         assertEquals("20K", createIndex.getProperty(STORAGE_NEXT));
-        assertEquals("50", createIndex.getProperty(STORAGE_PCINCREASE));
+        assertEquals("50", createIndex.getProperty(STORAGE_PCTINCREASE));
         assertEquals(Boolean.TRUE, createIndex.getProperty(STORAGE_ENCRYPT));
         assertEquals("KEEP", createIndex.getProperty(STORAGE_BUFFER_POOL));
         assertEquals(Boolean.TRUE, createIndex.getProperty(STORAGE_MAXSIZE_UNLIMITED));
@@ -879,5 +869,4 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
     private static String replaceMultipleWhiteSpaces(String a) {
     	return a.replaceAll("\\s+", " ").trim();
     }
-    
 }

@@ -169,9 +169,11 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
 
     public static final String INDEX_ORDER        = PREFIX + ":order";
     public static final String WHERE_CLAUSE       = PREFIX + ":whereClause";
-    public static final String OR_REPLACE         = PREFIX + ":orReplace";
-    public static final String FORCE              = PREFIX + ":force";
-    public static final String NO_FORCE           = PREFIX + ":noForce";
+    public static final String VIEW_OR_REPLACE    = PREFIX + ":orReplace";
+    public static final String VIEW_FORCE         = PREFIX + ":force";
+    public static final String VIEW_NO_FORCE      = PREFIX + ":noForce";
+    public static final String VIEW_EDITIONING    = PREFIX + ":editioning";
+    public static final String VIEW_SHARING       = PREFIX + ":sharing";
 
 
     // table properties
@@ -180,6 +182,9 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String TABLE_CACHE                      = PREFIX + ":cache";
     public static final String TABLE_ORGANIZATION               = PREFIX + ":organization";
     public static final String TABLE_ROWDEPENDENCIES            = PREFIX + ":rowdependencies";
+    public static final String TABLE_SHARING                    = PREFIX + ":sharing";
+    public static final String TABLE_COLLATION                  = PREFIX + ":collation";
+    public static final String TABLE_PARTITIONING                  = PREFIX + ":partitioning";
 
     // column properties
     public static final String COLUMN_SALT                      = PREFIX + ":salt";
@@ -201,7 +206,7 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String INDEX_TYPE = PREFIX + ":indexType";
     public static final String INDEX_VISIBLE = PREFIX + ":visible";
     public static final String INDEX_ATTRIBUTES   = PREFIX + ":indexAttributes";
-    // index attributies
+    // index attributes
     public static final String INDEX_TABLESPACE = PREFIX + ":tablespace";
     public static final String INDEX_ONLINE = PREFIX + ":online";
     public static final String INDEX_LOGGING = PREFIX + ":logging";
@@ -209,6 +214,7 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String INDEX_COMPRESS = PREFIX + ":compress";
     public static final String INDEX_PARALLEL = PREFIX + ":parallel";
     public static final String INDEX_REVERSE = PREFIX + ":reverse";
+    public static final String INDEX_PARTITIONING = PREFIX + ":partitioning";
 
     // physical properties
     public static final String PHYSICAL_INITRANS = PREFIX + ":initrans";
@@ -225,7 +231,7 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String STORAGE_FREELIST_GROUPS = PREFIX + ":storageFreelistGroups";
     public static final String STORAGE_FREELISTS = PREFIX + ":storageFreelists";
     public static final String STORAGE_MAXEXTENTS_UNLIMITED = PREFIX + ":storageMaxextentsUnlimited";
-    public static final String STORAGE_PCINCREASE = PREFIX + ":storagePctincrease";
+    public static final String STORAGE_PCTINCREASE = PREFIX + ":storagePctincrease";
     public static final String STORAGE_MAXEXTENTS = PREFIX + ":storageMaxextents";
     public static final String STORAGE_MINEXTENTS = PREFIX + ":storageMinextents";
     public static final String STORAGE_NEXT = PREFIX + ":storageNext";
@@ -242,5 +248,24 @@ public class OracleDdlLexicon extends StandardDdlLexicon {
     public static final String SEQ_CACHE          = PREFIX + "cache";
     public static final String SEQ_NO_CACHE       = PREFIX + "noCache";
     public static final String SEQ_ORDER          = PREFIX + "order";
+    public static final String SEQ_SHARING          = PREFIX + "sharing";
+    public static final String SEQ_KEEP          = PREFIX + "keep";
+    public static final String SEQ_SCALE          = PREFIX + "scale";
+    public static final String SEQ_SHARD          = PREFIX + "shard";
 
+    // materialized view properties
+    public static final String MATERIALIZED_VIEW_SCHEMA = "schema";
+    public static final String MATERIALIZED_VIEW_COLLATION = "collation";
+    public static final String MATERIALIZED_VIEW_REFRESH_METHOD = "refreshMethod";
+    public static final String MATERIALIZED_VIEW_REFRESH_ON = "refreshOn";
+    public static final String MATERIALIZED_VIEW_REFRESH_START = "refreshStart";
+    public static final String MATERIALIZED_VIEW_REFRESH_NEXT = "refreshNext";
+    public static final String MATERIALIZED_VIEW_REFRESH_WITH = "refreshWith";
+    public static final String MATERIALIZED_VIEW_REFRESH_USING = "refreshUsing";
+    public static final String MATERIALIZED_VIEW_ON_PREBUILT_TABLE = "onPrebuiltTable";
+    public static final String MATERIALIZED_VIEW_PHYSICAL_PROPERTIES = "physicalProperties";
+    public static final String MATERIALIZED_VIEW_PARTITIONING = "partitioning";
+    public static final String MATERIALIZED_VIEW_CACHE = "cache";
+    public static final String MATERIALIZED_VIEW_BUILD = "build";
+    public static final String MATERIALIZED_VIEW_ON_QUERY_COMPUTATION = "onQueryComputation";
 }
