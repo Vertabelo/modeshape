@@ -38,5 +38,11 @@ git add  .... # nowe pliki
 git commit -m "Wersja modeshape'a  3.7.1.Final-epXXX" 
 git push
 
+9. Zmień numer wersji w db-web-modeler w pliku ~/work/db-web-modeler/impl/standalone-importer/build.gradle i wkomituj zmiany
 
+10. W mindshape ustaw kolejny numer wersji z suffiksem -dev
 
+code VERSION
+make update-pom-xml
+git commit -m 'Nowy numer wersji -dev' -a
+git push

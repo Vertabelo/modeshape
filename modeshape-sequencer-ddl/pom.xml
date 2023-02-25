@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.modeshape</groupId>
         <artifactId>modeshape-sequencers</artifactId>
-        <version>3.7.1.Final-ep37</version>
+        <version>3.7.1.Final-ep38-dev</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <!-- The groupId and version values are inherited from parent -->
@@ -25,7 +25,7 @@
     <name>ModeShape Sequencer for DDL Files</name>
     <description>ModeShape Sequencer that processes DDL files</description>
     <url>http://www.modeshape.org</url>
-    <version>3.7.1.Final-ep37</version>
+    <version>3.7.1.Final-ep38-dev</version>
 
     <dependencies>
         <dependency>
