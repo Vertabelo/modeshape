@@ -24,7 +24,7 @@ public class MySql8DataType extends DataType {
 
     private String characterSet;
     private String collate;
-    private boolean onUpdateCurrentTimestamp;
+    private String onUpdate;
 
     public String getCharacterSet() {
         return characterSet;
@@ -38,10 +38,10 @@ public class MySql8DataType extends DataType {
     public void setCollate(String collate) {
         this.collate = collate;
     }
-    public void setOnUpdateCurrentTimestamp(boolean onUpdateCurrentTimestamp) {
-        this.onUpdateCurrentTimestamp = onUpdateCurrentTimestamp;
+    public void setOnUpdate(String onUpdate) {
+        this.onUpdate = onUpdate;
     }
-    public boolean isOnUpdateCurrentTimestamp() {
-        return onUpdateCurrentTimestamp;
+    public String getOnUpdate() {
+        return onUpdate;
     }
 }

@@ -2155,9 +2155,9 @@ public class MySql8DdlParser extends StandardDdlParser
                     columnNode.setProperty(MySql8DdlLexicon.TABLE_COLLATE, collate);
                 }
 
-                boolean onUpdateCurrentTimestamp = ((MySql8DataType) datatype).isOnUpdateCurrentTimestamp();
-                if (onUpdateCurrentTimestamp) {
-                    columnNode.setProperty(MySql8DdlLexicon.ON_UPDATE_CURRENT_TIMESTAMP, true);
+                String onUpdateValue = ((MySql8DataType) datatype).getOnUpdate();
+                if (onUpdateValue != null) {
+                    columnNode.setProperty(MySql8DdlLexicon.ON_UPDATE, onUpdateValue);
                 }
             }
         }
@@ -2197,8 +2197,7 @@ public class MySql8DdlParser extends StandardDdlParser
 
         boolean parsedDefaultClause = false;
 
-        if (tokens.canConsume("ON", "UPDATE", "CURRENT_TIMESTAMP")) {
-            columnNode.setProperty(MySql8DdlLexicon.ON_UPDATE_CURRENT_TIMESTAMP, true);
+        if (parseOnUpdateClause(tokens, columnNode)) {
             parsedDefaultClause = true;
         }
 
@@ -2268,12 +2267,26 @@ public class MySql8DdlParser extends StandardDdlParser
             parsedDefaultClause = true;
         }
 
-        if (tokens.canConsume("ON", "UPDATE", "CURRENT_TIMESTAMP")) {
-            columnNode.setProperty(MySql8DdlLexicon.ON_UPDATE_CURRENT_TIMESTAMP, true);
+        if (parseOnUpdateClause(tokens, columnNode)) {
             parsedDefaultClause = true;
         }
 
         return parsedDefaultClause;
+    }
+
+    private boolean parseOnUpdateClause(DdlTokenStream tokens, AstNode columnNode) {
+        if (tokens.canConsume("ON", "UPDATE")) {
+            String onUpdateValue = tokens.consume();
+            if (tokens.canConsume(L_PAREN)) {
+                // EXPECT INTEGER
+                Integer onUpdatePrecision = integer(tokens.consume());
+                tokens.canConsume(R_PAREN);
+                onUpdateValue = String.format("%s(%d)", onUpdateValue, onUpdatePrecision);
+            }
+            columnNode.setProperty(MySql8DdlLexicon.ON_UPDATE, onUpdateValue);
+            return true;
+        }
+        return false;
     }
 
     @Override
