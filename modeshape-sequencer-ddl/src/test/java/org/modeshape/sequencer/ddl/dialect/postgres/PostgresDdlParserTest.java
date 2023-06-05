@@ -47,6 +47,7 @@ import org.modeshape.common.FixFor;
 import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
+import org.modeshape.sequencer.ddl.dialect.postgres10plus.Postgres10PlusDdlLexicon;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import java.io.InputStream;
@@ -230,6 +231,48 @@ public class PostgresDdlParserTest extends DdlParserTestHelper {
         assertScoreAndParse(content, null, 1);
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
+    }
+
+    @Test
+    public void shouldParseCreateTable_DEFAULT_VALUE_0() {
+        String content = "CREATE TABLE foo (name varchar(40));";
+        assertScoreAndParse(content, null, 1);
+        AstNode tableNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(tableNode, TYPE_CREATE_TABLE_STATEMENT));
+
+        AstNode columnNode = tableNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
+
+        assertEquals(null, columnNode.getProperty(Postgres10PlusDdlLexicon.DEFAULT_VALUE));
+    }
+
+    @Test
+    public void shouldParseCreateTable_DEFAULT_VALUE_1() {
+        String content = "CREATE TABLE foo (name varchar(40) DEFAULT bar());";
+        assertScoreAndParse(content, null, 1);
+        AstNode tableNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(tableNode, TYPE_CREATE_TABLE_STATEMENT));
+
+        AstNode columnNode = tableNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
+
+        assertEquals("bar()", columnNode.getProperty(Postgres10PlusDdlLexicon.DEFAULT_VALUE));
+    }
+
+
+
+    @Test
+    public void shouldParseCreateTable_DEFAULT_VALUE_2() {
+        String content = "CREATE TABLE foo (name varchar(40) DEFAULT timezone('utc'::text, now()));";
+        assertScoreAndParse(content, null, 1);
+        AstNode tableNode = rootNode.getChildren().get(0);
+        assertTrue(hasMixinType(tableNode, TYPE_CREATE_TABLE_STATEMENT));
+
+        AstNode columnNode = tableNode.getChildren().get(0);
+        assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
+
+        // FIXME SPACJE
+        assertEquals("timezone( 'utc' :: text , now ( ))", columnNode.getProperty(Postgres10PlusDdlLexicon.DEFAULT_VALUE));
     }
 
     // CREATE TABLE films_recent AS

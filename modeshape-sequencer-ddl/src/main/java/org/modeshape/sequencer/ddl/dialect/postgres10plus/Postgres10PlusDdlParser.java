@@ -1196,6 +1196,14 @@ public class Postgres10PlusDdlParser extends StandardDdlParser
                     defaultValue = defaultValue + '.' + tokens.consume();
                 }
 
+                if (tokens.matches(L_PAREN)) {
+                    String fnParams = consumeParenBoundedTokens(tokens,false);
+                    if(fnParams == null) {
+                        fnParams = "";
+                    }
+                    defaultValue = defaultValue + "(" +  fnParams + ")";
+                }
+
                 defaultValue += parsePossibleCastExpression(tokens);
             }
 

@@ -1477,6 +1477,8 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                                                 boolean includeParens ) throws ParsingException {
         assert tokens != null;
 
+
+
         // Assume we start with open parenthesis '(', then we can count on walking through ALL tokens until we find the close
         // parenthesis ')'. If there are intermediate parenthesis, we can count on them being pairs.
         if (tokens.canConsume(L_PAREN)) { // EXPECTED
