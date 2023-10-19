@@ -130,6 +130,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
 
         // Create the state of this parser ...
         problems.clear();
+        this.datatypeParser.getProblems().clear();
         boolean includeComments = true;
         DdlTokenStream tokens = new DdlTokenStream(ddl, ddlTokenizer(includeComments), false);
         initializeTokenStream(tokens);
@@ -189,6 +190,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
         CheckArg.isNotNull(ddl, "ddl");
         CheckArg.isNotNull(rootNode, "rootNode");
         problems.clear();
+        this.datatypeParser.getProblems().clear();
         setRootNode(rootNode);
 
         DdlTokenStream tokens = null;
