@@ -412,6 +412,7 @@ public class OracleDdlParser extends StandardDdlParser
     protected String consumeIdentifier( DdlTokenStream tokens ) throws ParsingException {
         Position startPosition = tokens.nextPosition();
         String id = super.consumeIdentifier(tokens);
+        if (!tokens.hasNext()) return id;
         Position nextPosition = tokens.nextPosition();
 
         while (((nextPosition.getIndexInContent() - startPosition.getIndexInContent() - id.length()) == 0)) {

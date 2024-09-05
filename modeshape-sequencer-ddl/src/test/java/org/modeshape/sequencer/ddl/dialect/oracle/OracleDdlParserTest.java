@@ -232,6 +232,27 @@ public class OracleDdlParserTest extends DdlParserTestHelper {
         assertScoreAndParse(content, null, 2);
     }
 
+    @FixFor("EDWM-4426")
+    @Test
+    public void testParseCreateTableWithImplicitColumnReferences() {
+        printTest("testParseCreateTableWithImplicitColumnReferences()");
+
+        String content = "CREATE TABLE person (\n" +
+                "  id NUMBER(6) NOT NULL,\n" +
+                "  first_name VARCHAR2(30) NOT NULL,\n" +
+                "  last_name VARCHAR2(30) NOT NULL,\n" +
+                "  changed_by NUMBER(6) NOT NULL,\n" +
+                "  created_by NUMBER(6) NOT NULL REFERENCES person,\n" +
+                "  CONSTRAINT person#PK\n" +
+                "    PRIMARY KEY (id),\n" +
+                "  CONSTRAINT person#person#FK\n" +
+                "    FOREIGN KEY (changed_by)\n" +
+                "    REFERENCES person\n" +
+                ");";
+
+        assertScoreAndParse(content, null, 1);
+    }
+
     @Test
     public void shouldParseAlterTableWithModifyClause() {
         printTest("shouldParseAlterTableWithModifyClause()");
