@@ -68,6 +68,8 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
+                    <!-- to ostatnia wersja, która działa z JDK 11 -->
+                    <version>5.1.9</version>
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
@@ -119,6 +121,8 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <!-- to ostatnia wersja, która działa z JDK 11 -->
+                <version>5.1.9</version>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
