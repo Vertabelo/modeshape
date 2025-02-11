@@ -77,18 +77,4 @@ public class MySql8DdlParserTablePartitionsTest extends DdlParserTestHelper {
                              + "SUBPARTITIONS 2 ( PARTITION p0 VALUES LESS THAN (1990), PARTITION p1 VALUES LESS THAN (2000), "
                              + "PARTITION p2 VALUES LESS THAN MAXVALUE )", tableNode.getProperty(MySql8DdlLexicon.TABLE_PARTITION_BY));
     }
-
-    // TODO EDWM-4257 do usunięcia
-    @Test
-    public void shouldParseTableCharacterSet() {
-        String content = "CREATE TABLE test (test CHAR) ENGINE=InnoDB CHARACTER SET charset_name "
-                + "COLLATE collation_name TABLESPACE tablespace_name STORAGE DISK";
-        assertScoreAndParse(content, null, 1);
-        AstNode tableNode = rootNode.getChildren().get(0);
-        assertTrue(hasMixinType(tableNode, TYPE_CREATE_TABLE_STATEMENT));
-        assertEquals("InnoDB", tableNode.getProperty(MySql8DdlLexicon.TABLE_ENGINE));
-        assertEquals("charset_name", tableNode.getProperty(MySql8DdlLexicon.TABLE_CHARACTER_SET));
-        assertEquals("collation_name", tableNode.getProperty(MySql8DdlLexicon.TABLE_COLLATE));
-        assertEquals("tablespace_name", tableNode.getProperty(MySql8DdlLexicon.TABLE_TABLESPACE));
-    }
 }

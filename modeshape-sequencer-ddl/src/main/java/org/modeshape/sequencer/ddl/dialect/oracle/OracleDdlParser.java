@@ -2091,8 +2091,6 @@ public class OracleDdlParser extends StandardDdlParser
             indexNode.setProperty(OracleDdlLexicon.UNUSABLE_INDEX, unusable);
         }
 
-        // TODO
-
         markEndOfStatement(tokens, indexNode);
         return indexNode;
     }

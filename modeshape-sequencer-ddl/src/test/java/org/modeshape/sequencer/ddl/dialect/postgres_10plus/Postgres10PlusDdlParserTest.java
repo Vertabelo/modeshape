@@ -282,7 +282,6 @@ public class Postgres10PlusDdlParserTest extends DdlParserTestHelper {
         AstNode columnNode = tableNode.getChildren().get(0);
         assertTrue(hasMixinType(columnNode, TYPE_COLUMN_DEFINITION));
 
-        // FIXME SPACJE
         assertEquals("timezone( 'utc' :: text , now ( ))", columnNode.getProperty(Postgres10PlusDdlLexicon.DEFAULT_VALUE));
     }
 
