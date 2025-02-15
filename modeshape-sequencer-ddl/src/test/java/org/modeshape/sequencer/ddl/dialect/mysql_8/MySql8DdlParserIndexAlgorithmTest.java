@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.dialect.mysql8.MySql8DdlLexicon.TYPE_CREATE_INDEX_STATEMENT;
 
 /**
- * Testy atrybutów algorytmu indeksu dodanych dla MySQL 8.x
+ * Tests of index algorithm attributes added for MySQL 8.x
  *
  * @author Marek Berkan
  */

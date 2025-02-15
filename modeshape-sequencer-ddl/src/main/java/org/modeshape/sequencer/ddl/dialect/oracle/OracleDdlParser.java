@@ -168,7 +168,6 @@ import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_C
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_INDEXTYPE_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_JAVA_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_LIBRARY_STATEMENT;
-import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_MATERIALIZED_VIEW_LOG_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_MATERIALIZED_VIEW_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_OPERATOR_STATEMENT;
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_OUTLINE_STATEMENT;
@@ -642,9 +641,9 @@ public class OracleDdlParser extends StandardDdlParser
 
     @Override
     protected void parseColumnsAndConstraints(DdlTokenStream tokens, AstNode tableNode) throws ParsingException {
-        // Baza danych Oracle dopuszcza opcję "SHARING" dla tabeli PRZED definicją kolumn, a nie jak w przypadku innych
-        // opcji PO, więc musimy je pobrać przed analizą kolumn.
-        // Dokumentacja https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-TABLE.html - patrz
+        // Oracle Database allows the “SHARING” option for the table BEFORE the columns are defined, not like other
+        // options AFTER, so we need to retrieve them before analyzing the columns.
+        // Documentation: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-TABLE.html - see
         // "create_table::="
 
         // SHARING = {METADATA | DATA | EXTENDED DATA | NONE}
@@ -711,7 +710,7 @@ public class OracleDdlParser extends StandardDdlParser
                   | EXTERNAL external_table_clause
                   }
 
-                  pominąłem opcje szczegółowe, bo są one zawarte w ramach compress i physical attributes
+                  I skipped the detail options, because they are included in the compress and physical attributes
              */
             if ("ORGANIZATION".equals(tableAttribute)) {
                 String organizationType = tokens.consume();
@@ -726,14 +725,14 @@ public class OracleDdlParser extends StandardDdlParser
                 processed = true;
             }
 
-            // DEFAULT COLLATION <zawartość pola>
+            // DEFAULT COLLATION <field value>
             if ("DEFAULT".equals(tableAttribute) && tokens.canConsume("COLLATION")) {
                 String collationValue = tokens.consume();
                 tableNode.setProperty(TABLE_COLLATION, collationValue);
                 processed = true;
             }
 
-            // obsługujemy różne wersje "partition..." w naiwny sposób: pobierając wszystko do końca
+            // We support different versions of “partition...” in a naive way: by fetching everything to the end
             if ("PARTITION".equals(tableAttribute) && tokens.canConsume("BY")) {
                 String partitionByExpression = parseUntilTerminator(tokens);
                 tableNode.setProperty(TABLE_PARTITIONING, "PARTITION " + partitionByExpression);
@@ -978,7 +977,7 @@ public class OracleDdlParser extends StandardDdlParser
     }
 
     /**
-     * Parsuje wyrażenie "CREATE MATERIALIZED VIEW"
+     * Parse "CREATE MATERIALIZED VIEW" part query.
      */
     protected AstNode parseMaterializedViewStatement(DdlTokenStream tokens, AstNode parentNode) throws ParsingException {
         assert tokens != null;
@@ -992,11 +991,11 @@ public class OracleDdlParser extends StandardDdlParser
         AstNode createViewNode = nodeFactory().node(name, parentNode, TYPE_CREATE_MATERIALIZED_VIEW_STATEMENT);
 
         boolean consumedMaterializedViewOption = true;
-        // pętla po możliwych opcjach występujących w różnej kolejności i przedzielanych nieobsługiwanymi fragmentami
+        // loop through possible options occurring in different order and punctuated by unsupported fragments
         while (consumedMaterializedViewOption) {
             consumedMaterializedViewOption = false;
 
-            // DEFAULT COLLATION <zawartość pola>
+            // DEFAULT COLLATION <field value>
             if (tokens.canConsume("DEFAULT", "COLLATION")) {
                 String collationValue = tokens.consume();
                 createViewNode.setProperty(MATERIALIZED_VIEW_COLLATION, collationValue);
@@ -1037,7 +1036,7 @@ public class OracleDdlParser extends StandardDdlParser
             } else if (tokens.canConsume("REFRESH")) {
                 consumedMaterializedViewOption = true;
                 boolean consumedRefreshOption = true;
-                // pętla po możliwych opcjach "REFRESH" występujących w różnej kolejności
+                // loop through possible “REFRESH” options occurring in different order
                 while (consumedRefreshOption) {
                     consumedRefreshOption = false;
                     // { FAST | COMPLETE | FORCE}
@@ -1065,12 +1064,12 @@ public class OracleDdlParser extends StandardDdlParser
                     }
 
                     if (tokens.canConsume("START", "WITH")) {
-                        // wyrażenia daty po "START WITH" nie potrafimy zinterpretować, ale pobieramy kolejny token
+                        // date expression after “START WITH” we can not interpret, but we retrieve next token
                         tokens.consume();
                     }
 
                     if (tokens.canConsume("NEXT")) {
-                        // wyrażenia daty po "NEXT" nie potrafimy zinterpretować, ale pobieramy kolejny token
+                        // date expression after “NEXT” we can not interpret, but we retrieve next token
                         tokens.consume();
                     }
 
@@ -1084,7 +1083,7 @@ public class OracleDdlParser extends StandardDdlParser
                     }
 
                     if (tokens.canConsume("USING")) {
-                        // wyrażenia daty po "NEXT" nie potrafimy zinterpretować, ale pobieramy kolejny token
+                        // date expression after “USING” we can not interpret, but we retrieve next token
                         tokens.consume();
                     }
                 }
@@ -1100,7 +1099,7 @@ public class OracleDdlParser extends StandardDdlParser
             }
 
             if (!tokens.matches("AS")) {
-                // pobieramy inny niespodziewany token, aż do "AS"
+                // we retrieve another unexpected token, up to “AS”
                 tokens.consume();
                 consumedMaterializedViewOption = true;
             }
@@ -2060,7 +2059,7 @@ public class OracleDdlParser extends StandardDdlParser
                     processed = true;
                 }
 
-                // obsługujemy różne wersje "partition..." w naiwny sposób: pobierając wszystko do końca
+                // We support different versions of “partition...” in a naive way: by fetching everything to the end
                 if ("PARTITION".equals(indexAttribute) && tokens.canConsume("BY")) {
                     String partitionByExpression = parseUntilTerminator(tokens);
                     indexNode.setProperty(INDEX_PARTITIONING, "PARTITION " + partitionByExpression);

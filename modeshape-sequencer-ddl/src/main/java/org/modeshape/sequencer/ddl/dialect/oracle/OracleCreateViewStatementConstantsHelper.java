@@ -5,18 +5,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.modeshape.sequencer.ddl.DdlConstants;
-
 /**
- * Klasa do generacji stałych reprezentujących wszystkie możliwe kombinacje SQL tworzące widok - ich ilość jest na tyle
- * duża, że trudno to zrobić ręcznie.
+ * A class for the generation of constants representing all possible SQL combinations that make up a view - their number
+ * is so large that it is difficult to do it manually.
  *
- * Używana go generacji stałych składających się na {@link OracleDdlConstants.OracleStatementStartPhrases#CREATE_PHRASES}
- * i {@link OracleDdlConstants.OracleStatementStartPhrases#CREATE_VIEW_PHRASES}.
+ * Used it the generation of constants in {@link OracleDdlConstants.OracleStatementStartPhrases#CREATE_PHRASES}
+ * and {@link OracleDdlConstants.OracleStatementStartPhrases#CREATE_VIEW_PHRASES}.
  *
- * Metoda ta jest uruchamiana ręcznie przez "main" i jej wynik należy wkleić do kodu w powyższych miejscach.
+ * This method is run manually by “main” and its result should be pasted into the code in the above places.
  *
- * Szczegóły w dokumentacji
+ * See the documentation for details:
  * https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-VIEW.html#GUID-61D2D2B4-DACC-4C7C-89EB-7E50D9594D30
  */
 public class OracleCreateViewStatementConstantsHelper {
@@ -64,7 +62,7 @@ public class OracleCreateViewStatementConstantsHelper {
     }
 
     /**
-     * Algorytm na podstawie https://stackoverflow.com/a/17193002/3049486
+     * Algorithm based on https://stackoverflow.com/a/17193002/3049486
      */
     static void generatePermutations(List<List<CreateViewPart>> lists, List<CreateViewPart> result, int depth, CreateViewPart current) {
         if (depth == lists.size()) {

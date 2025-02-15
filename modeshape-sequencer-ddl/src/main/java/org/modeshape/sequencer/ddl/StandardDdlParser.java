@@ -2968,7 +2968,7 @@ public class StandardDdlParser implements DdlParser, DdlConstants, DdlConstants.
                     defaultValue = defaultValue + '.' + tokens.consume();
                 }
                 
-                // obsługa wywołań funkcji
+                // handling of function calls
                 if (tokens.canConsume(L_PAREN)) {
                     defaultValue = defaultValue + L_PAREN;
                     while (!tokens.canConsume(R_PAREN)) {

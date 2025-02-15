@@ -306,7 +306,7 @@ public class StandardDdlParserTest extends DdlParserTestHelper {
     }
 
     @Test
-    public void shoudParseUntilTerminated() {
+    public void shouldParseUntilTerminated() {
         printTest("shoudParseUntilTerminated()");
         String prefix = "( COL_SUM, COL_DIFF ) AS SELECT COMM + BONUS, COMM - BONUS FROM SAMP.EMPLOYEE";
         String content = prefix + "; CREATE TABLE someName";

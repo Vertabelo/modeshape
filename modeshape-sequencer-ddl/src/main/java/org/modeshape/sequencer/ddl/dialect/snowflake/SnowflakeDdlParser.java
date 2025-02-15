@@ -24,9 +24,7 @@
 package org.modeshape.sequencer.ddl.dialect.snowflake;
 
 import org.modeshape.common.text.ParsingException;
-import org.modeshape.common.text.Position;
 import org.modeshape.common.text.TokenStream;
-import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserProblem;
 import org.modeshape.sequencer.ddl.DdlSequencerI18n;
 import org.modeshape.sequencer.ddl.DdlTokenStream;
@@ -38,7 +36,6 @@ import org.modeshape.sequencer.ddl.datatype.DataTypeParser;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.ALL_PRIVILEGES;
@@ -91,7 +88,6 @@ import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.FUNCTION_PARAMETER_MODE;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.PROPERTY_VALUE;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.ROLE;
-import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.SCHEMA_NAME;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.SEQ_INCREMENT_BY;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.SEQ_START_WITH;
 import static org.modeshape.sequencer.ddl.dialect.snowflake.SnowflakeDdlLexicon.TRANSIENT_TABLE;
@@ -555,8 +551,8 @@ public class SnowflakeDdlParser extends StandardDdlParser
         // terminator
         // or a new statement
 
-        // w niektórych przypadkach poniższa pętla sie nie kończy
-        // zabezpiecznie na ten przypadek
+        // in some cases the following loop does not finish
+        // safeguards for this case
         int triesGuard = TRIES_OF_PARSE;
         while (tokens.hasNext() && !tokens.matches(getTerminator()) && !tokens.matches(DdlTokenizer.STATEMENT_KEY)) {
             if (triesGuard == 0) {
@@ -772,7 +768,7 @@ public class SnowflakeDdlParser extends StandardDdlParser
             tableNode.setProperty(SnowflakeDdlLexicon.PATTERN, maxDataExtension);
         }
         // FILE_FORMAT = ( { FORMAT_NAME = '<file_format_name>' | TYPE = { CSV | JSON | AVRO | ORC | PARQUET } [ formatTypeOptions ] } )
-        // UWAGA: FILE_FORMAT jest obowiązkowy, ale dla uproszczenia przyjmijmy ze nie
+        // UWAGA: NOTE: FILE_FORMAT is mandatory, but for simplicity, let's assume it is not
         if (tokens.canConsume("FILE_FORMAT", "=")) {
             String fileFormat = consumeParenBoundedTokens(tokens, false);
             tableNode.setProperty(SnowflakeDdlLexicon.FILE_FORMAT, fileFormat.trim());
@@ -797,10 +793,10 @@ public class SnowflakeDdlParser extends StandardDdlParser
     private String parseExternalStage(DdlTokenStream tokens) {
         /* externalStage ::=
         @[<namespace>.]<ext_stage_name>[/<path>] */
-        // @ nie jest tokenizowane, przyjdzie albo w
+        // @  is not tokenized, it will come either in
         // 1. @namespace
         // 2. @ext_stage_name
-        // nie ma to znaczenia dla wyniku
+        // it doesn't matter for the result
         StringBuilder sb = new StringBuilder();
         if (tokens.matches(TokenStream.ANY_VALUE, ".")) {
             String namespace = tokens.consume();

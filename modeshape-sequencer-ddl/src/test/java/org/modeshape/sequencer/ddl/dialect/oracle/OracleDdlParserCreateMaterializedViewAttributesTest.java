@@ -11,9 +11,9 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_E
 import static org.modeshape.sequencer.ddl.dialect.oracle.OracleDdlLexicon.TYPE_CREATE_MATERIALIZED_VIEW_STATEMENT;
 
 /**
- * Testy parsowania tworzenia widoków zmaterializowanych z atrybutami.
+ * Parsing tests the creation of materialized views with attributes.
  *
- * Dokumentacja: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-MATERIALIZED-VIEW.html
+ * Documentation: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-MATERIALIZED-VIEW.html
  *
  * @author Marek Berkan
  */
@@ -185,7 +185,7 @@ public class OracleDdlParserCreateMaterializedViewAttributesTest extends DdlPars
     }
 
     /**
-     * Kombinacja 3 wartości do REFRESH w kolejności "1"
+     * Combination of 3 values to REFRESH in order "1"
      */
     @Test
     public void shouldParseCreateViewWithRefreshFastOnDemandWithPrimaryKey() {
@@ -203,7 +203,7 @@ public class OracleDdlParserCreateMaterializedViewAttributesTest extends DdlPars
     }
 
     /**
-     * Kombinacja 3 wartości do REFRESH w kolejności "2"
+     * Combination of 3 values to REFRESH in order "2"
      */
     @Test
     public void shouldParseCreateViewWithRefreshWithPrimaryKeyFastOnDemand() {
@@ -221,7 +221,7 @@ public class OracleDdlParserCreateMaterializedViewAttributesTest extends DdlPars
     }
 
     /**
-     * Kombinacja 3 wartości do REFRESH w kolejności "3"
+     * Combination of 3 values to REFRESH in order "3"
      */
     @Test
     public void shouldParseCreateViewWithRefreshOnDemandWithPrimaryKeyFast() {

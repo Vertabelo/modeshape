@@ -36,7 +36,7 @@ public interface MySql8DdlConstants extends DdlConstants {
 
     String[] CUSTOM_KEYWORDS = {
 
-        //źródło: https://dev.mysql.com/doc/refman/8.0/en/keywords.html
+        // source: https://dev.mysql.com/doc/refman/8.0/en/keywords.html
         "ACCESSIBLE", "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "ASENSITIVE", "BEFORE", "BETWEEN",
         "BIGINT", "BINARY", "BLOB", "BOTH", "BY", "CALL", "CASCADE", "CASE", "CHANGE", "CHAR", "CHARACTER",
         "CHECK", "COLLATE", "COLUMN", "CONDITION", "CONSTRAINT", "CONTINUE", "CONVERT", "CREATE", "CROSS",
@@ -62,13 +62,13 @@ public interface MySql8DdlConstants extends DdlConstants {
         "UNLOCK", "UNSIGNED", ",  UPDATE", "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", ",  UTC_TIMESTAMP",
         "VALUES", "VARBINARY", ", VARCHAR", "VARCHARACTER", "VARYING WHEN", "WHERE", "WHILE", "WITH", "WRITE",
         "XOR", "YEAR_MONTH", "ZEROFILL",
-        // dodane ręcznie:
+        // added manually:
         "SERIAL"};
 
 
 
     interface MySqlStatementStartPhrases {
-        //źródło https://dev.mysql.com/doc/refman/8.0/en/data-types.html
+        // source https://dev.mysql.com/doc/refman/8.0/en/data-types.html
         String[] STMT_ALTER_DATABASE 		= {"ALTER", "DATABASE"};
         String[] STMT_ALTER_SCHEMA 		= {"ALTER", "SCHEMA"};
         
@@ -290,7 +290,7 @@ public interface MySql8DdlConstants extends DdlConstants {
 
     String[] DTYPE_JSON            = {"JSON"};
 
-    // dane przestrzenne
+    // spatial data
     String[] DTYPE_GEOMETRY = {"GEOMETRY"};
     String[] DTYPE_POINT = {"POINT"};
     String[] DTYPE_LINESTRING = {"LINESTRING"};

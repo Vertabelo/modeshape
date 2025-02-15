@@ -50,8 +50,7 @@ import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.TARG
 import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.TYPE_COMMENT_ON_STATEMENT;
 
 /**
- * Źródła testów:
- *  https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_examples.html
+ * Test sources: https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_examples.html
  */
 public class RedshiftDdlParserTest extends DdlParserTestHelper {
     private static final String SPACE = DdlConstants.SPACE;

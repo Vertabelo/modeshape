@@ -37,7 +37,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINIT
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 
 /**
- * Testy atrybutów "UNSIGNED" i "ZEROFILL" dla typów danych FLOAT i DOUBLE
+ * Tests of “UNSIGNED” and “ZEROFILL” attributes for FLOAT and DOUBLE data types
  *
  * @author Marek Berkan
  */

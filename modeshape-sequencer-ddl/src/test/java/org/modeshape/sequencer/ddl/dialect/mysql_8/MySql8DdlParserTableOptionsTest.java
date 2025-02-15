@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 
 /**
- * Testy wcześniejszych atrybutów już wspieranych w MySQL 5.x
+ * Testing earlier attributes already supported in MySQL 5.x
  *
  * @author Marek Berkan
  */

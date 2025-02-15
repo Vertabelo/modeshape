@@ -478,23 +478,23 @@ public class Postgres10PlusDdlParserTest extends DdlParserTestHelper {
 
     @Test
     public void shouldParseCreateTableWithColumnAtEnd() {
-        // z modelu klienta
+        // from the user model
         printTest("shouldParseCreateTableWithColumnAtEnd");
         String content = "CREATE TABLE TEST (" +
                 " test CHAR(20) NOT NULL," +
                 ");";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
     @Test
     public void shouldParseCreateTableWithNoColumns() {
-        // z modelu klienta
+        // from the user model
         printTest("shouldParseCreateTableWithNoColumns");
         String content = "CREATE TABLE TEST (" +
                 ");";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
@@ -509,7 +509,7 @@ public class Postgres10PlusDdlParserTest extends DdlParserTestHelper {
                 "  created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,\n" +
                 "  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL\n" +
                 ");";
-        assertScoreAndParse(sql, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(sql, null, 1); // "1" means no errors
         assertTrue(hasMixinType(rootNode.getChild(0), TYPE_CREATE_TABLE_STATEMENT));
     }
 

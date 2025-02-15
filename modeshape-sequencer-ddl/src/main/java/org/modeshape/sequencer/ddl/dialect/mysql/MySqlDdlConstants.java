@@ -39,7 +39,7 @@ public interface MySqlDdlConstants extends DdlConstants {
 //  		"TINYTEXT", "MEDIUMBLOB", "MEDIUMTEXT", "LONGBLOB", "LONGTEXT", "TEXT", "ENUM", "SET", "DATETIME", "YEAR", "BLOB", "RENAME",
 //  		"ALGORITHM", "SECURITY",
 
-        //źródło: http://dev.mysql.com/doc/refman/5.5/en/reserved-words.html
+        // source: http://dev.mysql.com/doc/refman/5.5/en/reserved-words.html
         "ACCESSIBLE", "ADD", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "ASENSITIVE", "BEFORE", "BETWEEN",
         "BIGINT", "BINARY", "BLOB", "BOTH", "BY", "CALL", "CASCADE", "CASE", "CHANGE", "CHAR", "CHARACTER",
         "CHECK", "COLLATE", "COLUMN", "CONDITION", "CONSTRAINT", "CONTINUE", "CONVERT", "CREATE", "CROSS",
@@ -65,13 +65,13 @@ public interface MySqlDdlConstants extends DdlConstants {
         "UNLOCK", "UNSIGNED", ",  UPDATE", "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", ",  UTC_TIMESTAMP",
         "VALUES", "VARBINARY", ", VARCHAR", "VARCHARACTER", "VARYING WHEN", "WHERE", "WHILE", "WITH", "WRITE",
         "XOR", "YEAR_MONTH", "ZEROFILL",
-        // dodane ręcznie:
+        // added manually:
         "SERIAL"};
 
 
 
     interface MySqlStatementStartPhrases {
-        //źródło http://dev.mysql.com/doc/refman/5.5/en/sql-syntax-data-definition.html
+        // source http://dev.mysql.com/doc/refman/5.5/en/sql-syntax-data-definition.html
         static final String[] STMT_ALTER_DATABASE 		= {"ALTER", "DATABASE"};
         static final String[] STMT_ALTER_SCHEMA 		= {"ALTER", "SCHEMA"};
         

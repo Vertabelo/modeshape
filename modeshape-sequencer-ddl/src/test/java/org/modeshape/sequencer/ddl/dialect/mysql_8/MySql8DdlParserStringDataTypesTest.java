@@ -37,7 +37,7 @@ import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINIT
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 
 /**
- * Testy typów danych tekstowych dodanych dla MySQL 8.x
+ * Tests of text data types added for MySQL 8.x
  *
  * @author Marek Berkan
  */

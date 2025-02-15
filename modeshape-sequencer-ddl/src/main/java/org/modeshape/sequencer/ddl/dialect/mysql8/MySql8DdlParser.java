@@ -1949,7 +1949,7 @@ public class MySql8DdlParser extends StandardDdlParser
             } else if (tokens.matches(DTYPE_MEDIUMBLOB) || tokens.matches(DTYPE_LONGBLOB)
                     || tokens.matches(DTYPE_TINYBLOB) || tokens.matches(DTYPE_YEAR)
                     || tokens.matches(DTYPE_BOOLEAN) || tokens.matches(DTYPE_BOOL) || tokens.matches(DTYPE_JSON)
-                    // dane przestrzenne
+                    // spatial data
                     || tokens.matches(DTYPE_GEOMETRY) || tokens.matches(DTYPE_POINT)
                     || tokens.matches(DTYPE_LINESTRING) || tokens.matches(DTYPE_POLYGON)
                     || tokens.matches(DTYPE_GEOMETRYCOLLECTION) || tokens.matches(DTYPE_MULTIPOINT)

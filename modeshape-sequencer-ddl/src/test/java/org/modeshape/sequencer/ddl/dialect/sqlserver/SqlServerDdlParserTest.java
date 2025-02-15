@@ -32,12 +32,10 @@ import static org.modeshape.sequencer.ddl.dialect.sqlserver.SqlServerDdlLexicon.
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.modeshape.common.FixFor;
 import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
 import org.modeshape.sequencer.ddl.StandardDdlLexicon;
-import org.modeshape.sequencer.ddl.dialect.sqlite.SqliteDdlLexicon;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import java.io.InputStream;
@@ -276,7 +274,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
 
     @Test
     public void shouldParseCreateTable_9() {
-        // zgłoszone przez klienta
+        // reported by the customer
         printTest("shouldParseCreateTable_9");
         String content = "CREATE TABLE [dbo].[tblApp](" +
                 "    [AppID] [int] IDENTITY(1,1) NOT NULL," +
@@ -298,7 +296,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
 
     @Test
     public void shouldParseCreateTable_10() {
-        // zgłoszone przez klienta
+        // reported by the customer
         printTest("shouldParseCreateTable_10");
         String content = "CREATE TABLE [tbl_Search_Criteria](" +
         		"  [Search_Criteria_ID] [int]NOT NULL IDENTITY  ," +
@@ -318,38 +316,38 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
 
     @Test
     public void shouldParseCreateTable_11() {
-        // z modelu klienta
+        // from the user model
         printTest("shouldParseCreateTable_11");
         String content = "CREATE TABLE [bap].[proje] (" +
         		"     [id] int NOT NULL, " +
         		"     [baska_kurum_destegi_durum] bit NULL DEFAULT ((0)) )";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
     @Test
     public void shouldParseCreateTable_12() {
-        // z modelu klienta
+        // from the user model
         printTest("shouldParseCreateTable_12");
         String content = "CREATE TABLE [dbo].[ESTUDIANTES](" +
                         "   [EST_AUTO] [nchar](10) NULL," +
                         "   [EST_AUTO_2] [national char](10) NULL," +
                         "   [EST_AUTO_3] [national character](10) NULL" +
                         ") ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
     @Test
     public void shouldParseCreateTable_13() {
-        // z modelu klienta
+        // from the user model
         printTest("shouldParseCreateTable_13");
         String content = "CREATE TABLE [dbo].[INSCRIPCION DETALLE](" +
                         "   [IND_CODIGO] [int] NOT NULL" +
                         ")";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
@@ -370,7 +368,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
                 "  CONSTRAINT [PK_SalesOrderDetail_Order_SalesOrderDetailID] PRIMARY KEY CLUSTERED \n" +
                 "  ([Order] ASC, [SalesOrderDetailID] ASC)\n" +
                 ")";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
@@ -387,30 +385,30 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
                 "    [AUTHENTICATION_TOKEN jarkowy_id] varchar(255)  NOT NULL,\n" +
                 "    CONSTRAINT [TEMPORARY_STORAGE_pk jarkowy_id] PRIMARY KEY  ([ID jarkowy_id])\n" +
                 ");";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
     @Test
     public void shouldParseCreateTableWithColumnAtEnd() {
-        // z modelu klienta
+        // from the user model
         printTest("shouldParseCreateTableWithColumnAtEnd");
         String content = "CREATE TABLE TEST (" +
                 " test CHAR(20) NOT NULL," +
                 ");";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
 
     @Test
     public void shouldParseCreateTableWithNoColumns() {
-        // z modelu klienta
+        // from the user model
         printTest("shouldParseCreateTableWithNoColumns");
         String content = "CREATE TABLE TEST (" +
                 ");";
-        assertScoreAndParse(content, null, 1); // 1 oznacza brak błędów
+        assertScoreAndParse(content, null, 1); // "1" means no errors
         AstNode childNode = rootNode.getChildren().get(0);
         assertTrue(hasMixinType(childNode, TYPE_CREATE_TABLE_STATEMENT));
     }
@@ -750,7 +748,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
 
 
     @Test
-    public void shoudParseWithDot() {
+    public void shouldParseWithDot() {
         String content = "CREATE TABLE [dbo].[Blade]("
         + "[Id] [uniqueidentifier] NOT NULL CONSTRAINT [DF_dbo.Blade_Id]  DEFAULT (newsequentialid()),"
         + "[Position] [nvarchar](max) NULL,"
@@ -777,7 +775,7 @@ public class SqlServerDdlParserTest extends DdlParserTestHelper {
 
 
     @Test
-    public void shoudParseWithTwoDots() {
+    public void shouldParseWithTwoDots() {
         String content = "CREATE TABLE [dbo].[Inspection](\n" +
                 "\t[Id] [uniqueidentifier] NOT NULL CONSTRAINT [DF_dbo.Inspection_Id]  DEFAULT (newsequentialid()),\n" +
                 /*"\t[Inspectors] [nvarchar](max) NULL,\n" +

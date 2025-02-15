@@ -25,35 +25,19 @@ package org.modeshape.sequencer.ddl.dialect.snowflake;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.modeshape.sequencer.ddl.DdlConstants;
 import org.modeshape.sequencer.ddl.DdlParserScorer;
 import org.modeshape.sequencer.ddl.DdlParserTestHelper;
-import org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlParser;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import static org.junit.Assert.assertEquals;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CONSTRAINT_TYPE;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DATATYPE_NAME;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.DEFAULT_VALUE;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.NULLABLE;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_ALTER_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_COLUMN_DEFINITION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
-import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.COMPOUND_SORTKEY;
-import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.DISTKEY;
-import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.DISTSTYLE;
-import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDENTITY;
-import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDENTITY_SEED;
-import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.IDENTITY_STEP;
-import static org.modeshape.sequencer.ddl.dialect.amazon.RedshiftDdlLexicon.INTERLEAVED_SORTKEY;
 
 /**
- * Źródła testów:
- *  https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_examples.html
+ * Test sources: https://docs.aws.amazon.com/redshift/latest/dg/r_CREATE_TABLE_examples.html
  */
 public class SnowflakeDdlParserTest extends DdlParserTestHelper {
-    private static final String SPACE = DdlConstants.SPACE;
 
     public static final String DDL_FILE_PATH = "ddl/dialect/snowflake/";
 

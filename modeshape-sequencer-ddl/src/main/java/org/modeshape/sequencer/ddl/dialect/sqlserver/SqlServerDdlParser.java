@@ -560,8 +560,7 @@ public class SqlServerDdlParser extends StandardDdlParser
     }
 
     /**
-     * Klasa służąca do matchowania, niezmieniająca stanu DdlTokenStreama (nie używa metod zmieniających stan streama)
-     *
+     * Class used for matching, not changing the state of the DdlTokenStream (does not use methods that change the state of the stream)
      *
      * @author  Adam Mościcki
      */
@@ -574,20 +573,14 @@ public class SqlServerDdlParser extends StandardDdlParser
         }
 
         /**
-         * Sprawdza czy aktualny stan tokenów do spawdzenia zgadza się z tymi ze strumienia
-         *
-         * @return {true} jeśli tak, {false} w p.p.
+         * Checks if the current state of tokens to be checked matches those in the stream
          */
         public boolean matches() {
             return tokensStream.matches(tokensToMatch);
         }
 
         /**
-         * Sprawdza czy lista tokenów jest zgodna ze strumieniem
-         *
-         * @param first pierwszy token
-         * @param last kolejne
-         * @return {true} jeśli tak, {false} w p.p.
+         * Checks if the token list is compatible with the stream
          */
         public boolean matches(String first, String... last) {
             int argSize = last.length + 1;
@@ -602,10 +595,7 @@ public class SqlServerDdlParser extends StandardDdlParser
         }
 
         /**
-         * Dodaje tokeny do sprawdzenia
-         *
-         * @param first pierwszy token
-         * @param last kolejne
+         * Adds tokens to check
          */
         public void add(String first, String... last) {
             tokensToMatch.add(first);
@@ -666,7 +656,7 @@ public class SqlServerDdlParser extends StandardDdlParser
     }
     
     protected AstNode parseExecuteStatement(DdlTokenStream tokens, AstNode parentNode) {
-        // źródło: http://msdn.microsoft.com/en-us/library/ms188332.aspx
+        // source: http://msdn.microsoft.com/en-us/library/ms188332.aspx
         assert tokens != null;
         assert parentNode != null;
         
@@ -678,8 +668,7 @@ public class SqlServerDdlParser extends StandardDdlParser
         AstNode executeNode ;
         
         if (tokens.matches("(")) {
-            // to nam nie jest potrzebne, więc parsowanie odpuszczam
-            // robienie tego porządnie
+            // we don't need it, so skip the parsing
             String body = parseContentBetweenParens(tokens);
             executeNode = nodeFactory().node("", parentNode, TYPE_EXECUTE_STATEMENT);
             executeNode.setProperty(BODY, body);

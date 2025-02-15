@@ -7,15 +7,14 @@ import org.modeshape.sequencer.ddl.DdlParserTestHelper;
 import org.modeshape.sequencer.ddl.node.AstNode;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.CREATE_VIEW_QUERY_EXPRESSION;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_VIEW_STATEMENT;
 
 /**
- * Testy parsowania tworzenia widoków. Wydzielone do osobnej klasy, bo w wersjach 12c/18c/19c/21c przybyło sporo
- * możliwych kombinacji.
+ * Parsing tests of view creation. Separated into a separate class, because in versions 12c/18c/19c/21c came a lot of
+ * possible combinations.
  *
- * Dokumentacja: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-VIEW.html
+ * Documentation: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-VIEW.html
  *
  * @author Marek Berkan
  */

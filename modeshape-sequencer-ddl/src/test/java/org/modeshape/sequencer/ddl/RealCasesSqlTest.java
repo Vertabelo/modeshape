@@ -14,7 +14,7 @@ import java.util.Scanner;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Przypadki wykrzaczjące (kiedyś) się na produkcji w postaci testów
+ * Testing for cases that cause errors in production.
  *
  * @author Adam Mościcki
  */
@@ -47,7 +47,7 @@ public class RealCasesSqlTest extends DdlParserTestHelper {
         } catch (IllegalStateException exception) {
             illegalState = true;
         }
-        // kończy się
+        // ends successfully
         assertTrue(illegalState == true);
     }
 
@@ -67,7 +67,7 @@ public class RealCasesSqlTest extends DdlParserTestHelper {
         } catch (IllegalStateException exception) {
             illegalState = true;
         }
-        // kończy się
+        // ends successfully
         assertTrue(illegalState == true);
 
     }

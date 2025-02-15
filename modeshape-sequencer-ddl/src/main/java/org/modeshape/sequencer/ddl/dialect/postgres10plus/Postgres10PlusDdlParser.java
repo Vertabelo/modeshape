@@ -747,8 +747,8 @@ public class Postgres10PlusDdlParser extends StandardDdlParser
         // terminator
         // or a new statement
 
-        // w niektórych przypadkach poniższa pętla sie nie kończy
-        // zabezpiecznie na ten przypadek
+        // in some cases the following loop does not finish
+        // safeguards for this case
         int triesGuard = TRIES_OF_PARSE;
         while (tokens.hasNext() && !tokens.matches(getTerminator()) && !tokens.matches(DdlTokenizer.STATEMENT_KEY)) {
             if (triesGuard == 0) {
@@ -1045,7 +1045,7 @@ public class Postgres10PlusDdlParser extends StandardDdlParser
             stmtType = stmtType + SPACE + "MATERIALIZED";
         }
 
-        // pomijamy obsługę
+        // skip tokens
         tokens.canConsume("TEMP");
         tokens.canConsume("TEMPORARY");
 

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 import static org.modeshape.sequencer.ddl.StandardDdlLexicon.TYPE_CREATE_TABLE_STATEMENT;
 
 /**
- * Testy atrybutów partycjonowania dodanych dla MySQL 8.x
+ * Testing partitioning attributes added for MySQL 8.x
  *
  * @author Marek Berkan
  */

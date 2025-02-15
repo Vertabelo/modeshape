@@ -43,8 +43,8 @@ public interface RedshiftDdlConstants extends DdlConstants {
 			"OFFSET", "OID", "OLD", "PARALLEL", "PARTITION", "PERCENT", "PERMISSIONS", "PLACING", "RAW", "READRATIO",
 			"RECOVER", "RESPECT", "REJECTLOG", "RESORT", "RESTORE", "SIMILAR", "SNAPSHOT ", "SYSDATE", "SYSTEM", "TAG",
 			"TDES", "TEXT255", "TEXT32K", "TOP", "TRUNCATECOLUMNS", "VERBOSE", "WALLET", "WITHOUT",
-			// COMMENT nie jest stricte rzecz biorąc słowem kluczowym
-			// ale żeby nie komplikować zbytnio obsługi "COMMENT ON" warto go tak tratkować
+			// COMMENT is strictly speaking not a keyword but in order not to overcomplicate the handling of
+			// “COMMENT ON” it is worth treating it as such
 			"COMMENT"
 	};
 	
